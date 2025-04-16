@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
@@ -55,7 +56,7 @@ model User {
 model VerifyEmailToken {
   userId    String    @unique @map("user_id")
   user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String    @default(uuid())
+  token     String    @unique @default(uuid())
   createdAt DateTime? @default(now()) @map("created_at")
   updatedAt DateTime? @default(now()) @updatedAt @map("updated_at")
 

@@ -18,6 +18,8 @@ import { EmailTokenRepository } from '../../database/repositories/email-token.re
 import { EmailAlreadySentException } from '../../common/exceptions/email-already-sent.exception';
 import { HOUR } from '../../common/utils/time.constants';
 import { EmailService } from '../email/email.service';
+import { InvalidTokenException } from '../../common/exceptions/invalid-token.exception';
+import { TokenExpiredException } from '../../common/exceptions/token-expired.exception';
 
 @Injectable()
 export class AuthService {
@@ -49,6 +51,26 @@ export class AuthService {
     return user;
   }
 
+  async validateUserPayload (payload: JwtPayload): Promise<DbUser> {
+    if (!payload) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.userRepository.findById(payload.sub);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    if (user.lastPasswordChange.getTime() > payload.createdAt) {
+      throw new UnauthorizedException(
+        'Token has expired due to change of password',
+      );
+    }
+
+    delete user.password;
+    return user;
+  }
+
   async hashPassword (password: string): Promise<string> {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
@@ -71,11 +93,20 @@ export class AuthService {
     const payload = this.createPayload(user);
 
     return {
-      accessToken: this.jwtService.sign(payload),
-      refreshToken: this.jwtService.sign(payload, {
-        expiresIn: this.securityConfig.refreshTtl,
-      } as any),
+      accessToken: this.getAccessToken(payload),
+      refreshToken: this.getRefreshToken(payload),
     };
+  }
+
+  getAccessToken (user: JwtPayload): string {
+    return this.jwtService.sign(user);
+  }
+
+  getRefreshToken (user: JwtPayload): string {
+    return this.jwtService.sign(user, {
+      secret: this.securityConfig.refreshSecret,
+      expiresIn: this.securityConfig.refreshTtl,
+    } as any);
   }
 
   login (user: DbUser): TokensResponse {
@@ -125,5 +156,31 @@ export class AuthService {
     });
 
     console.info(`Successfully deleted ${count} unverified users`);
+  }
+
+  async verifyEmail (token: string): Promise<TokensResponse> {
+    const res = await this.emailTokenRepository.find(token, { user: true });
+
+    if (!res) {
+      throw new InvalidTokenException();
+    }
+
+    const { user, createdAt } = res;
+    if (Date.now() - createdAt.getTime() > HOUR) {
+      await this.userRepository.delete({ id: user.id });
+
+      throw new TokenExpiredException();
+    }
+
+    const updatedUser = await this.userRepository.update({
+      id: user.id,
+    }, {
+      state: UserState.CONFIRMED,
+      verifyEmailToken: {
+        delete: true,
+      },
+    });
+
+    return this.getTokens(updatedUser);
   }
 }

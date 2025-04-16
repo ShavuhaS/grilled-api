@@ -9,7 +9,7 @@ export class ApiDocumentationParams {
   authRequired?: boolean;
   acceptsFile?: boolean;
   ok?: ApiResponseOptions;
-  body?: ApiBodyOptions;
+  created?: ApiResponseOptions;
   badRequest?: ApiResponseOptions;
   forbidden?: ApiResponseOptions;
   unauthorized?: ApiResponseOptions;
@@ -19,4 +19,5 @@ export class ApiDocumentationParams {
   tooManyRequests?: ApiResponseOptions;
   params?: ApiParamOptions[];
   queries?: ApiQueryOptions[];
+  body?: ApiBodyOptions;
 }

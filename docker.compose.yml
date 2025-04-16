@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  grilled-api:
+  grilled-api-dev:
+  postgres-db:
+  postgres-db-dev:

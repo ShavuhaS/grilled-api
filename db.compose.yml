@@ -1,5 +1,9 @@
 version: '3'
 
+networks:
+  grilled-local:
+    external: true
+
 services:
   db:
     image: postgres:15
@@ -9,6 +13,8 @@ services:
       - '5432:5432'
     volumes:
       - db-data:/var/lib/postgresql/data
+    networks:
+      - grilled-local
     environment:
       POSTGRES_PASSWORD: postgres
 

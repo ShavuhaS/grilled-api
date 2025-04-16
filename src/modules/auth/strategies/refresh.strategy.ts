@@ -8,7 +8,7 @@ import { DbUser } from '../../../database/entities/user.entity';
 import { AuthService } from '../auth.service';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+export class RefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
   constructor (
     private securityConfig: SecurityConfigService,
     private authService: AuthService,
@@ -16,10 +16,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         ExtractJwt.fromAuthHeaderAsBearerToken(),
-        cookieExtractor('access_token'),
+        cookieExtractor('refresh_token'),
       ]),
       ignoreExpiration: false,
-      secretOrKey: securityConfig.accessSecret,
+      secretOrKey: securityConfig.refreshSecret,
     } as any);
   }
 

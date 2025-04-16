@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { RefreshStrategy } from './strategies/refresh.strategy';
 import { PrismaModule } from '../../database/prisma.module';
 import { ConfigurationModule } from '../../config/configuration.module';
 import { SecurityConfigService } from '../../config/security-config.service';
@@ -11,7 +12,8 @@ import { EmailModule } from '../email/email.module';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, RefreshStrategy],
+  exports: [LocalStrategy, JwtStrategy, RefreshStrategy],
   imports: [
     PrismaModule,
     ConfigurationModule,
@@ -20,7 +22,7 @@ import { EmailModule } from '../email/email.module';
       imports: [ConfigurationModule],
       inject: [SecurityConfigService],
       useFactory: (config: SecurityConfigService) => ({
-        secret: config.secret,
+        secret: config.accessSecret,
         signOptions: {
           expiresIn: config.accessTtl as any,
         },
