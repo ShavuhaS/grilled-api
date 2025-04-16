@@ -10,7 +10,7 @@ export function ApiEndpoint ({
   const decorators = getDocumentationDecorators({ summary, documentation });
 
   if (guards) {
-    decorators.push(UseGuards(...guards));
+    decorators.push(UseGuards(...(Array.isArray(guards) ? guards : [guards])));
   }
 
   return applyDecorators(...decorators);

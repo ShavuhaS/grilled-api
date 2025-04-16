@@ -4,4 +4,6 @@ export class DbVerifyEmailToken {
   userId: string;
   token: string;
   user?: DbUser;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

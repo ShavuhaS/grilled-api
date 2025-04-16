@@ -4,6 +4,7 @@ import {
   ApiBody,
   ApiConflictResponse,
   ApiConsumes,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
@@ -30,6 +31,7 @@ export function getDocumentationDecorators ({
 }: DocDecoratorParams) {
   const responseTypes = [
     { key: 'ok', decorator: ApiOkResponse },
+    { key: 'created', decorator: ApiCreatedResponse },
     { key: 'badRequest', decorator: ApiBadRequestResponse },
     { key: 'forbidden', decorator: ApiForbiddenResponse },
     { key: 'unauthorized', decorator: ApiUnauthorizedResponse },

@@ -5,8 +5,12 @@ import { ConfigService } from '@nestjs/config';
 export class SecurityConfigService {
   constructor (private configService: ConfigService) {}
 
-  get secret (): string {
-    return this.configService.get<string>('security.secret');
+  get accessSecret (): string {
+    return this.configService.get<string>('security.secret.access');
+  }
+
+  get refreshSecret (): string {
+    return this.configService.get<string>('security.secret.refresh');
   }
 
   get accessTtl (): string {

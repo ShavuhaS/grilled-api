@@ -23,7 +23,7 @@ export class RegistrationDto {
     description: 'User password',
   })
   @IsNotEmpty({ message: 'Password should not be empty' })
-  @IsString({ message: 'Password should be a valid string' })
+  @IsString({ message: 'Password should be a string' })
   @Matches(
     new RegExp(
       /(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_\-])[A-Za-z\d@$!%*?&_\-]{8,64}/,
