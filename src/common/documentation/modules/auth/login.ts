@@ -22,10 +22,9 @@ export const LoginDocumentation: ApiDocumentationParams = {
       
     InvalidEntityIdException:
       User with such id was not found
-      
-    ${DefaultUnauthorizedResponse.description}
     
     EmailNotConfirmedException:
-      Email has not been confirmed`,
+      Email has not been confirmed
+    ${DefaultUnauthorizedResponse.description}`,
   },
 };

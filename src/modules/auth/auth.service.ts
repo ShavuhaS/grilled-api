@@ -20,6 +20,7 @@ import { HOUR } from '../../common/utils/time.constants';
 import { EmailService } from '../email/email.service';
 import { InvalidTokenException } from '../../common/exceptions/invalid-token.exception';
 import { TokenExpiredException } from '../../common/exceptions/token-expired.exception';
+import { AccessTokenResponse } from '../../common/responses/access-token.response';
 
 @Injectable()
 export class AuthService {
@@ -115,6 +116,12 @@ export class AuthService {
     }
 
     return this.getTokens(user);
+  }
+
+  refreshToken (user: DbUser): AccessTokenResponse {
+    const payload = this.createPayload(user);
+
+    return { accessToken: this.getAccessToken(payload) };
   }
 
   async signUp (dto: RegistrationDto) {
