@@ -34,9 +34,9 @@ model User {
   surname               String
   state                 UserState             @default(PENDING)
   role                  Role
-  lastLogin             DateTime              @default(now()) @map("last_login")
+  lastLearning          DateTime              @default(now()) @map("last_learning")
   lastPasswordChange    DateTime              @default(now()) @map("last_password_change")
-  loginStreak           Int                   @default(0) @map("login_streak")
+  learningStreak        Int                   @default(0) @map("learning_streak")
   createdAt             DateTime?             @default(now()) @map("created_at")
   updatedAt             DateTime?             @default(now()) @updatedAt @map("updated_at")
   teacher               Teacher?

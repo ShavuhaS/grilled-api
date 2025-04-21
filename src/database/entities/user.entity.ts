@@ -12,8 +12,8 @@ export class DbUser {
   state: UserStateEnum;
   role: RoleEnum;
   lastPasswordChange: Date;
-  lastLogin: Date;
-  loginStreak: number;
+  lastLearning: Date;
+  learningStreak: number;
   createdAt?: Date;
   updatedAt?: Date;
   verifyEmailToken?: DbVerifyEmailToken;
