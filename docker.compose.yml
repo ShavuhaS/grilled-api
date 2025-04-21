@@ -1,7 +1,74 @@
 version: '3'
 
+networks:
+  grilled:
+    external: true
+  grilled-dev:
+    external: true
+
 services:
   grilled-api:
+    image: grilled31/grilled-api:master
+    container_name: grilled-api
+    restart: unless-stopped
+    volumes:
+      - ~/static/grilled-api:/app/static
+    depends_on:
+      - postgres-db
+      - watchtower
+    networks:
+      - grilled
+    ports:
+      - "3001:80"
+    env_file:
+      - ~/deployment/production/env/api.env
+
   grilled-api-dev:
+    image: grilled31/grilled-api:dev
+    container_name: grilled-api-dev
+    restart: unless-stopped
+    volumes:
+      - ~/static/grilled-api-dev:/app/static
+    depends_on:
+      - postgres-db-dev
+      - watchtower
+    networks:
+      - grilled-dev
+    ports:
+      - "4001:80"
+    env_file:
+      - ~/deployment/development/env/api.env
+
   postgres-db:
+    image: postgres:15
+    container_name: postgres-db
+    volumes:
+      - ~/deployment/production/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - grilled
+    env_file:
+      - ~/deployment/production/env/postgres.env
+
   postgres-db-dev:
+    image: postgres:15
+    container_name: postgres-db
+    volumes:
+      - ~/deployment/development/postgresql/data:/var/lib/postgresql/data
+    ports:
+      - "4002:5432"
+    networks:
+      - grilled-dev
+    env_file:
+      - ~/deployment/development/env/postgres.env
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - "--cleanup"
+      - "-i"
+      - "120"
