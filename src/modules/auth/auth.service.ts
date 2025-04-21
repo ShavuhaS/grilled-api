@@ -21,6 +21,7 @@ import { EmailService } from '../email/email.service';
 import { InvalidTokenException } from '../../common/exceptions/invalid-token.exception';
 import { TokenExpiredException } from '../../common/exceptions/token-expired.exception';
 import { AccessTokenResponse } from '../../common/responses/access-token.response';
+import { RoleEnum } from '../../common/enums/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -179,14 +180,21 @@ export class AuthService {
       throw new TokenExpiredException();
     }
 
-    const updatedUser = await this.userRepository.update({
-      id: user.id,
-    }, {
+    const { id } = user;
+    const updatedUser = await this.userRepository.update({ id }, {
       state: UserState.CONFIRMED,
       verifyEmailToken: {
         delete: true,
       },
     });
+
+    if (updatedUser.role === RoleEnum.TEACHER) {
+      await this.userRepository.update({ id }, {
+        teacher: {
+          create: {},
+        },
+      });
+    }
 
     return this.getTokens(updatedUser);
   }
