@@ -13,10 +13,17 @@ export default () => ({
     },
   },
   email: {
-    host: process.env.SMTP_HOST,
-    port: parseInt(process.env.SMTP_PORT),
-    username: process.env.SMTP_USERNAME,
-    password: process.env.SMTP_PASSWORD,
+    smtp: {
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT),
+      secure: process.env.SMTP_SECURE ?? false,
+      username: process.env.SMTP_USERNAME,
+      password: process.env.SMTP_PASSWORD,
+    },
+    mailgun: {
+      apiKey: process.env.MAILGUN_API_KEY,
+      domain: process.env.MAILGUN_DOMAIN,
+    },
   },
   static: {
     servePath: '/static',
