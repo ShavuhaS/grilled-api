@@ -2,11 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class BaseTeacherResponse {
   @ApiProperty({
-    description: 'Teacher\'s avatar',
-  })
-    avatar?: string;
-
-  @ApiProperty({
     description: 'Teacher\'s workplace',
   })
     workplace?: string;

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RoleEnum } from '../enums/role.enum';
 import { UserStateEnum } from '../enums/user-state.enum';
 
@@ -8,10 +8,15 @@ export class BaseUserResponse {
   })
     id: string;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'User google account id',
   })
     googleId?: string;
+
+  @ApiPropertyOptional({
+    description: 'User\'s avatar',
+  })
+    avatar?: string;
 
   @ApiProperty({
     description: 'User email',

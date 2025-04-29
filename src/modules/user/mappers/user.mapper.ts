@@ -12,6 +12,7 @@ export class UserMapper {
     return {
       id: user.id,
       googleId: user.googleId,
+      avatar: user.avatar,
       email: user.email,
       name: user.name,
       surname: user.surname,

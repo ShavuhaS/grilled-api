@@ -14,6 +14,7 @@ import { DbUserQuestionAnswer } from './user-question-answer.entity';
 export class DbUser {
   id: string;
   googleId?: string;
+  avatar?: string;
   email: string;
   password: string;
   name: string;

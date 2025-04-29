@@ -9,7 +9,6 @@ export class TeacherMapper {
 
   toBaseTeacherResponse (teacher: DbTeacher): BaseTeacherResponse {
     return {
-      avatar: teacher.avatar,
       workplace: teacher.workplace,
       position: teacher.position,
       aboutMe: teacher.aboutMe,
@@ -19,9 +18,9 @@ export class TeacherMapper {
   toCourseTeacherResponse (teacher: DbTeacher): CourseTeacherResponse {
     return {
       id: teacher.userId,
-      avatar: teacher.avatar,
-      name: teacher?.user.name,
-      surname: teacher?.user.surname,
+      avatar: teacher.user?.avatar,
+      name: teacher.user?.name,
+      surname: teacher.user?.surname,
       workplace: teacher.workplace,
     };
   }

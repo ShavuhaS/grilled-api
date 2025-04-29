@@ -6,7 +6,6 @@ import { DbCourse } from './course.entity';
 export class DbTeacher {
   userId: string;
   user?: DbUser;
-  avatar?: string;
   workplace?: string;
   position?: string;
   aboutMe?: string;
