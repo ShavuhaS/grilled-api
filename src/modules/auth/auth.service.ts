@@ -147,7 +147,7 @@ export class AuthService {
 
     const { id: userId, email: to } = user;
     const { token } = await this.emailTokenRepository.create(userId);
-    const link = `${this.urlConfig.front}/email/${token}`;
+    const link = `${this.urlConfig.front}/signup/finish?token=${token}`;
 
     await this.emailService.sendVerificationEmail({ to, link });
   }
