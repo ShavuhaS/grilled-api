@@ -207,18 +207,18 @@ export class AuthService {
       maxAge: this.securityConfig.accessTtl * 1000,
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
   }
 
   setRefreshTokenCookie (res: Response, refreshToken: string) {
     res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {
       domain: this.urlConfig.domain,
-      path: '/v1/auth/refresh',
+      path: '/v1/auth',
       maxAge: this.securityConfig.refreshTtl * 1000,
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
     });
   }
 }
