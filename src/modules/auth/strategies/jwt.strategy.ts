@@ -6,6 +6,7 @@ import { cookieExtractor } from '../../../common/utils/cookie-extractor.util';
 import { JwtPayload } from '../types/jwt-payload.type';
 import { DbUser } from '../../../database/entities/user.entity';
 import { AuthService } from '../auth.service';
+import { ACCESS_TOKEN_COOKIE } from '../constants/cookie-names.const';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -16,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         ExtractJwt.fromAuthHeaderAsBearerToken(),
-        cookieExtractor('access_token'),
+        cookieExtractor(ACCESS_TOKEN_COOKIE),
       ]),
       ignoreExpiration: false,
       secretOrKey: securityConfig.accessSecret,

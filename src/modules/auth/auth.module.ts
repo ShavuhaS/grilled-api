@@ -26,7 +26,7 @@ import { UserModule } from '../user/user.module';
       useFactory: (config: SecurityConfigService) => ({
         secret: config.accessSecret,
         signOptions: {
-          expiresIn: config.accessTtl as any,
+          expiresIn: config.accessTtlStr as any,
         },
       }),
     }),

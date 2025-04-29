@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Cron } from '@nestjs/schedule';
+import { Response } from 'express';
 import { UserState } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
 import { UserRepository } from '../../database/repositories/user.repository';
@@ -22,6 +23,7 @@ import { InvalidTokenException } from '../../common/exceptions/invalid-token.exc
 import { TokenExpiredException } from '../../common/exceptions/token-expired.exception';
 import { AccessTokenResponse } from '../../common/responses/access-token.response';
 import { RoleEnum } from '../../common/enums/role.enum';
+import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from './constants/cookie-names.const';
 
 @Injectable()
 export class AuthService {
@@ -107,7 +109,7 @@ export class AuthService {
   getRefreshToken (user: JwtPayload): string {
     return this.jwtService.sign(user, {
       secret: this.securityConfig.refreshSecret,
-      expiresIn: this.securityConfig.refreshTtl,
+      expiresIn: this.securityConfig.refreshTtlStr,
     } as any);
   }
 
@@ -197,5 +199,22 @@ export class AuthService {
     }
 
     return this.getTokens(updatedUser);
+  }
+
+  setAccessTokenCookie (res: Response, accessToken: string) {
+    res.cookie(ACCESS_TOKEN_COOKIE, accessToken, {
+      domain: this.urlConfig.domain,
+      maxAge: this.securityConfig.accessTtl * 1000,
+      httpOnly: true,
+    });
+  }
+
+  setRefreshTokenCookie (res: Response, refreshToken: string) {
+    res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {
+      domain: this.urlConfig.domain,
+      path: '/v1/refresh',
+      maxAge: this.securityConfig.refreshTtl * 1000,
+      httpOnly: true,
+    });
   }
 }

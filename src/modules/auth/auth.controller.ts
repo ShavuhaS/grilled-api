@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Param, Post, Request } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Request, Res } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegistrationDto } from '../../common/dtos/registration.dto';
 import { ApiEndpoint } from '../../common/decorators/api-endpoint.decorator';
@@ -38,8 +39,14 @@ export class AuthController {
     documentation: AuthDocumentation.VERIFY_EMAIL,
   })
   @Post('/verifyEmail/:token')
-  async verifyEmail (@Param('token') token: string): Promise<TokensResponse> {
-    return this.authService.verifyEmail(token);
+  async verifyEmail (
+    @Param('token') token: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<TokensResponse> {
+    const { accessToken, refreshToken } = await this.authService.verifyEmail(token);
+    this.authService.setAccessTokenCookie(res, accessToken);
+    this.authService.setRefreshTokenCookie(res, refreshToken);
+    return { accessToken, refreshToken };
   }
 
   @ApiEndpoint({
@@ -59,8 +66,14 @@ export class AuthController {
     guards: LocalAuthGuard,
   })
   @Post('/login')
-  async login (@Request() req): Promise<TokensResponse> {
-    return this.authService.login(req.user);
+  async login (
+    @Request() req,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<TokensResponse> {
+    const { accessToken, refreshToken } = this.authService.login(req.user);
+    this.authService.setAccessTokenCookie(res, accessToken);
+    this.authService.setRefreshTokenCookie(res, refreshToken);
+    return { accessToken, refreshToken };
   }
 
   @ApiEndpoint({
@@ -69,7 +82,12 @@ export class AuthController {
     guards: RefreshGuard,
   })
   @Get('/refresh')
-  async refresh (@Request() req): Promise<AccessTokenResponse> {
-    return this.authService.refreshToken(req.user);
+  async refresh (
+    @Request() req,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AccessTokenResponse> {
+    const { accessToken } = this.authService.refreshToken(req.user);
+    this.authService.setAccessTokenCookie(res, accessToken);
+    return { accessToken };
   }
 }

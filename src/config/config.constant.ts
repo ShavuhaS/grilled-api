@@ -8,8 +8,8 @@ export default () => ({
       refresh: process.env.JWT_REFRESH_SECRET ?? '42',
     },
     jwt: {
-      ttl: process.env.JWT_TTL ?? '86400s',
-      refreshTtl: process.env.JWT_REFRESH_TTL ?? '604800s',
+      ttl: process.env.JWT_TTL ?? 86400,
+      refreshTtl: process.env.JWT_REFRESH_TTL ?? 604800,
     },
   },
   email: {

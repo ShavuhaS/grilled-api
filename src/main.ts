@@ -50,8 +50,8 @@ async function bootstrap () {
 
   await app.listen(port);
   console.info(
-    `Server started on http:/127.0.0.1:${port}\n` +
-      `Swagger available on http:/127.0.0.1:${port}/api`,
+    `Server started on http://127.0.0.1:${port}\n` +
+      `Swagger available on http://127.0.0.1:${port}/api`,
   );
 }
 bootstrap();
