@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CourseTeacherResponse } from './course-teacher.response';
 import { BaseCourseCategoryResponse } from './base-course-category.response';
+import { CourseLevelEnum } from '../enums/course-level.enum';
+import { CourseStatusEnum } from '../enums/course-status.enum';
 
 export class BaseCourseResponse {
   @ApiProperty({
@@ -29,6 +31,18 @@ export class BaseCourseResponse {
     description: 'Course description',
   })
     about: string;
+
+  @ApiProperty({
+    description: 'Course level (BEGINNER, INTERMEDIATE or EXPERT)',
+    enum: CourseLevelEnum,
+  })
+    level: CourseLevelEnum;
+
+  @ApiProperty({
+    description: 'Course status (DRAFT, ARCHIVED or PUBLISHED)',
+    enum: CourseStatusEnum,
+  })
+    status: CourseStatusEnum;
 
   @ApiProperty({
     description: 'Estimated time for course completion',

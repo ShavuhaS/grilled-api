@@ -4,9 +4,23 @@ import { UserRepository } from './repositories/user.repository';
 import { EmailTokenRepository } from './repositories/email-token.repository';
 import { CourseRepository } from './repositories/course.repository';
 import { CourseCategoryRepository } from './repositories/course-category.repository';
+import { CourseModuleRepository } from './repositories/course-module.repository';
 
 @Module({
-  providers: [PrismaService, UserRepository, EmailTokenRepository, CourseRepository, CourseCategoryRepository],
-  exports: [UserRepository, EmailTokenRepository, CourseRepository, CourseCategoryRepository],
+  providers: [
+    PrismaService,
+    UserRepository,
+    EmailTokenRepository,
+    CourseRepository,
+    CourseCategoryRepository,
+    CourseModuleRepository,
+  ],
+  exports: [
+    UserRepository,
+    EmailTokenRepository,
+    CourseRepository,
+    CourseCategoryRepository,
+    CourseModuleRepository,
+  ],
 })
 export class PrismaModule {}

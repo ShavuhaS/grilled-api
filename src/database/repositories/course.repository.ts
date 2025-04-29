@@ -16,6 +16,15 @@ export class CourseRepository {
     }) as Promise<DbCourse>;
   }
 
+  async updateById (id: string, data: Prisma.CourseUpdateInput): Promise<DbCourse> {
+    return this.prisma.course.update({
+      where: {
+        id,
+      },
+      data,
+    }) as Promise<DbCourse>;
+  }
+
   async create (dto: Prisma.CourseUncheckedCreateInput, include?: Prisma.CourseInclude): Promise<DbCourse> {
     return this.prisma.course.create({
       data: dto,
