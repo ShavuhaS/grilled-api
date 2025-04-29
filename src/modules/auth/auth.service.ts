@@ -207,7 +207,7 @@ export class AuthService {
       maxAge: this.securityConfig.accessTtl * 1000,
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
     });
   }
 
@@ -218,7 +218,7 @@ export class AuthService {
       maxAge: this.securityConfig.refreshTtl * 1000,
       httpOnly: true,
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
     });
   }
 }
