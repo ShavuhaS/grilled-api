@@ -15,4 +15,11 @@ export class CourseRepository {
       include,
     }) as Promise<DbCourse>;
   }
+
+  async create (dto: Prisma.CourseUncheckedCreateInput, include?: Prisma.CourseInclude): Promise<DbCourse> {
+    return this.prisma.course.create({
+      data: dto,
+      include,
+    }) as Promise<DbCourse>;
+  }
 }

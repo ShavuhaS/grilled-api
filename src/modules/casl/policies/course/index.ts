@@ -1,7 +1,9 @@
-import { Type } from '@nestjs/common';
+import { PolicyHandler } from '../../interfaces/policy-handler.interface';
+import { courseCreatePolicy } from './create';
 import { CourseEnrollPolicy } from './enroll';
-import { IPolicyHandler } from '../../interfaces/policy-handler.interface';
+import { CourseAction } from '../../actions/course-action.enum';
 
-export const CoursePolicies: Record<string, Type<IPolicyHandler<any>>> = {
+export const CoursePolicies: Record<string, PolicyHandler<CourseAction>> = {
+  CREATE: courseCreatePolicy,
   ENROLL: CourseEnrollPolicy,
 };

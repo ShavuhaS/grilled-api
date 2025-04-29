@@ -17,6 +17,14 @@ export class CourseAbilityFactory implements AbilityFactory<CourseAction> {
     if (user.role === RoleEnum.STUDENT) {
       cannot(CourseAction.MANAGE, DbCourse);
       can(CourseAction.ENROLL, DbCourse, { status: CourseStatusEnum.PUBLISHED });
+    } else if (user.role === RoleEnum.TEACHER) {
+      cannot(CourseAction.MANAGE, DbCourse);
+      can(CourseAction.CREATE, DbCourse);
+      can(CourseAction.READ, DbCourse);
+      can(CourseAction.UPDATE, DbCourse, { authorId: user.id });
+      can(CourseAction.DELETE, DbCourse, { authorId: user.id });
+    } else if (user.role === RoleEnum.ADMIN) {
+      can(CourseAction.MANAGE, DbCourse);
     }
 
     return build({

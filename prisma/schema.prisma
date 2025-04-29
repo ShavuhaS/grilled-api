@@ -175,10 +175,10 @@ model Course {
   name          String
   about         String
   level         CourseLevel
-  status        CourseStatus
+  status        CourseStatus     @default(DRAFT)
   estimatedTime Int              @default(0) @map("estimated_time")
   enrolledCount Int              @default(0) @map("enrolled_count")
-  avgRating     Decimal          @map("avg_rating")
+  avgRating     Decimal          @default(0) @map("avg_rating")
   reviewCount   Int              @default(0) @map("review_count")
   createdAt     DateTime?        @default(now()) @map("created_at")
   updatedAt     DateTime?        @default(now()) @updatedAt @map("updated_at")

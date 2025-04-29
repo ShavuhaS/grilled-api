@@ -3,3 +3,9 @@ export const DefaultUnauthorizedResponse = {
     UnauthorizedException:
       Unauthorized`,
 };
+
+export const DefaultForbiddenResponse = {
+  description: `\n
+    Forbidden:
+      Forbidden resource`,
+};
