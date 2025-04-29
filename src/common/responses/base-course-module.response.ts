@@ -24,6 +24,7 @@ export class BaseCourseModuleResponse {
 
   @ApiProperty({
     description: 'Course module lessons',
+    type: [BaseCourseLessonResponse],
   })
     lessons: BaseCourseLessonResponse[];
 }

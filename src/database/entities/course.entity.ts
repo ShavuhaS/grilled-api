@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { DbTeacher } from './teacher.entity';
 import { DbCourseCategory } from './course-category.entity';
 import { CourseLevelEnum } from '../../common/enums/course-level.enum';

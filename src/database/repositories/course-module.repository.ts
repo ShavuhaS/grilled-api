@@ -26,4 +26,15 @@ export class CourseModuleRepository {
       include,
     }) as Promise<DbCourseModule>;
   }
+
+  async updateMany (where: Prisma.CourseModuleWhereInput, data: Prisma.CourseModuleUpdateInput): Promise<{ count: number }> {
+    return this.prisma.courseModule.updateMany({
+      where,
+      data,
+    });
+  }
+
+  async delete (where: Prisma.CourseModuleWhereUniqueInput): Promise<DbCourseModule> {
+    return this.prisma.courseModule.delete({ where }) as Promise<DbCourseModule>;
+  }
 }

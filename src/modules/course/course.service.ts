@@ -14,21 +14,23 @@ export class CourseService {
     private courseModuleRepository: CourseModuleRepository,
   ) {}
 
+  async getById (id: string): Promise<DbCourse> {
+    return this.courseRepository.findById(id, {
+      modules: {
+        orderBy: { order: 'asc' },
+        include: {
+          lessons: {
+            orderBy: { order: 'asc' },
+          },
+        },
+      },
+    });
+  }
+
   async create (user: DbUser, body: CreateCourseDto): Promise<DbCourse> {
     return this.courseRepository.create({
       ...body,
       authorId: user.id,
-    }, {
-      author: {
-        include: {
-          user: {
-            include: {
-              teacher: true,
-            },
-          },
-        },
-      },
-      category: true,
     });
   }
 
@@ -54,6 +56,23 @@ export class CourseService {
         orderBy: {
           order: 'asc',
         },
+      },
+    });
+  }
+
+  async deleteModule (moduleId: string) {
+    const { courseId, order } = await this.courseModuleRepository.delete({
+      id: moduleId,
+    });
+
+    await this.courseModuleRepository.updateMany({
+      courseId,
+      order: {
+        gt: order,
+      },
+    }, {
+      order: {
+        decrement: 1,
       },
     });
   }

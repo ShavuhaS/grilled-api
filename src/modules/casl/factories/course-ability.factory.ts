@@ -6,6 +6,7 @@ import { AbilityBuilder, CreateAbility, createMongoAbility, ExtractSubjectType }
 import { RoleEnum } from '../../../common/enums/role.enum';
 import { DbCourse } from '../../../database/entities/course.entity';
 import { CourseStatusEnum } from '../../../common/enums/course-status.enum';
+import { DbCourseModule } from '../../../database/entities/course-module.entity';
 
 @Injectable()
 export class CourseAbilityFactory implements AbilityFactory<CourseAction> {
@@ -16,13 +17,15 @@ export class CourseAbilityFactory implements AbilityFactory<CourseAction> {
 
     if (user.role === RoleEnum.STUDENT) {
       cannot(CourseAction.MANAGE, DbCourse);
-      can(CourseAction.ENROLL, DbCourse, { status: CourseStatusEnum.PUBLISHED });
+      can([CourseAction.READ, CourseAction.ENROLL], DbCourse, { status: CourseStatusEnum.PUBLISHED });
     } else if (user.role === RoleEnum.TEACHER) {
       cannot(CourseAction.MANAGE, DbCourse);
       can(CourseAction.CREATE, DbCourse);
       can(CourseAction.READ, DbCourse);
-      can(CourseAction.UPDATE, DbCourse, { authorId: user.id });
-      can(CourseAction.DELETE, DbCourse, { authorId: user.id });
+      can([CourseAction.UPDATE, CourseAction.DELETE], DbCourse, { authorId: user.id });
+      cannot([CourseAction.UPDATE, CourseAction.DELETE], DbCourse, {
+        enrolledCount: { $gt: 0 },
+      });
     } else if (user.role === RoleEnum.ADMIN) {
       can(CourseAction.MANAGE, DbCourse);
     }

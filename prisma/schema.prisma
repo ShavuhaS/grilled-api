@@ -277,7 +277,6 @@ model CourseModule {
   updatedAt     DateTime?      @default(now()) @updatedAt @map("updated_at")
   lessons       CourseLesson[]
 
-  @@unique([courseId, order])
   @@map("course_modules")
 }
 
@@ -301,7 +300,6 @@ model CourseLesson {
   resources     LessonResource[]
   completedBy   CompletedLesson[]
 
-  @@unique([moduleId, order])
   @@map("course_lessons")
 }
 

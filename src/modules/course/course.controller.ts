@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Request } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SetAbilityFactory } from '../../common/guards/casl/set-ability-factory.meta';
 import { CourseAbilityFactory } from '../casl/factories/course-ability.factory';
@@ -12,6 +12,7 @@ import { CourseMapper } from './mappers/course.mapper';
 import { CourseByIdPipe } from '../../common/pipes/course-by-id.pipe';
 import { CreateCourseModuleDto } from '../../common/dtos/create-course-module.dto';
 import { CourseModuleMapper } from './mappers/course-module.mapper';
+import { ModuleByIdPipe } from '../../common/pipes/module-by-id.pipe';
 
 @ApiTags('Courses')
 @Controller({
@@ -42,6 +43,16 @@ export class CourseController {
   }
 
   @ApiEndpoint({
+    summary: 'Get course by id',
+    documentation: CourseDocumentation.GET,
+  })
+  @Get('/:courseId')
+  async get (@Param('courseId', CourseByIdPipe) courseId: string) {
+    const course = await this.courseService.getById(courseId);
+    return this.courseMapper.toCourseResponse(course);
+  }
+
+  @ApiEndpoint({
     summary: 'Create course module',
     documentation: CourseDocumentation.CREATE_MODULE,
     policies: CoursePolicies.UPDATE,
@@ -53,6 +64,15 @@ export class CourseController {
   ) {
     const module = await this.courseService.createModule(courseId, body);
     return this.moduleMapper.toBaseCourseModuleResponse(module);
+  }
+
+  @ApiEndpoint({
+    summary: 'Delete course module',
+    policies: CoursePolicies.MODULE_DELETE,
+  })
+  @Delete('/modules/:moduleId')
+  async deleteModule (@Param('moduleId', ModuleByIdPipe) moduleId: string) {
+    return await this.courseService.deleteModule(moduleId);
   }
 
   @ApiEndpoint({

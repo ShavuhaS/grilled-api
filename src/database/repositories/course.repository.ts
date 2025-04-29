@@ -5,6 +5,19 @@ import { DbCourse } from '../entities/course.entity';
 
 @Injectable()
 export class CourseRepository {
+  private include: Prisma.CourseInclude = {
+    author: {
+      include: {
+        user: {
+          include: {
+            teacher: true,
+          },
+        },
+      },
+    },
+    category: true,
+  };
+
   constructor (private prisma: PrismaService) {}
 
   async findById (id: string, include?: Prisma.CourseInclude): Promise<DbCourse> {
@@ -12,7 +25,20 @@ export class CourseRepository {
       where: {
         id,
       },
-      include,
+      include: {
+        ...this.include,
+        ...include,
+      },
+    }) as Promise<DbCourse>;
+  }
+
+  async findOne (where: Prisma.CourseWhereInput, include?: Prisma.CourseInclude): Promise<DbCourse> {
+    return this.prisma.course.findFirst({
+      where,
+      include: {
+        ...this.include,
+        ...include,
+      },
     }) as Promise<DbCourse>;
   }
 
@@ -28,7 +54,10 @@ export class CourseRepository {
   async create (dto: Prisma.CourseUncheckedCreateInput, include?: Prisma.CourseInclude): Promise<DbCourse> {
     return this.prisma.course.create({
       data: dto,
-      include,
+      include: {
+        ...this.include,
+        ...include,
+      },
     }) as Promise<DbCourse>;
   }
 }
