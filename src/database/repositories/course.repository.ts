@@ -1,0 +1,18 @@
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
+import { DbCourse } from '../entities/course.entity';
+
+@Injectable()
+export class CourseRepository {
+  constructor (private prisma: PrismaService) {}
+
+  async findById (id: string, include?: Prisma.CourseInclude): Promise<DbCourse> {
+    return this.prisma.course.findUnique({
+      where: {
+        id,
+      },
+      include,
+    }) as Promise<DbCourse>;
+  }
+}

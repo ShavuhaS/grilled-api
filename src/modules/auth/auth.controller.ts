@@ -4,11 +4,13 @@ import { AuthService } from './auth.service';
 import { RegistrationDto } from '../../common/dtos/registration.dto';
 import { ApiEndpoint } from '../../common/decorators/api-endpoint.decorator';
 import { AuthDocumentation } from '../../common/documentation/modules/auth';
-import { JwtGuard } from '../../common/guards/jwt.guard';
-import { LocalAuthGuard } from '../../common/guards/local-auth.guard';
-import { RefreshGuard } from '../../common/guards/refresh.guard';
+import { JwtGuard } from '../../common/guards/auth/jwt.guard';
+import { LocalAuthGuard } from '../../common/guards/auth/local-auth.guard';
+import { RefreshGuard } from '../../common/guards/auth/refresh.guard';
 import { AccessTokenResponse } from '../../common/responses/access-token.response';
 import { TokensResponse } from '../../common/responses/tokens.response';
+import { UserService } from '../user/user.service';
+import { UserMapper } from '../user/mappers/user.mapper';
 
 @ApiTags('Auth')
 @Controller({
@@ -16,7 +18,11 @@ import { TokensResponse } from '../../common/responses/tokens.response';
   version: '1',
 })
 export class AuthController {
-  constructor (private authService: AuthService) {}
+  constructor (
+    private authService: AuthService,
+    private userService: UserService,
+    private userMapper: UserMapper,
+  ) {}
 
   @ApiEndpoint({
     summary: 'User account registration',
@@ -43,7 +49,8 @@ export class AuthController {
   })
   @Get('/me')
   async getMe (@Request() req) {
-    return req.user;
+    const user = await this.userService.getById(req.user.id);
+    return this.userMapper.toUserResponse(user);
   }
 
   @ApiEndpoint({

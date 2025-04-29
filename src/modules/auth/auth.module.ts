@@ -9,6 +9,8 @@ import { PrismaModule } from '../../database/prisma.module';
 import { ConfigurationModule } from '../../config/configuration.module';
 import { SecurityConfigService } from '../../config/security-config.service';
 import { EmailModule } from '../email/email.module';
+import { UserMapperModule } from '../user/mappers/user-mapper.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   controllers: [AuthController],
@@ -28,6 +30,8 @@ import { EmailModule } from '../email/email.module';
         },
       }),
     }),
+    UserModule,
+    UserMapperModule,
   ],
 })
 export class AuthModule {}

@@ -7,6 +7,7 @@ import {
 
 export class ApiDocumentationParams {
   authRequired?: boolean;
+  policies?: string[];
   acceptsFile?: boolean;
   ok?: ApiResponseOptions;
   created?: ApiResponseOptions;

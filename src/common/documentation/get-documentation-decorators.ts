@@ -41,6 +41,16 @@ export function getDocumentationDecorators ({
     { key: 'tooManyRequests', decorator: ApiTooManyRequestsResponse },
   ];
 
+  if (documentation?.policies) {
+    const policies = 'Policies:\n\t' + documentation.policies.join('\n\t') + '\n';
+
+    if (description === undefined) {
+      description = policies;
+    } else {
+      description = policies + description;
+    }
+  }
+
   const decorators = [ApiOperation({ summary, description })];
 
   if (documentation?.authRequired) {
