@@ -5,7 +5,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { resolve } from 'node:path';
 import { EmailService } from './email.service';
 import { ConfigurationModule } from '../../config/configuration.module';
-import { EmailConfigService } from '../../config/email-config.service';
+import { EmailConfigService } from '../../config/services/email-config.service';
 
 @Module({
   providers: [EmailService],

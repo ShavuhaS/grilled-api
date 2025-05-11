@@ -7,7 +7,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshStrategy } from './strategies/refresh.strategy';
 import { PrismaModule } from '../../database/prisma.module';
 import { ConfigurationModule } from '../../config/configuration.module';
-import { SecurityConfigService } from '../../config/security-config.service';
+import { SecurityConfigService } from '../../config/services/security-config.service';
 import { EmailModule } from '../email/email.module';
 import { UserMapperModule } from '../user/mappers/user-mapper.module';
 import { UserModule } from '../user/user.module';

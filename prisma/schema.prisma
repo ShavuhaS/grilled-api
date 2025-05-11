@@ -167,25 +167,28 @@ enum CourseStatus {
 }
 
 model Course {
-  id            String           @id @default(uuid())
-  authorId      String           @map("author_id")
-  author        Teacher          @relation(fields: [authorId], references: [userId])
-  category      CourseCategory   @relation(fields: [categoryId], references: [id])
-  categoryId    String           @map("category_id")
-  name          String
-  about         String
-  level         CourseLevel
-  status        CourseStatus     @default(DRAFT)
-  estimatedTime Int              @default(0) @map("estimated_time")
-  enrolledCount Int              @default(0) @map("enrolled_count")
-  avgRating     Decimal          @default(0) @map("avg_rating")
-  reviewCount   Int              @default(0) @map("review_count")
-  createdAt     DateTime?        @default(now()) @map("created_at")
-  updatedAt     DateTime?        @default(now()) @updatedAt @map("updated_at")
-  skills        CourseSkill[]
-  enrollees     UserCourse[]
-  questions     CourseQuestion[]
-  modules       CourseModule[]
+  id                 String           @id @default(uuid())
+  authorId           String           @map("author_id")
+  author             Teacher          @relation(fields: [authorId], references: [userId])
+  category           CourseCategory   @relation(fields: [categoryId], references: [id])
+  categoryId         String           @map("category_id")
+  publishedVersionId String?          @map("published_version_id")
+  publishedVersion   Course?          @relation("CourseVersion", fields: [publishedVersionId], references: [id], onDelete: Cascade)
+  versions           Course[]         @relation("CourseVersion")
+  name               String
+  about              String
+  level              CourseLevel
+  status             CourseStatus     @default(DRAFT)
+  estimatedTime      Int              @default(0) @map("estimated_time")
+  enrolledCount      Int              @default(0) @map("enrolled_count")
+  avgRating          Decimal          @default(0) @map("avg_rating")
+  reviewCount        Int              @default(0) @map("review_count")
+  createdAt          DateTime?        @default(now()) @map("created_at")
+  updatedAt          DateTime?        @default(now()) @updatedAt @map("updated_at")
+  skills             CourseSkill[]
+  enrollees          UserCourse[]
+  questions          CourseQuestion[]
+  modules            CourseModule[]
 
   @@map("courses")
 }

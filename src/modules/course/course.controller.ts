@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SetAbilityFactory } from '../../common/guards/casl/set-ability-factory.meta';
 import { CourseAbilityFactory } from '../casl/factories/course-ability.factory';
@@ -13,6 +13,9 @@ import { CourseByIdPipe } from '../../common/pipes/course-by-id.pipe';
 import { CreateCourseModuleDto } from '../../common/dtos/create-course-module.dto';
 import { CourseModuleMapper } from './mappers/course-module.mapper';
 import { ModuleByIdPipe } from '../../common/pipes/module-by-id.pipe';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { CreateLessonDto } from '../../common/dtos/create-lesson.dto';
+import { plainToInstance } from 'class-transformer';
 
 @ApiTags('Courses')
 @Controller({
@@ -55,7 +58,7 @@ export class CourseController {
   @ApiEndpoint({
     summary: 'Create course module',
     documentation: CourseDocumentation.CREATE_MODULE,
-    policies: CoursePolicies.UPDATE,
+    policies: CoursePolicies.MODULE_CREATE,
   })
   @Post('/:courseId/modules')
   async createModule (
@@ -70,9 +73,30 @@ export class CourseController {
     summary: 'Delete course module',
     policies: CoursePolicies.MODULE_DELETE,
   })
-  @Delete('/modules/:moduleId')
-  async deleteModule (@Param('moduleId', ModuleByIdPipe) moduleId: string) {
-    return await this.courseService.deleteModule(moduleId);
+  @Delete('/:courseId/modules/:moduleId')
+  async deleteModule (
+    @Param('courseId') courseId: string,
+    @Param('moduleId', ModuleByIdPipe) moduleId: string,
+  ) {
+    return await this.courseService.deleteModule(courseId, moduleId);
+  }
+
+  @ApiEndpoint({
+    summary: 'Create course lesson',
+    documentation: CourseDocumentation.CREATE_LESSON,
+    policies: CoursePolicies.LESSON_CREATE,
+  })
+  @Post('/:courseId/modules/:moduleId/lessons')
+  async createLesson (
+    @Param('courseId') courseId: string,
+    @Param('moduleId', ModuleByIdPipe) moduleId: string,
+    @Body() body: CreateLessonDto,
+  ) {
+    const instance = plainToInstance(CreateLessonDto, body);
+    console.log(body);
+    console.log(instance.lesson.type);
+    console.log(body.lesson.type);
+    return 'Passed';
   }
 
   @ApiEndpoint({

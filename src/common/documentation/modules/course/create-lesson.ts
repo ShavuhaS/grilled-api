@@ -1,11 +1,15 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
 import { DefaultForbiddenResponse, DefaultUnauthorizedResponse } from '../../default-responses.constants';
+import { CreateLessonDto } from '../../../dtos/create-lesson.dto';
 
-export const DeleteModuleDocumentatiton: ApiDocumentationParams = {
+export const CreateLessonDocumentation: ApiDocumentationParams = {
   authRequired: true,
   policies: [
-    'Teacher should own the module\'s course',
+    'Only the course owner can create lessons',
   ],
+  body: {
+    type: CreateLessonDto,
+  },
   params: [
     {
       name: 'courseId',
@@ -18,15 +22,6 @@ export const DeleteModuleDocumentatiton: ApiDocumentationParams = {
       required: true,
     },
   ],
-  badRequest: {
-    description: `\n
-    InvalidEntityIdException:
-      Course with such id was not found
-      Module with such id was not found
-    
-    CourseModuleDisconnectionException:
-      Course with such id has no module with such id`,
-  },
   unauthorized: DefaultUnauthorizedResponse,
   forbidden: DefaultForbiddenResponse,
 };

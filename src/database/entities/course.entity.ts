@@ -15,6 +15,9 @@ export class DbCourse {
   author?: DbTeacher;
   categoryId: string;
   category?: DbCourseCategory;
+  publishedVersionId?: string;
+  publishedVersion?: DbCourse;
+  versions?: DbCourse[];
   name: string;
   about: string;
   level: CourseLevelEnum;

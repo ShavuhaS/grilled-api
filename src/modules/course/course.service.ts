@@ -6,6 +6,8 @@ import { DbUser } from '../../database/entities/user.entity';
 import { CreateCourseModuleDto } from '../../common/dtos/create-course-module.dto';
 import { DbCourseModule } from '../../database/entities/course-module.entity';
 import { CourseModuleRepository } from '../../database/repositories/course-module.repository';
+import { CourseModuleDisconnectionException } from '../../common/exceptions/course-module-disconnection.exception';
+import { CreateLessonDto } from '../../common/dtos/create-lesson.dto';
 
 @Injectable()
 export class CourseService {
@@ -60,10 +62,20 @@ export class CourseService {
     });
   }
 
-  async deleteModule (moduleId: string) {
-    const { courseId, order } = await this.courseModuleRepository.delete({
-      id: moduleId,
-    });
+  async checkModuleConnected (courseId: string, moduleId: string): Promise<DbCourseModule> {
+    const courseModule = await this.courseModuleRepository.findById(moduleId);
+
+    if (courseModule.courseId !== courseId) {
+      throw new CourseModuleDisconnectionException();
+    }
+
+    return courseModule;
+  }
+
+  async deleteModule (courseId: string, moduleId: string) {
+    const { order } = await this.checkModuleConnected(courseId, moduleId);
+
+    await this.courseModuleRepository.delete({ id: moduleId });
 
     await this.courseModuleRepository.updateMany({
       courseId,
@@ -75,5 +87,9 @@ export class CourseService {
         decrement: 1,
       },
     });
+  }
+
+  async createLesson (dto: CreateLessonDto) {
+
   }
 }

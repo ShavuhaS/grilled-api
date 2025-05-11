@@ -25,8 +25,15 @@ export default () => ({
       domain: process.env.MAILGUN_DOMAIN,
     },
   },
+  storage: {
+    credential: process.env.GOOGLE_APPLICATION_CREDENTIALS,
+    bucket: process.env.STORAGE_BUCKET_NAME,
+  },
   static: {
     servePath: '/static',
     dir: process.env.STATIC_DIR,
+  },
+  multer: {
+    dir: process.env.MULTER_FILE_DIR,
   },
 });

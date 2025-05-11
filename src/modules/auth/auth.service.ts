@@ -9,8 +9,8 @@ import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity
 import { DbUser } from '../../database/entities/user.entity';
 import { JwtPayload } from './types/jwt-payload.type';
 import { TokensResponse } from '../../common/responses/tokens.response';
-import { SecurityConfigService } from '../../config/security-config.service';
-import { UrlConfigService } from '../../config/url-config.service';
+import { SecurityConfigService } from '../../config/services/security-config.service';
+import { UrlConfigService } from '../../config/services/url-config.service';
 import { UserStateEnum } from '../../common/enums/user-state.enum';
 import { EmailNotConfirmedException } from '../../common/exceptions/email-not-confirmed.exception';
 import { RegistrationDto } from '../../common/dtos/registration.dto';
