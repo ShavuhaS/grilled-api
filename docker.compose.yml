@@ -13,6 +13,8 @@ services:
     restart: unless-stopped
     volumes:
       - ~/static/grilled-api:/app/static
+      - ~/deployment/google:/app/google
+      - ~/deployment/production/tmp:/app/tmp
     depends_on:
       - postgres-db
       - watchtower
@@ -29,6 +31,8 @@ services:
     restart: unless-stopped
     volumes:
       - ~/static/grilled-api-dev:/app/static
+      - ~/deployment/google:/app/google
+      - ~/deployment/development/tmp:/app/tmp
     depends_on:
       - postgres-db-dev
       - watchtower
