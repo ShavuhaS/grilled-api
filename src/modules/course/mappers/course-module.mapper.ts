@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DbCourseModule } from '../../../database/entities/course-module.entity';
-import { BaseCourseModuleResponse } from '../../../common/responses/base-course-module.response';
+import { CourseModuleResponse } from '../../../common/responses/course-module.response';
 import { CourseLessonMapper } from './course-lesson.mapper';
+import { BaseCourseModuleResponse } from '../../../common/responses/base-course-module.response';
+import { ModuleMappingOptions } from '../interfaces/mapping-options.interfaces';
 
 @Injectable()
 export class CourseModuleMapper {
@@ -13,9 +15,24 @@ export class CourseModuleMapper {
       name: module.name,
       estimatedTime: module.estimatedTime,
       number: module.order,
-      lessons: module.lessons?.map((lesson) =>
-        this.lessonMapper.toBaseCourseLessonResponse(lesson)
-      ),
+    };
+  }
+
+  toCourseModuleResponse (
+    module: DbCourseModule,
+    { links, progress, completed }: ModuleMappingOptions,
+  ): CourseModuleResponse {
+    const lessons = module.lessons?.map((lesson, ind) =>
+      this.lessonMapper.toLessonResponse(lesson, {
+        links,
+        completed: completed?.[ind],
+      })
+    ) ?? [];
+
+    return {
+      ...this.toBaseCourseModuleResponse(module),
+      progress: progress && +progress.toFixed(1),
+      lessons,
     };
   }
 }

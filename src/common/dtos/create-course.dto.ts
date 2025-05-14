@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  IsUUID,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { CourseLevelEnum } from '../enums/course-level.enum';
 
 export class CreateCourseDto {
@@ -24,7 +31,9 @@ export class CreateCourseDto {
   })
   @IsNotEmpty({ message: 'Course description must not be empty' })
   @IsString({ message: 'Course description must be a string' })
-  @MaxLength(1000, { message: 'Course decription must be at most 1000 characters long' })
+  @MaxLength(1000, {
+    message: 'Course decription must be at most 1000 characters long',
+  })
     about: string;
 
   @ApiProperty({
@@ -32,6 +41,8 @@ export class CreateCourseDto {
     enum: CourseLevelEnum,
   })
   @IsNotEmpty({ message: 'Course level must not be empty' })
-  @IsEnum(CourseLevelEnum, { message: 'Course level must be either BEGINNER, INTERMEDIATE or EXPERT' })
+  @IsEnum(CourseLevelEnum, {
+    message: 'Course level must be either BEGINNER, INTERMEDIATE or EXPERT',
+  })
     level: CourseLevelEnum;
 }

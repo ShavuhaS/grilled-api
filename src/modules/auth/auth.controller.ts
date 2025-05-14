@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, Request, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Request,
+  Res,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
@@ -43,7 +51,8 @@ export class AuthController {
     @Param('token') token: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<TokensResponse> {
-    const { accessToken, refreshToken } = await this.authService.verifyEmail(token);
+    const { accessToken, refreshToken } =
+      await this.authService.verifyEmail(token);
     this.authService.setAccessTokenCookie(res, accessToken);
     this.authService.setRefreshTokenCookie(res, refreshToken);
     return { accessToken, refreshToken };

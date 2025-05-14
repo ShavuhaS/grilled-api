@@ -3,9 +3,10 @@ import { Type } from 'class-transformer';
 import {
   ArrayNotEmpty,
   Equals,
-  IsArray, IsEnum,
+  IsArray,
+  IsEnum,
   IsInt,
-  IsNotEmpty,
+  IsNotEmpty, IsNotEmptyObject,
   IsString,
   MaxLength,
   Min,
@@ -27,15 +28,20 @@ export class BaseTestQuestionDto {
   @IsNotEmpty({ message: 'Question text must not be empty' })
   @IsString({ message: 'Question text must be a string' })
   @MinLength(5, { message: 'Question test must be at least 5 characters long' })
-  @MaxLength(300, { message: 'Question test must be at most 300 characters long' })
+  @MaxLength(300, {
+    message: 'Question test must be at most 300 characters long',
+  })
     text: string;
 
   @IsNotEmpty({ message: 'Question type must not be empty' })
-  @IsEnum([
-    QuestionTypeEnum.CHOICE,
-    QuestionTypeEnum.MULTICHOICE,
-    QuestionTypeEnum.SHORT_ANSWER,
-  ], { message: 'Question type must be CHOICE, MULTICHOICE or SHORT_ANSWER' })
+  @IsEnum(
+    [
+      QuestionTypeEnum.CHOICE,
+      QuestionTypeEnum.MULTICHOICE,
+      QuestionTypeEnum.SHORT_ANSWER,
+    ],
+    { message: 'Question type must be CHOICE, MULTICHOICE or SHORT_ANSWER' },
+  )
     type: QuestionTypeEnum;
 }
 
@@ -72,13 +78,17 @@ export class MultiChoiceTestQuestionDto extends BaseTestQuestionDto {
     type: QuestionTypeEnum.MULTICHOICE;
 
   @ApiProperty({
-    description: 'Right answers to the question (indices in the array of answers)',
+    description:
+      'Right answers to the question (indices in the array of answers)',
   })
   @IsNotEmpty({ message: 'Question right answers must not be empty' })
   @IsArray({ message: 'Question right answers must be an array' })
   @ArrayNotEmpty({ message: 'Question right answers must not be empty' })
   @IsInt({ each: true, message: 'Question right answers must be an integer' })
-  @Min(0, { each: true, message: 'Question right answers must not be negative' })
+  @Min(0, {
+    each: true,
+    message: 'Question right answers must not be negative',
+  })
     rightAnswers: number[];
 
   @ApiProperty({
@@ -101,7 +111,8 @@ export class ShortTestQuestionDto extends BaseTestQuestionDto {
   @ApiProperty({
     description: 'Right answer to the question',
   })
-  @IsNotEmpty({ message: 'Question right answer must not be empty' })
-  @IsString({ message: 'Question right answer must be a string' })
-    rightAnswer: string;
+  @IsNotEmptyObject({}, { message: 'Question right answer must not be empty' })
+  @Type(() => TestQuestionAnswerDto)
+  @ValidateNested()
+    rightAnswer: TestQuestionAnswerDto;
 }

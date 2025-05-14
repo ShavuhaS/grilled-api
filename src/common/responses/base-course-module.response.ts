@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseCourseLessonResponse } from './base-course-lesson.response';
 
 export class BaseCourseModuleResponse {
   @ApiProperty({
@@ -21,10 +20,4 @@ export class BaseCourseModuleResponse {
     description: 'Estimated time to complete the module (in minutes)',
   })
     estimatedTime: number;
-
-  @ApiProperty({
-    description: 'Course module lessons',
-    type: [BaseCourseLessonResponse],
-  })
-    lessons: BaseCourseLessonResponse[];
 }

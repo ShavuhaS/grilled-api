@@ -1,5 +1,8 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
-import { DefaultForbiddenResponse, DefaultUnauthorizedResponse } from '../../default-responses.constants';
+import {
+  DefaultForbiddenResponse,
+  DefaultUnauthorizedResponse,
+} from '../../default-responses.constants';
 import { CreateCourseDto } from '../../../dtos/create-course.dto';
 import { BaseCourseResponse } from '../../../responses/base-course.response';
 

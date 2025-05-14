@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { LessonTypeEnum } from '../enums/lesson-type.enum';
 
-export class BaseCourseLessonResponse {
+export class BaseLessonResponse {
   @ApiProperty({
     description: 'Course lesson id',
   })

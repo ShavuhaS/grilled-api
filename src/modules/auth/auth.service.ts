@@ -23,7 +23,10 @@ import { InvalidTokenException } from '../../common/exceptions/invalid-token.exc
 import { TokenExpiredException } from '../../common/exceptions/token-expired.exception';
 import { AccessTokenResponse } from '../../common/responses/access-token.response';
 import { RoleEnum } from '../../common/enums/role.enum';
-import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from './constants/cookie-names.const';
+import {
+  ACCESS_TOKEN_COOKIE,
+  REFRESH_TOKEN_COOKIE,
+} from './constants/cookie-names.const';
 
 @Injectable()
 export class AuthService {
@@ -183,19 +186,25 @@ export class AuthService {
     }
 
     const { id } = user;
-    const updatedUser = await this.userRepository.update({ id }, {
-      state: UserState.CONFIRMED,
-      verifyEmailToken: {
-        delete: true,
+    const updatedUser = await this.userRepository.update(
+      { id },
+      {
+        state: UserState.CONFIRMED,
+        verifyEmailToken: {
+          delete: true,
+        },
       },
-    });
+    );
 
     if (updatedUser.role === RoleEnum.TEACHER) {
-      await this.userRepository.update({ id }, {
-        teacher: {
-          create: {},
+      await this.userRepository.update(
+        { id },
+        {
+          teacher: {
+            create: {},
+          },
         },
-      });
+      );
     }
 
     return this.getTokens(updatedUser);

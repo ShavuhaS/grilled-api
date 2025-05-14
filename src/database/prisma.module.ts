@@ -5,6 +5,9 @@ import { EmailTokenRepository } from './repositories/email-token.repository';
 import { CourseRepository } from './repositories/course.repository';
 import { CourseCategoryRepository } from './repositories/course-category.repository';
 import { CourseModuleRepository } from './repositories/course-module.repository';
+import { CourseLessonRepository } from './repositories/course-lesson.repository';
+import { CourseTestRepository } from './repositories/course-test.repository';
+import { TestQuestionRepository } from './repositories/test-question.repository';
 
 @Module({
   providers: [
@@ -14,6 +17,9 @@ import { CourseModuleRepository } from './repositories/course-module.repository'
     CourseRepository,
     CourseCategoryRepository,
     CourseModuleRepository,
+    CourseLessonRepository,
+    CourseTestRepository,
+    TestQuestionRepository,
   ],
   exports: [
     UserRepository,
@@ -21,6 +27,9 @@ import { CourseModuleRepository } from './repositories/course-module.repository'
     CourseRepository,
     CourseCategoryRepository,
     CourseModuleRepository,
+    CourseLessonRepository,
+    CourseTestRepository,
+    TestQuestionRepository,
   ],
 })
 export class PrismaModule {}

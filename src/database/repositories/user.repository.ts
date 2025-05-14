@@ -16,7 +16,10 @@ export class UserRepository {
     }) as Promise<DbUser>;
   }
 
-  async findOne (where: Prisma.UserWhereInput, include?: Prisma.UserInclude): Promise<DbUser> {
+  async findOne (
+    where: Prisma.UserWhereInput,
+    include?: Prisma.UserInclude,
+  ): Promise<DbUser> {
     return this.prisma.user.findFirst({
       where,
       include,
@@ -29,7 +32,10 @@ export class UserRepository {
     }) as Promise<DbUser>;
   }
 
-  async update (where: Prisma.UserWhereUniqueInput, data: Prisma.UserUncheckedUpdateInput): Promise<DbUser> {
+  async update (
+    where: Prisma.UserWhereUniqueInput,
+    data: Prisma.UserUncheckedUpdateInput,
+  ): Promise<DbUser> {
     return this.prisma.user.update({
       where,
       data,

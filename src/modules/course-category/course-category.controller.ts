@@ -32,7 +32,8 @@ export class CourseCategoryController {
   })
   @Get('/:id')
   async getWithSubcategories (@Param('id') categoryId: string) {
-    const category = await this.categoryService.getWithSubcategories(categoryId);
+    const category =
+      await this.categoryService.getWithSubcategories(categoryId);
     return this.categoryMapper.toCourseCategoryResponse(category);
   }
 }

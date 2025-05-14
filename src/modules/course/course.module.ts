@@ -6,11 +6,21 @@ import { CaslModule } from '../casl/casl.module';
 import { PrismaModule } from '../../database/prisma.module';
 import { CourseMapperModule } from './mappers/course-mapper.module';
 import { UploadModule } from '../upload/upload.module';
+import { MediaModule } from '../media/media.module';
+import { StorageModule } from '../storage/storage.module';
 
 @Module({
   controllers: [CourseController],
   providers: [CourseService],
   exports: [CourseService],
-  imports: [AuthModule, CaslModule, PrismaModule, CourseMapperModule, UploadModule],
+  imports: [
+    AuthModule,
+    CaslModule,
+    PrismaModule,
+    CourseMapperModule,
+    UploadModule,
+    MediaModule,
+    StorageModule,
+  ],
 })
 export class CourseModule {}

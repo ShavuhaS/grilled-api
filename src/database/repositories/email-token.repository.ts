@@ -7,7 +7,10 @@ import { Prisma } from '@prisma/client';
 export class EmailTokenRepository {
   constructor (private prisma: PrismaService) {}
 
-  async findByUserId (userId: string, include?: Prisma.VerifyEmailTokenInclude): Promise<DbVerifyEmailToken> {
+  async findByUserId (
+    userId: string,
+    include?: Prisma.VerifyEmailTokenInclude,
+  ): Promise<DbVerifyEmailToken> {
     return this.prisma.verifyEmailToken.findUnique({
       where: {
         userId,
@@ -16,7 +19,10 @@ export class EmailTokenRepository {
     }) as Promise<DbVerifyEmailToken>;
   }
 
-  async find (token: string, include?: Prisma.VerifyEmailTokenInclude): Promise<DbVerifyEmailToken> {
+  async find (
+    token: string,
+    include?: Prisma.VerifyEmailTokenInclude,
+  ): Promise<DbVerifyEmailToken> {
     return this.prisma.verifyEmailToken.findUnique({
       where: {
         token,
@@ -33,7 +39,9 @@ export class EmailTokenRepository {
     }) as Promise<DbVerifyEmailToken>;
   }
 
-  async delete (where: Prisma.VerifyEmailTokenWhereUniqueInput): Promise<DbVerifyEmailToken> {
+  async delete (
+    where: Prisma.VerifyEmailTokenWhereUniqueInput,
+  ): Promise<DbVerifyEmailToken> {
     return this.prisma.verifyEmailToken.delete({
       where,
     }) as Promise<DbVerifyEmailToken>;

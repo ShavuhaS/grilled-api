@@ -296,7 +296,7 @@ model CourseLesson {
   name          String
   order         Int
   type          LessonType
-  estimatedTime Int               @map("estimated_time")
+  estimatedTime Int?              @map("estimated_time")
   createdAt     DateTime?         @default(now()) @map("created_at")
   updatedAt     DateTime?         @default(now()) @updatedAt @map("updated_at")
   test          LessonTest?

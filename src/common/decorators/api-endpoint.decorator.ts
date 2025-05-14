@@ -28,7 +28,7 @@ export function ApiEndpoint ({
 
   const jwtIndex = guards.indexOf(JwtGuard);
   if (jwtIndex !== -1) {
-    [ guards[0], guards[jwtIndex] ] = [ guards[jwtIndex], guards[0] ];
+    [guards[0], guards[jwtIndex]] = [guards[jwtIndex], guards[0]];
   }
 
   if (guards.length !== 0) {

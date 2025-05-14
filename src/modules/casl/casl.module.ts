@@ -5,16 +5,8 @@ import { PrismaModule } from '../../database/prisma.module';
 import { CourseUpdatePolicy } from './policies/course/update';
 
 @Module({
-  providers: [
-    CourseAbilityFactory,
-    CourseEnrollPolicy,
-    CourseUpdatePolicy,
-  ],
-  exports: [
-    CourseAbilityFactory,
-    CourseEnrollPolicy,
-    CourseUpdatePolicy,
-  ],
+  providers: [CourseAbilityFactory, CourseEnrollPolicy, CourseUpdatePolicy],
+  exports: [CourseAbilityFactory, CourseEnrollPolicy, CourseUpdatePolicy],
   imports: [PrismaModule],
 })
 export class CaslModule {}

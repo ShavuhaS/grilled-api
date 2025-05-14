@@ -3,4 +3,5 @@ import { AbilityFactory } from '../../../modules/casl/interfaces/ability-factory
 
 export const ABILITY_FACTORY_KEY = 'ability_factory_key';
 
-export const SetAbilityFactory = (factoryType: Type<AbilityFactory<any>>) => SetMetadata(ABILITY_FACTORY_KEY, factoryType);
+export const SetAbilityFactory = (factoryType: Type<AbilityFactory<any>>) =>
+  SetMetadata(ABILITY_FACTORY_KEY, factoryType);

@@ -1,5 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Request,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
+import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
 import { SetAbilityFactory } from '../../common/guards/casl/set-ability-factory.meta';
 import { CourseAbilityFactory } from '../casl/factories/course-ability.factory';
 import { ApiEndpoint } from '../../common/decorators/api-endpoint.decorator';
@@ -15,9 +25,14 @@ import { CourseModuleMapper } from './mappers/course-module.mapper';
 import { ModuleByIdPipe } from '../../common/pipes/module-by-id.pipe';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateLessonDto } from '../../common/dtos/create-lesson.dto';
-import { plainToInstance } from 'class-transformer';
+import { OptionalJwtGuard } from '../../common/guards/auth/optional-jwt.guard';
+import { DbUser } from '../../database/entities/user.entity';
+import { User } from '../../common/decorators/user.decorator';
+import { CourseExtraModels } from '../../common/documentation/extra-models/course.models';
+import { CourseLessonMapper } from './mappers/course-lesson.mapper';
 
 @ApiTags('Courses')
+@ApiExtraModels(...CourseExtraModels)
 @Controller({
   path: '/courses',
   version: '1',
@@ -28,6 +43,7 @@ export class CourseController {
     private courseService: CourseService,
     private courseMapper: CourseMapper,
     private moduleMapper: CourseModuleMapper,
+    private lessonMapper: CourseLessonMapper,
   ) {}
 
   @ApiEndpoint({
@@ -48,11 +64,17 @@ export class CourseController {
   @ApiEndpoint({
     summary: 'Get course by id',
     documentation: CourseDocumentation.GET,
+    guards: OptionalJwtGuard,
   })
   @Get('/:courseId')
-  async get (@Param('courseId', CourseByIdPipe) courseId: string) {
+  async get (
+    @Param('courseId', CourseByIdPipe) courseId: string,
+    @User() user: DbUser,
+  ) {
     const course = await this.courseService.getById(courseId);
-    return this.courseMapper.toCourseResponse(course);
+    const mappingOptions = await this.courseService.personalizeCourseResponse(user, course);
+    console.log(mappingOptions);
+    return this.courseMapper.toCourseResponse(course, mappingOptions);
   }
 
   @ApiEndpoint({
@@ -66,7 +88,7 @@ export class CourseController {
     @Body() body: CreateCourseModuleDto,
   ) {
     const module = await this.courseService.createModule(courseId, body);
-    return this.moduleMapper.toBaseCourseModuleResponse(module);
+    return this.moduleMapper.toCourseModuleResponse(module, { links: true });
   }
 
   @ApiEndpoint({
@@ -78,7 +100,7 @@ export class CourseController {
     @Param('courseId') courseId: string,
     @Param('moduleId', ModuleByIdPipe) moduleId: string,
   ) {
-    return await this.courseService.deleteModule(courseId, moduleId);
+    return this.courseService.deleteModule(courseId, moduleId);
   }
 
   @ApiEndpoint({
@@ -92,11 +114,12 @@ export class CourseController {
     @Param('moduleId', ModuleByIdPipe) moduleId: string,
     @Body() body: CreateLessonDto,
   ) {
-    const instance = plainToInstance(CreateLessonDto, body);
-    console.log(body);
-    console.log(instance.lesson.type);
-    console.log(body.lesson.type);
-    return 'Passed';
+    const lesson = await this.courseService.createLesson(
+      courseId,
+      moduleId,
+      body,
+    );
+    return this.lessonMapper.toLessonTeacherResponse(lesson);
   }
 
   @ApiEndpoint({

@@ -19,7 +19,7 @@ export class UrlConfigService {
     const domainStart = this.base.indexOf('//') + 2;
     const domain = this.base.slice(domainStart);
     const domainEnd = domain.lastIndexOf(':');
-    this._domain = (domainEnd === -1) ? domain : domain.slice(0, domainEnd);
+    this._domain = domainEnd === -1 ? domain : domain.slice(0, domainEnd);
 
     if (this._domain === 'localhost') {
       this._domain = '';

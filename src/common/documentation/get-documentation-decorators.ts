@@ -42,7 +42,8 @@ export function getDocumentationDecorators ({
   ];
 
   if (documentation?.policies) {
-    const policies = 'Policies:\n\t' + documentation.policies.join('\n\t') + '\n';
+    const policies =
+      'Policies:\n\t' + documentation.policies.join('\n\t') + '\n';
 
     if (description === undefined) {
       description = policies;

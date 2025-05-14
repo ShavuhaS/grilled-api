@@ -3,10 +3,7 @@ import { DefaultUnauthorizedResponse } from '../../default-responses.constants';
 
 export const EnrollDocumentation: ApiDocumentationParams = {
   authRequired: true,
-  policies: [
-    'User must be a student',
-    'Course must be published',
-  ],
+  policies: ['User must be a student', 'Course must be published'],
   params: [
     {
       type: String,

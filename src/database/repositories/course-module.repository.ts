@@ -7,7 +7,10 @@ import { DbCourseModule } from '../entities/course-module.entity';
 export class CourseModuleRepository {
   constructor (private prisma: PrismaService) {}
 
-  async findById (id: string, include?: Prisma.CourseModuleInclude): Promise<DbCourseModule> {
+  async findById (
+    id: string,
+    include?: Prisma.CourseModuleInclude,
+  ): Promise<DbCourseModule> {
     return this.prisma.courseModule.findUnique({
       where: {
         id,
@@ -16,25 +19,47 @@ export class CourseModuleRepository {
     }) as Promise<DbCourseModule>;
   }
 
-  async findMany (args: Prisma.CourseModuleFindManyArgs): Promise<DbCourseModule[]> {
+  async findMany (
+    args: Prisma.CourseModuleFindManyArgs,
+  ): Promise<DbCourseModule[]> {
     return this.prisma.courseModule.findMany(args) as Promise<DbCourseModule[]>;
   }
 
-  async create (data: Prisma.CourseModuleCreateInput, include?: Prisma.CourseModuleInclude): Promise<DbCourseModule> {
+  async create (
+    data: Prisma.CourseModuleCreateInput,
+    include?: Prisma.CourseModuleInclude,
+  ): Promise<DbCourseModule> {
     return this.prisma.courseModule.create({
       data,
       include,
     }) as Promise<DbCourseModule>;
   }
 
-  async updateMany (where: Prisma.CourseModuleWhereInput, data: Prisma.CourseModuleUpdateInput): Promise<{ count: number }> {
+  async update (
+    where: Prisma.CourseModuleWhereUniqueInput,
+    data: Prisma.CourseModuleUpdateInput,
+  ): Promise<DbCourseModule> {
+    return this.prisma.courseModule.update({
+      where,
+      data,
+    }) as Promise<DbCourseModule>;
+  }
+
+  async updateMany (
+    where: Prisma.CourseModuleWhereInput,
+    data: Prisma.CourseModuleUpdateInput,
+  ): Promise<{ count: number }> {
     return this.prisma.courseModule.updateMany({
       where,
       data,
     });
   }
 
-  async delete (where: Prisma.CourseModuleWhereUniqueInput): Promise<DbCourseModule> {
-    return this.prisma.courseModule.delete({ where }) as Promise<DbCourseModule>;
+  async delete (
+    where: Prisma.CourseModuleWhereUniqueInput,
+  ): Promise<DbCourseModule> {
+    return this.prisma.courseModule.delete({
+      where,
+    }) as Promise<DbCourseModule>;
   }
 }

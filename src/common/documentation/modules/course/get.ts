@@ -3,6 +3,9 @@ import { CourseResponse } from '../../../responses/course.response';
 
 export const GetDocumentation: ApiDocumentationParams = {
   authRequired: false,
+  policies: [
+    'Authorization required for lesson links',
+  ],
   params: [
     {
       name: 'courseId',

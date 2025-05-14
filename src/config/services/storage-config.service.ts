@@ -12,4 +12,8 @@ export class StorageConfigService {
   get bucket (): string {
     return this.configService.get<string>('storage.bucket');
   }
+
+  get signatureTtl (): number {
+    return parseInt(this.configService.get<string>('storage.signatureTtl'));
+  }
 }

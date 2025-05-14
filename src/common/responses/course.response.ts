@@ -1,11 +1,17 @@
 import { BaseCourseResponse } from './base-course.response';
-import { ApiProperty } from '@nestjs/swagger';
-import { BaseCourseModuleResponse } from './base-course-module.response';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { CourseModuleResponse } from './course-module.response';
 
 export class CourseResponse extends BaseCourseResponse {
   @ApiProperty({
     description: 'Course modules',
-    type: [BaseCourseModuleResponse],
+    type: [CourseModuleResponse],
   })
-    modules: BaseCourseModuleResponse[];
+    modules: CourseModuleResponse[];
+
+  @ApiPropertyOptional({
+    description: 'Course progress (in percents), returned if the user is enrolled',
+    example: '76.3',
+  })
+    progress?: number;
 }

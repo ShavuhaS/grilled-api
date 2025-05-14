@@ -1,5 +1,10 @@
 import { BaseLessonDto } from './base-lesson.dto';
-import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
+import {
+  ApiExtraModels,
+  ApiProperty,
+  ApiPropertyOptional,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import { LessonTypeEnum } from '../enums/lesson-type.enum';
 import {
   ArrayNotEmpty,
@@ -16,12 +21,17 @@ import {
   TestQuestionDto,
   ChoiceTestQuestionDto,
   MultiChoiceTestQuestionDto,
-  ShortTestQuestionDto, BaseTestQuestionDto,
+  ShortTestQuestionDto,
+  BaseTestQuestionDto,
 } from './test-question.dto';
 import { Type } from 'class-transformer';
 import { QuestionTypeEnum } from '../enums/question-type.enum';
 
-@ApiExtraModels(ChoiceTestQuestionDto, MultiChoiceTestQuestionDto, ShortTestQuestionDto)
+@ApiExtraModels(
+  ChoiceTestQuestionDto,
+  MultiChoiceTestQuestionDto,
+  ShortTestQuestionDto,
+)
 export class TestLessonDto extends BaseLessonDto {
   @ApiProperty({
     description: 'Lesson type (TEST)',
@@ -30,7 +40,8 @@ export class TestLessonDto extends BaseLessonDto {
     type: LessonTypeEnum.TEST;
 
   @ApiPropertyOptional({
-    description: 'Estimated time in minutes to complete the lesson (required if lesson type is ARTICLE)',
+    description:
+      'Estimated time in minutes to complete the lesson (required if lesson type is ARTICLE)',
   })
   @IsOptional()
   @IsInt({ message: 'Estimated time must be an integer' })
@@ -50,14 +61,16 @@ export class TestLessonDto extends BaseLessonDto {
     },
   })
   @IsArray({ message: 'Test questions must be an array' })
-  @ArrayNotEmpty({ message: 'Test questions must not be empty' })
   @Type(() => BaseTestQuestionDto, {
     keepDiscriminatorProperty: true,
     discriminator: {
       property: 'type',
       subTypes: [
         { value: ChoiceTestQuestionDto, name: QuestionTypeEnum.CHOICE },
-        { value: MultiChoiceTestQuestionDto, name: QuestionTypeEnum.MULTICHOICE },
+        {
+          value: MultiChoiceTestQuestionDto,
+          name: QuestionTypeEnum.MULTICHOICE,
+        },
         { value: ShortTestQuestionDto, name: QuestionTypeEnum.SHORT_ANSWER },
       ],
     },

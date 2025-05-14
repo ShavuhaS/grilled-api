@@ -1,9 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   Equals,
+  IsArray,
   IsEnum,
   IsInt,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Max,
   MaxLength,
@@ -33,7 +35,11 @@ export class BaseLessonDto {
     description: 'Lesson useful links',
     type: [LessonLinkDto],
   })
+  @IsOptional()
+  @IsArray({ message: 'Links must be an array' })
   @Type(() => LessonLinkDto)
   @ValidateNested({ each: true })
     links?: LessonLinkDto[];
+
+  estimatedTime?: number;
 }

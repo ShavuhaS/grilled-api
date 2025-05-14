@@ -20,7 +20,10 @@ export class CourseRepository {
 
   constructor (private prisma: PrismaService) {}
 
-  async findById (id: string, include?: Prisma.CourseInclude): Promise<DbCourse> {
+  async findById (
+    id: string,
+    include?: Prisma.CourseInclude,
+  ): Promise<DbCourse> {
     return this.prisma.course.findUnique({
       where: {
         id,
@@ -32,7 +35,10 @@ export class CourseRepository {
     }) as Promise<DbCourse>;
   }
 
-  async findOne (where: Prisma.CourseWhereInput, include?: Prisma.CourseInclude): Promise<DbCourse> {
+  async findOne (
+    where: Prisma.CourseWhereInput,
+    include?: Prisma.CourseInclude,
+  ): Promise<DbCourse> {
     return this.prisma.course.findFirst({
       where,
       include: {
@@ -42,16 +48,24 @@ export class CourseRepository {
     }) as Promise<DbCourse>;
   }
 
-  async updateById (id: string, data: Prisma.CourseUpdateInput): Promise<DbCourse> {
-    return this.prisma.course.update({
-      where: {
-        id,
-      },
-      data,
-    }) as Promise<DbCourse>;
+  async update (
+    where: Prisma.CourseWhereUniqueInput,
+    data: Prisma.CourseUpdateInput,
+  ): Promise<DbCourse> {
+    return this.prisma.course.update({ where, data }) as Promise<DbCourse>;
   }
 
-  async create (dto: Prisma.CourseUncheckedCreateInput, include?: Prisma.CourseInclude): Promise<DbCourse> {
+  async updateById (
+    id: string,
+    data: Prisma.CourseUpdateInput,
+  ): Promise<DbCourse> {
+    return this.update({ id }, data);
+  }
+
+  async create (
+    dto: Prisma.CourseUncheckedCreateInput,
+    include?: Prisma.CourseInclude,
+  ): Promise<DbCourse> {
     return this.prisma.course.create({
       data: dto,
       include: {

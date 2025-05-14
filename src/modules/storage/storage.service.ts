@@ -1,16 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { initializeApp, cert } from 'firebase-admin/app';
 import { getStorage } from 'firebase-admin/storage';
-import { Bucket } from '@google-cloud/storage';
+import { Bucket, CreateWriteStreamOptions } from '@google-cloud/storage';
+import * as crypto from 'node:crypto';
+import * as fs from 'fs';
 import { StorageConfigService } from '../../config/services/storage-config.service';
+import { getDateString } from '../../common/utils/date.utils';
 
 @Injectable()
 export class StorageService {
   private readonly bucket: Bucket;
 
-  constructor (
-    private storageConfig: StorageConfigService,
-  ) {
+  constructor (private storageConfig: StorageConfigService) {
     const app = initializeApp({
       credential: cert(storageConfig.credential),
       storageBucket: storageConfig.bucket,
@@ -18,7 +19,90 @@ export class StorageService {
     this.bucket = getStorage(app).bucket();
   }
 
-  async uploadVideo (courseId: string, moduleId: string, lessonId: string, video: Express.Multer.File) {
+  async uploadVideo (
+    courseId: string,
+    video: Express.Multer.File,
+  ): Promise<{ storagePath: string }> {
+    const date = getDateString();
+    const uuid = crypto.randomUUID().slice(0, 8);
+    const filename = video.originalname;
 
+    const storagePath = `courses/${courseId}/videos/${date}-${uuid}-${filename}`;
+
+    await this.uploadFile(storagePath, video, {
+      contentType: video.mimetype,
+    });
+
+    return { storagePath };
+  }
+
+  async uploadArticle (
+    courseId: string,
+    text: string,
+  ): Promise<{ storagePath: string }> {
+    const buffer = Buffer.from(text);
+    const articleId = crypto.randomUUID();
+    const storagePath = `courses/${courseId}/articles/${articleId}.html`;
+
+    await this.uploadFile(storagePath, buffer, {
+      contentType: 'text/html',
+    });
+
+    return { storagePath };
+  }
+
+  async getSignedUrl (storagePath: string): Promise<string> {
+    return (await this.bucket.file(storagePath).getSignedUrl({
+      action: 'read',
+      expires: Date.now() + 1000 * this.storageConfig.signatureTtl,
+    }))[0];
+  }
+
+  private async uploadFile (
+    storagePath: string,
+    file: Express.Multer.File | Buffer,
+    options?: CreateWriteStreamOptions,
+  ) {
+    if (Buffer.isBuffer(file)) {
+      return this.uploadFileFromMemory(storagePath, file, options);
+    }
+
+    if (file.buffer !== undefined) {
+      return this.uploadFileFromMemory(storagePath, file.buffer, options);
+    }
+
+    return this.uploadFileFromDisk(storagePath, file, options);
+  }
+
+  private async uploadFileFromMemory (
+    storagePath: string,
+    buffer: Buffer,
+    options?: CreateWriteStreamOptions,
+  ) {
+    return this.bucket.file(storagePath).save(buffer, options);
+  }
+
+  private async uploadFileFromDisk (
+    storagePath: string,
+    file: Express.Multer.File,
+    options?: CreateWriteStreamOptions,
+  ) {
+    const fileStream = fs.createReadStream(file.path);
+    const uploadStream = this.bucket
+      .file(storagePath)
+      .createWriteStream(options);
+
+    return new Promise<void>((resolve, reject) => {
+      fileStream
+        .pipe(uploadStream)
+        .on('error', (err) => {
+          fs.unlinkSync(file.path);
+          reject(err);
+        })
+        .on('finish', () => {
+          fs.unlinkSync(file.path);
+          resolve();
+        });
+    });
   }
 }

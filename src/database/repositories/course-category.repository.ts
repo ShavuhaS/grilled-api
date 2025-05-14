@@ -7,7 +7,10 @@ import { DbCourseCategory } from '../entities/course-category.entity';
 export class CourseCategoryRepository {
   constructor (private prisma: PrismaService) {}
 
-  async findById (id: string, include?: Prisma.CourseCategoryInclude): Promise<DbCourseCategory> {
+  async findById (
+    id: string,
+    include?: Prisma.CourseCategoryInclude,
+  ): Promise<DbCourseCategory> {
     return this.prisma.courseCategory.findUnique({
       where: {
         id,
@@ -16,7 +19,10 @@ export class CourseCategoryRepository {
     }) as Promise<DbCourseCategory>;
   }
 
-  async findMany (where: Prisma.CourseCategoryWhereInput, include?: Prisma.CourseCategoryInclude): Promise<DbCourseCategory[]> {
+  async findMany (
+    where: Prisma.CourseCategoryWhereInput,
+    include?: Prisma.CourseCategoryInclude,
+  ): Promise<DbCourseCategory[]> {
     return this.prisma.courseCategory.findMany({
       where,
       include,

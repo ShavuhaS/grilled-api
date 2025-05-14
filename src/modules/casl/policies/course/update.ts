@@ -13,7 +13,10 @@ import { InvalidEntityIdException } from '../../../../common/exceptions/invalid-
 export class CourseUpdatePolicy implements IPolicyHandler<CourseAction> {
   constructor (private courseRepository: CourseRepository) {}
 
-  async handle (ability: AppAbility<CourseAction>, req: Request): Promise<boolean> {
+  async handle (
+    ability: AppAbility<CourseAction>,
+    req: Request,
+  ): Promise<boolean> {
     const courseId = RequestUtils.get<string>(req, 'courseId');
     const course = await this.courseRepository.findById(courseId);
 

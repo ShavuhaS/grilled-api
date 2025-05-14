@@ -25,7 +25,9 @@ export class UserMapper {
   toUserResponse (user: DbUser): UserResponse {
     return {
       ...this.toBaseUserResponse(user),
-      teacher: user.teacher ? this.teacherMapper.toBaseTeacherResponse(user.teacher) : undefined,
+      teacher: user.teacher
+        ? this.teacherMapper.toBaseTeacherResponse(user.teacher)
+        : undefined,
     };
   }
 }

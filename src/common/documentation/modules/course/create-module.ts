@@ -1,6 +1,9 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
-import { DefaultForbiddenResponse, DefaultUnauthorizedResponse } from '../../default-responses.constants';
-import { BaseCourseModuleResponse } from '../../../responses/base-course-module.response';
+import {
+  DefaultForbiddenResponse,
+  DefaultUnauthorizedResponse,
+} from '../../default-responses.constants';
+import { CourseModuleResponse } from '../../../responses/course-module.response';
 
 export const CreateModuleDocumentation: ApiDocumentationParams = {
   authRequired: true,
@@ -12,11 +15,9 @@ export const CreateModuleDocumentation: ApiDocumentationParams = {
     },
   ],
   created: {
-    type: BaseCourseModuleResponse,
+    type: CourseModuleResponse,
   },
-  policies: [
-    'Teacher should own the course',
-  ],
+  policies: ['Teacher should own the course'],
   badRequest: {
     description: `\n
     InvalidEntityIdException:

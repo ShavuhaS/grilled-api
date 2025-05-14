@@ -8,23 +8,34 @@ import { CourseCategoryResponse } from '../../../common/responses/course-categor
 export class CourseCategoryMapper {
   constructor () {}
 
-  toBaseCourseCategoryResponse (category: DbCourseCategory): BaseCourseCategoryResponse {
+  toBaseCourseCategoryResponse (
+    category: DbCourseCategory,
+  ): BaseCourseCategoryResponse {
     return {
       id: category.id,
       name: category.name,
     };
   }
 
-  toCourseCategoriesResponse (categories: DbCourseCategory[]): CourseCategoriesResponse {
+  toCourseCategoriesResponse (
+    categories: DbCourseCategory[],
+  ): CourseCategoriesResponse {
     return {
-      categories: categories.map((category) => this.toBaseCourseCategoryResponse(category)),
+      categories: categories.map((category) =>
+        this.toBaseCourseCategoryResponse(category),
+      ),
     };
   }
 
-  toCourseCategoryResponse ({ subcategories, ...category }: DbCourseCategory): CourseCategoryResponse {
+  toCourseCategoryResponse ({
+    subcategories,
+    ...category
+  }: DbCourseCategory): CourseCategoryResponse {
     return {
       ...this.toBaseCourseCategoryResponse(category),
-      subcategories: subcategories?.map((sub) => this.toBaseCourseCategoryResponse(sub)),
+      subcategories: subcategories?.map((sub) =>
+        this.toBaseCourseCategoryResponse(sub),
+      ),
     };
   }
 }

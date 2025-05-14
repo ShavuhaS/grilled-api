@@ -28,12 +28,13 @@ export default () => ({
   storage: {
     credential: process.env.GOOGLE_APPLICATION_CREDENTIALS,
     bucket: process.env.STORAGE_BUCKET_NAME,
+    signatureTtl: process.env.STORAGE_SIGNATURE_TTL ?? 86400,
   },
   static: {
     servePath: '/static',
     dir: process.env.STATIC_DIR,
   },
   multer: {
-    dir: process.env.MULTER_FILE_DIR,
+    dir: process.env.TEMP_DIR,
   },
 });

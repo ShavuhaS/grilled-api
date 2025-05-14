@@ -1,6 +1,15 @@
 import { BaseLessonDto } from './base-lesson.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from 'class-validator';
 import { LessonTypeEnum } from '../enums/lesson-type.enum';
 
 export class ArticleLessonDto extends BaseLessonDto {
@@ -20,7 +29,8 @@ export class ArticleLessonDto extends BaseLessonDto {
     type: LessonTypeEnum.ARTICLE;
 
   @ApiProperty({
-    description: 'Estimated time in minutes to complete the lesson (required if lesson type is not VIDEO)',
+    description:
+      'Estimated time in minutes to complete the lesson (required if lesson type is not VIDEO)',
   })
   @IsInt({ message: 'Estimated time must be an integer' })
   @Min(1, { message: 'Estimated time must be positive' })

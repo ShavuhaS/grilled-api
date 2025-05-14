@@ -5,6 +5,8 @@ import { TeacherMapper } from '../../teacher/mappers/teacher.mapper';
 import { CourseCategoryMapper } from '../../course-category/mappers/course-category.mapper';
 import { CourseResponse } from '../../../common/responses/course.response';
 import { CourseModuleMapper } from './course-module.mapper';
+import { CourseMappingOptions } from '../interfaces/mapping-options.interfaces';
+
 @Injectable()
 export class CourseMapper {
   constructor (
@@ -28,12 +30,15 @@ export class CourseMapper {
     };
   }
 
-  toCourseResponse (course: DbCourse): CourseResponse {
+  toCourseResponse (course: DbCourse, { links, progress }: CourseMappingOptions): CourseResponse {
+    const modules = course.modules?.map((module, ind) =>
+      this.moduleMapper.toCourseModuleResponse(module, { links, ...progress?.modules[ind]  })
+    ) ?? [];
+
     return {
       ...this.toBaseCourseResponse(course),
-      modules: course.modules?.map((module) =>
-        this.moduleMapper.toBaseCourseModuleResponse(module)
-      ),
+      progress: progress && +progress.course.toFixed(1),
+      modules,
     };
   }
 }

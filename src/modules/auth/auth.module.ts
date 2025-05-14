@@ -11,11 +11,21 @@ import { SecurityConfigService } from '../../config/services/security-config.ser
 import { EmailModule } from '../email/email.module';
 import { UserMapperModule } from '../user/mappers/user-mapper.module';
 import { UserModule } from '../user/user.module';
+import { OptionalJwtGuard } from '../../common/guards/auth/optional-jwt.guard';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, RefreshStrategy],
-  exports: [LocalStrategy, JwtStrategy, RefreshStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    RefreshStrategy,
+  ],
+  exports: [
+    LocalStrategy,
+    JwtStrategy,
+    RefreshStrategy,
+  ],
   imports: [
     PrismaModule,
     ConfigurationModule,
