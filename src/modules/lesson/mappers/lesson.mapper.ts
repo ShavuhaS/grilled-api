@@ -4,19 +4,19 @@ import { BaseLessonResponse } from '../../../common/responses/base-lesson.respon
 import { LessonResponse } from '../../../common/responses/lesson.response';
 import { ResourceTypeEnum } from '../../../common/enums/resource-type.enum';
 import { LessonResourceMapper } from './lesson-resource.mapper';
-import { LessonMappingOptions } from '../interfaces/mapping-options.interfaces';
+import { LessonMappingOptions } from '../../course/interfaces/mapping-options.interfaces';
 import { LessonTeacherResponse } from '../../../common/responses/lesson-teacher.response';
 import { LessonTypeEnum } from '../../../common/enums/lesson-type.enum';
 import { VideoLessonTeacherResponse } from '../../../common/responses/video-lesson-teacher.response';
 import { ArticleLessonTeacherResponse } from '../../../common/responses/article-lesson-teacher.response';
 import { TestLessonTeacherResponse } from '../../../common/responses/test-lesson-teacher.response';
-import { LessonTestMapper } from './lesson-test.mapper.';
+import { TestMapper } from '../../test/mappers/test.mapper';
 
 @Injectable()
-export class CourseLessonMapper {
+export class LessonMapper {
   constructor (
     private resourceMapper: LessonResourceMapper,
-    private testMapper: LessonTestMapper,
+    private testMapper: TestMapper,
   ) {}
 
   toBaseLessonResponse (lesson: DbCourseLesson): BaseLessonResponse {
@@ -29,10 +29,13 @@ export class CourseLessonMapper {
     };
   }
 
-  toLessonResponse (lesson: DbCourseLesson, options: LessonMappingOptions): LessonResponse {
-    const linkResources = lesson.resources?.filter(
-      ({ type }) => type === ResourceTypeEnum.LINK
-    ) ?? [];
+  toLessonResponse (
+    lesson: DbCourseLesson,
+    options: LessonMappingOptions,
+  ): LessonResponse {
+    const linkResources =
+      lesson.resources?.filter(({ type }) => type === ResourceTypeEnum.LINK) ??
+      [];
 
     const links = options.links
       ? linkResources.map((link) => this.resourceMapper.toLinkResponse(link))
@@ -58,9 +61,11 @@ export class CourseLessonMapper {
     }
   }
 
-  toArticleLessonTeacherResponse (lesson: DbCourseLesson): ArticleLessonTeacherResponse {
+  toArticleLessonTeacherResponse (
+    lesson: DbCourseLesson,
+  ): ArticleLessonTeacherResponse {
     const article = lesson.resources?.find(
-      ({ type }) => type === ResourceTypeEnum.MARKDOWN
+      ({ type }) => type === ResourceTypeEnum.MARKDOWN,
     );
 
     return {
@@ -69,9 +74,11 @@ export class CourseLessonMapper {
     } as ArticleLessonTeacherResponse;
   }
 
-  toVideoLessonTeacherResponse (lesson: DbCourseLesson): VideoLessonTeacherResponse {
+  toVideoLessonTeacherResponse (
+    lesson: DbCourseLesson,
+  ): VideoLessonTeacherResponse {
     const video = lesson.resources?.find(
-      ({ type }) => type === ResourceTypeEnum.VIDEO
+      ({ type }) => type === ResourceTypeEnum.VIDEO,
     );
 
     return {
@@ -80,7 +87,9 @@ export class CourseLessonMapper {
     } as VideoLessonTeacherResponse;
   }
 
-  toTestLessonTeacherResponse (lesson: DbCourseLesson): TestLessonTeacherResponse {
+  toTestLessonTeacherResponse (
+    lesson: DbCourseLesson,
+  ): TestLessonTeacherResponse {
     return {
       ...this.toLessonResponse(lesson, { links: true }),
       test: this.testMapper.toTestTeacherResponse(lesson.test),

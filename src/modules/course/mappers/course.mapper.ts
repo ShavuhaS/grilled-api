@@ -4,7 +4,7 @@ import { BaseCourseResponse } from '../../../common/responses/base-course.respon
 import { TeacherMapper } from '../../teacher/mappers/teacher.mapper';
 import { CourseCategoryMapper } from '../../course-category/mappers/course-category.mapper';
 import { CourseResponse } from '../../../common/responses/course.response';
-import { CourseModuleMapper } from './course-module.mapper';
+import { CourseModuleMapper } from '../../course-module/mappers/course-module.mapper';
 import { CourseMappingOptions } from '../interfaces/mapping-options.interfaces';
 
 @Injectable()
@@ -19,7 +19,9 @@ export class CourseMapper {
     return {
       id: course.id,
       author: this.teacherMapper.toCourseTeacherResponse(course.author),
-      category: this.categoryMapper.toBaseCourseCategoryResponse(course.category),
+      category: this.categoryMapper.toBaseCourseCategoryResponse(
+        course.category,
+      ),
       about: course.about,
       name: course.name,
       level: course.level,
@@ -30,10 +32,17 @@ export class CourseMapper {
     };
   }
 
-  toCourseResponse (course: DbCourse, { links, progress }: CourseMappingOptions): CourseResponse {
-    const modules = course.modules?.map((module, ind) =>
-      this.moduleMapper.toCourseModuleResponse(module, { links, ...progress?.modules[ind]  })
-    ) ?? [];
+  toCourseResponse (
+    course: DbCourse,
+    { links, progress }: CourseMappingOptions,
+  ): CourseResponse {
+    const modules =
+      course.modules?.map((module, ind) =>
+        this.moduleMapper.toCourseModuleResponse(module, {
+          links,
+          ...progress?.modules[ind],
+        }),
+      ) ?? [];
 
     return {
       ...this.toBaseCourseResponse(course),

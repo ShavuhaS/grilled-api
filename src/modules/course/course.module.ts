@@ -8,6 +8,10 @@ import { CourseMapperModule } from './mappers/course-mapper.module';
 import { UploadModule } from '../upload/upload.module';
 import { MediaModule } from '../media/media.module';
 import { StorageModule } from '../storage/storage.module';
+import { LessonMapperModule } from '../lesson/mappers/lesson-mapper.module';
+import { LessonModule } from '../lesson/lesson.module';
+import { CourseModuleModule } from '../course-module/course-module.module';
+import { CourseModuleMapperModule } from '../course-module/mappers/course-module-mapper.module';
 
 @Module({
   controllers: [CourseController],
@@ -17,10 +21,14 @@ import { StorageModule } from '../storage/storage.module';
     AuthModule,
     CaslModule,
     PrismaModule,
-    CourseMapperModule,
     UploadModule,
     MediaModule,
     StorageModule,
+    CourseModuleModule,
+    LessonModule,
+    CourseMapperModule,
+    CourseModuleMapperModule,
+    LessonMapperModule,
   ],
 })
 export class CourseModule {}

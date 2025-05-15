@@ -2,6 +2,12 @@
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
+  "generateOptions": {
+    "spec": {
+      "s": false,
+      "service": true
+    }
+  },
   "compilerOptions": {
     "deleteOutDir": true
   }

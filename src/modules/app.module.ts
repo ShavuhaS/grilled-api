@@ -5,12 +5,14 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ApiModule } from './api.module';
 import Configuration from '../config/config.constant';
 import { EmailModule } from './email/email.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
     ApiModule,
     EmailModule,
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       ignoreEnvFile: true,
       isGlobal: true,

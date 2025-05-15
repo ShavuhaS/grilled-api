@@ -52,10 +52,12 @@ export class StorageService {
   }
 
   async getSignedUrl (storagePath: string): Promise<string> {
-    return (await this.bucket.file(storagePath).getSignedUrl({
-      action: 'read',
-      expires: Date.now() + 1000 * this.storageConfig.signatureTtl,
-    }))[0];
+    return (
+      await this.bucket.file(storagePath).getSignedUrl({
+        action: 'read',
+        expires: Date.now() + 1000 * this.storageConfig.signatureTtl,
+      })
+    )[0];
   }
 
   private async uploadFile (

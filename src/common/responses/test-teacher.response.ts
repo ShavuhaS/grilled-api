@@ -11,7 +11,7 @@ export type TestQuestionTeacherResponse =
 @ApiExtraModels(
   ChoiceQuestionTeacherResponse,
   MultichoiceQuestionTeacherResponse,
-  ShortAnswerQuestionTeacherResponse
+  ShortAnswerQuestionTeacherResponse,
 )
 export class TestTeacherResponse {
   @ApiProperty({

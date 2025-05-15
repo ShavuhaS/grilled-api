@@ -10,7 +10,8 @@ export class CourseResponse extends BaseCourseResponse {
     modules: CourseModuleResponse[];
 
   @ApiPropertyOptional({
-    description: 'Course progress (in percents), returned if the user is enrolled',
+    description:
+      'Course progress (in percents), returned if the user is enrolled',
     example: '76.3',
   })
     progress?: number;

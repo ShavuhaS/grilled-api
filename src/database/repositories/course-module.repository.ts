@@ -7,16 +7,31 @@ import { DbCourseModule } from '../entities/course-module.entity';
 export class CourseModuleRepository {
   constructor (private prisma: PrismaService) {}
 
+  async findOne (
+    where: Prisma.CourseModuleWhereUniqueInput,
+    include?: Prisma.CourseModuleInclude,
+  ): Promise<DbCourseModule> {
+    return this.prisma.courseModule.findUnique({
+      where,
+      include,
+    }) as Promise<DbCourseModule>;
+  }
+
+  async findFirst (
+    where: Prisma.CourseModuleWhereInput,
+    include?: Prisma.CourseModuleInclude,
+  ): Promise<DbCourseModule> {
+    return this.prisma.courseModule.findFirst({
+      where,
+      include,
+    }) as Promise<DbCourseModule>;
+  }
+
   async findById (
     id: string,
     include?: Prisma.CourseModuleInclude,
   ): Promise<DbCourseModule> {
-    return this.prisma.courseModule.findUnique({
-      where: {
-        id,
-      },
-      include,
-    }) as Promise<DbCourseModule>;
+    return this.findOne({ id }, include);
   }
 
   async findMany (

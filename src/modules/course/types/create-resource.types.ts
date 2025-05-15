@@ -1,12 +1,12 @@
 import { LessonDto } from '../../../common/dtos/lesson.dto';
 import { DbCourseLesson } from '../../../database/entities/course-lesson.entity';
 
-export type CreateResourceOptions = {
+export type CreateResourceContext = {
   courseId: string;
   lesson: LessonDto;
 };
 
 export type CreateResourceFunction = (
   dbLesson: DbCourseLesson,
-  options: CreateResourceOptions,
+  ctx: CreateResourceContext,
 ) => Promise<DbCourseLesson>;

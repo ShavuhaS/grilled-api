@@ -21,7 +21,7 @@ import { CourseService } from './course.service';
 import { CourseMapper } from './mappers/course.mapper';
 import { CourseByIdPipe } from '../../common/pipes/course-by-id.pipe';
 import { CreateCourseModuleDto } from '../../common/dtos/create-course-module.dto';
-import { CourseModuleMapper } from './mappers/course-module.mapper';
+import { CourseModuleMapper } from '../course-module/mappers/course-module.mapper';
 import { ModuleByIdPipe } from '../../common/pipes/module-by-id.pipe';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateLessonDto } from '../../common/dtos/create-lesson.dto';
@@ -29,7 +29,8 @@ import { OptionalJwtGuard } from '../../common/guards/auth/optional-jwt.guard';
 import { DbUser } from '../../database/entities/user.entity';
 import { User } from '../../common/decorators/user.decorator';
 import { CourseExtraModels } from '../../common/documentation/extra-models/course.models';
-import { CourseLessonMapper } from './mappers/course-lesson.mapper';
+import { LessonMapper } from '../lesson/mappers/lesson.mapper';
+import { CourseModuleService } from '../course-module/course-module.service';
 
 @ApiTags('Courses')
 @ApiExtraModels(...CourseExtraModels)
@@ -41,9 +42,10 @@ import { CourseLessonMapper } from './mappers/course-lesson.mapper';
 export class CourseController {
   constructor (
     private courseService: CourseService,
+    private moduleService: CourseModuleService,
     private courseMapper: CourseMapper,
     private moduleMapper: CourseModuleMapper,
-    private lessonMapper: CourseLessonMapper,
+    private lessonMapper: LessonMapper,
   ) {}
 
   @ApiEndpoint({
@@ -72,7 +74,10 @@ export class CourseController {
     @User() user: DbUser,
   ) {
     const course = await this.courseService.getById(courseId);
-    const mappingOptions = await this.courseService.personalizeCourseResponse(user, course);
+    const mappingOptions = await this.courseService.personalizeCourseResponse(
+      user,
+      course,
+    );
 
     return this.courseMapper.toCourseResponse(course, mappingOptions);
   }
@@ -87,7 +92,7 @@ export class CourseController {
     @Param('courseId', CourseByIdPipe) courseId: string,
     @Body() body: CreateCourseModuleDto,
   ) {
-    const module = await this.courseService.createModule(courseId, body);
+    const module = await this.moduleService.create(courseId, body);
     return this.moduleMapper.toCourseModuleResponse(module, { links: true });
   }
 

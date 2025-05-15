@@ -15,17 +15,8 @@ import { OptionalJwtGuard } from '../../common/guards/auth/optional-jwt.guard';
 
 @Module({
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    JwtStrategy,
-    RefreshStrategy,
-  ],
-  exports: [
-    LocalStrategy,
-    JwtStrategy,
-    RefreshStrategy,
-  ],
+  providers: [AuthService, LocalStrategy, JwtStrategy, RefreshStrategy],
+  exports: [LocalStrategy, JwtStrategy, RefreshStrategy],
   imports: [
     PrismaModule,
     ConfigurationModule,
