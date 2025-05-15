@@ -73,7 +73,7 @@ export class CourseController {
   ) {
     const course = await this.courseService.getById(courseId);
     const mappingOptions = await this.courseService.personalizeCourseResponse(user, course);
-    console.log(mappingOptions);
+
     return this.courseMapper.toCourseResponse(course, mappingOptions);
   }
 

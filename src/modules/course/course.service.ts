@@ -98,6 +98,7 @@ export class CourseService {
 
   async isUserEnrolled (user: DbUser, course: DbCourse): Promise<boolean> {
     const enrollee = await this.courseRepository.findOne({
+      id: course.id,
       enrollees: {
         some: {
           userId: user.id,
