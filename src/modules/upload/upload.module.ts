@@ -1,17 +1,23 @@
 import { Module } from '@nestjs/common';
 import { MulterModule } from '@nestjs/platform-express';
-import { ConfigService } from '@nestjs/config';
+import { UploadService } from './upload.service';
+import { ConfigurationModule } from '../../config/configuration.module';
+import { MulterConfigService } from '../../config/services/multer-config.service';
 
 @Module({
   imports: [
     MulterModule.registerAsync({
-      imports: [],
-      useFactory: (configService: ConfigService) => ({
-        dest: configService.get<string>('multer.dir') || undefined,
+      imports: [ConfigurationModule],
+      useFactory: (config: MulterConfigService) => ({
+        dest: config.dir || undefined,
+        limits: {
+          fileSize: config.maxFileSize,
+        },
       }),
-      inject: [ConfigService],
+      inject: [MulterConfigService],
     }),
   ],
-  exports: [MulterModule],
+  providers: [UploadService],
+  exports: [MulterModule, UploadService],
 })
 export class UploadModule {}

@@ -3,7 +3,7 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
+  Param, Patch,
   Post,
   Request,
   UploadedFile,
@@ -31,6 +31,8 @@ import { User } from '../../common/decorators/user.decorator';
 import { CourseExtraModels } from '../../common/documentation/extra-models/course.models';
 import { LessonMapper } from '../lesson/mappers/lesson.mapper';
 import { CourseModuleService } from '../course-module/course-module.service';
+import { LessonByIdPipe } from '../../common/pipes/lesson-by-id.pipe';
+import { VideoValidationPipe } from '../../common/pipes/video-validation.pipe';
 
 @ApiTags('Courses')
 @ApiExtraModels(...CourseExtraModels)
@@ -78,7 +80,6 @@ export class CourseController {
       user,
       course,
     );
-
     return this.courseMapper.toCourseResponse(course, mappingOptions);
   }
 
@@ -125,6 +126,22 @@ export class CourseController {
       body,
     );
     return this.lessonMapper.toLessonTeacherResponse(lesson);
+  }
+
+  @ApiEndpoint({
+    summary: 'Upload a video to a lesson of type VIDEO',
+    documentation: CourseDocumentation.UPLOAD_VIDEO,
+    policies: CoursePolicies.VIDEO_UPLOAD,
+  })
+  @UseInterceptors(FileInterceptor('video'))
+  @Patch('/:courseId/lessons/:lessonId/video')
+  async uploadVideo (
+    @Param('courseId') courseId: string,
+    @Param('lessonId', LessonByIdPipe) lessonId: string,
+    @UploadedFile(VideoValidationPipe) file: Express.Multer.File,
+  ) {
+    const lesson = await this.courseService.uploadVideo(courseId, lessonId, file);
+    return this.lessonMapper.toVideoLessonTeacherResponse(lesson);
   }
 
   @ApiEndpoint({

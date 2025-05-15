@@ -12,9 +12,11 @@ import {
   ModuleProgress,
 } from './interfaces/course-progress.interface';
 import { LessonService } from '../lesson/lesson.service';
-import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CourseEvent } from '../../common/enums/course-event.enum';
 import { CourseModuleService } from '../course-module/course-module.service';
+import { CourseLessonDisconnectionException } from '../../common/exceptions/course-lesson-disconnection.exception';
+import { FILE_PROCESSED_EVENT } from '../upload/events/file-processed.event';
 
 @Injectable()
 export class CourseService {
@@ -22,6 +24,7 @@ export class CourseService {
     private courseRepository: CourseRepository,
     private moduleService: CourseModuleService,
     private lessonService: LessonService,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   async getById (id: string, signResources = false): Promise<DbCourse> {
@@ -83,7 +86,7 @@ export class CourseService {
     return !!enrollee;
   }
 
-  async ownsCourse (user: DbUser, course: DbCourse): Promise<boolean> {
+  private async ownsCourse (user: DbUser, course: DbCourse): Promise<boolean> {
     return course.authorId === user.id;
   }
 
@@ -170,6 +173,30 @@ export class CourseService {
     await this.checkModuleConnected(courseId, moduleId);
 
     return this.lessonService.create(courseId, moduleId, dto);
+  }
+
+  private async checkLessonConnected (courseId: string, lessonId: string) {
+    const course = await this.courseRepository.findOne({
+      modules: { some: { lessons: { some: { id: lessonId } } } },
+    });
+
+    if (!course) {
+      throw new CourseLessonDisconnectionException();
+    }
+  }
+
+  async uploadVideo (
+    courseId: string,
+    lessonId: string,
+    file: Express.Multer.File,
+  ): Promise<DbCourseLesson> {
+    try {
+      await this.checkLessonConnected(courseId, lessonId);
+
+      return await this.lessonService.uploadVideo(courseId, lessonId, file);
+    } finally {
+      this.eventEmitter.emit(FILE_PROCESSED_EVENT, file);
+    }
   }
 
   @OnEvent(CourseEvent.LESSON_CREATED)

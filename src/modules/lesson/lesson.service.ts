@@ -1,4 +1,4 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateLessonDto } from '../../common/dtos/create-lesson.dto';
 import { DbCourseLesson } from '../../database/entities/course-lesson.entity';
 import { LessonTypeEnum } from '../../common/enums/lesson-type.enum';
@@ -7,23 +7,21 @@ import { LessonDto } from '../../common/dtos/lesson.dto';
 import { ResourceTypeEnum } from '../../common/enums/resource-type.enum';
 import { CourseLessonRepository } from '../../database/repositories/course-lesson.repository';
 import { DbLessonResource } from '../../database/entities/lesson-resource.entity';
-import {
-  CreateResourceFunction,
-  CreateResourceContext,
-} from '../course/types/create-resource.types';
+import { CreateResourceContext, CreateResourceFunction } from '../course/types/create-resource.types';
 import { ArticleLessonDto } from '../../common/dtos/article-lesson.dto';
 import { TestService } from '../test/test.service';
 import { StorageService } from '../storage/storage.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CourseEvent } from '../../common/enums/course-event.enum';
+import { InvalidEntityTypeException } from '../../common/exceptions/invalid-entity-type.exception';
+
+const storageResourceTypes = [
+  ResourceTypeEnum.MARKDOWN,
+  ResourceTypeEnum.VIDEO,
+] as const as Partial<ResourceTypeEnum>[];
 
 @Injectable()
 export class LessonService {
-  private readonly storageResourceTypes = [
-    ResourceTypeEnum.MARKDOWN,
-    ResourceTypeEnum.VIDEO,
-  ] as const as Partial<ResourceTypeEnum>[];
-
   private readonly createResourceMap: Partial<
     Record<LessonTypeEnum, CreateResourceFunction>
   >;
@@ -110,36 +108,6 @@ export class LessonService {
     );
   }
 
-  async signLessonResources (lesson: DbCourseLesson): Promise<DbCourseLesson> {
-    if (!lesson.resources) {
-      return lesson;
-    }
-
-    for (const resource of lesson.resources) {
-      await this.signResourceUrl(resource);
-    }
-
-    return lesson;
-  }
-
-  private async signResourceUrl (
-    resource: DbLessonResource,
-  ): Promise<DbLessonResource> {
-    if (this.storageResourceTypes.includes(resource.type)) {
-      resource.link = await this.storageService.getSignedUrl(resource.link);
-    }
-    return resource;
-  }
-
-  private async signResourceUrls (
-    resources: DbLessonResource[],
-  ): Promise<DbLessonResource[]> {
-    for (const resource of resources) {
-      await this.signResourceUrl(resource);
-    }
-    return resources;
-  }
-
   private async createArticle (
     dbLesson: DbCourseLesson,
     { courseId, lesson }: CreateResourceContext,
@@ -168,5 +136,85 @@ export class LessonService {
     dbLesson.resources = resources;
 
     return dbLesson;
+  }
+
+  async uploadVideo (
+    courseId: string,
+    lessonId: string,
+    file: Express.Multer.File,
+  ): Promise<DbCourseLesson> {
+    const lesson = await this.lessonRepository.find(
+      { id: lessonId },
+      { resources: true },
+    );
+
+    if (lesson.type !== LessonTypeEnum.VIDEO) {
+      throw new InvalidEntityTypeException('Lesson');
+    }
+
+    const { storagePath } = await this.storageService.uploadVideo(courseId, file);
+
+    const oldVideo = lesson.resources?.find((res) => res.type === ResourceTypeEnum.VIDEO);
+
+    if (oldVideo?.link) {
+      await this.storageService.deleteFile(oldVideo.link);
+    }
+
+    const resourceAction =
+      oldVideo === undefined
+        ? {
+          create: {
+            type: ResourceTypeEnum.VIDEO,
+            link: storagePath,
+          },
+        }
+        : {
+          update: {
+            where: {
+              id: oldVideo.id,
+            },
+            data: {
+              link: storagePath,
+            },
+          },
+        };
+
+    const updatedLesson = await this.lessonRepository.update(
+      { id: lessonId },
+      { resources: resourceAction },
+      { resources: true },
+    );
+
+    return this.signLessonResources(updatedLesson);
+  }
+
+  async signLessonResources (lesson: DbCourseLesson): Promise<DbCourseLesson> {
+    if (!lesson.resources) {
+      return lesson;
+    }
+
+    for (const resource of lesson.resources) {
+      await this.signResourceUrl(resource);
+    }
+
+    return lesson;
+  }
+
+  private async signResourceUrl (
+    resource: DbLessonResource,
+  ): Promise<DbLessonResource> {
+    if (storageResourceTypes.includes(resource.type)) {
+      resource.link = await this.storageService.getSignedUrl(resource.link);
+    }
+    return resource;
+  }
+
+  private async signResourceUrls (
+    resources: DbLessonResource[],
+  ): Promise<DbLessonResource[]> {
+    for (const resource of resources) {
+      await this.signResourceUrl(resource);
+    }
+    return resources;
   }
 }

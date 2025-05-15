@@ -1,3 +1,5 @@
+import { GIGABYTE } from '../common/utils/file.constants';
+
 export default () => ({
   port: parseInt(process.env.PORT) || 3000,
   baseUrl: process.env.BASE_URL,
@@ -36,5 +38,6 @@ export default () => ({
   },
   multer: {
     dir: process.env.TEMP_DIR,
+    maxFileSize: process.env.MAX_UPLOAD_SIZE ?? GIGABYTE,
   },
 });

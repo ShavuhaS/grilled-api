@@ -6,12 +6,16 @@ import * as crypto from 'node:crypto';
 import * as fs from 'fs';
 import { StorageConfigService } from '../../config/services/storage-config.service';
 import { getDateString } from '../../common/utils/date.utils';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class StorageService {
   private readonly bucket: Bucket;
 
-  constructor (private storageConfig: StorageConfigService) {
+  constructor (
+    private storageConfig: StorageConfigService,
+    private eventEmitter: EventEmitter2,
+  ) {
     const app = initializeApp({
       credential: cert(storageConfig.credential),
       storageBucket: storageConfig.bucket,
@@ -60,6 +64,10 @@ export class StorageService {
     )[0];
   }
 
+  async deleteFile (storagePath: string) {
+    await this.bucket.file(storagePath).delete();
+  }
+
   private async uploadFile (
     storagePath: string,
     file: Express.Multer.File | Buffer,
@@ -97,14 +105,8 @@ export class StorageService {
     return new Promise<void>((resolve, reject) => {
       fileStream
         .pipe(uploadStream)
-        .on('error', (err) => {
-          fs.unlinkSync(file.path);
-          reject(err);
-        })
-        .on('finish', () => {
-          fs.unlinkSync(file.path);
-          resolve();
-        });
+        .on('error', reject)
+        .on('finish', resolve);
     });
   }
 }

@@ -11,4 +11,5 @@ export const CoursePolicies: Record<string, PolicyHandler<CourseAction>> = {
   MODULE_CREATE: CourseUpdatePolicy,
   MODULE_DELETE: CourseUpdatePolicy,
   LESSON_CREATE: CourseUpdatePolicy,
+  VIDEO_UPLOAD: CourseUpdatePolicy,
 };
