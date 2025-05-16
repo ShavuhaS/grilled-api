@@ -1,4 +1,5 @@
 import { GIGABYTE } from '../common/utils/file.constants';
+import { seconds } from '../common/utils/time.constants';
 
 export default () => ({
   port: parseInt(process.env.PORT) || 3000,
@@ -10,8 +11,8 @@ export default () => ({
       refresh: process.env.JWT_REFRESH_SECRET ?? '42',
     },
     jwt: {
-      ttl: process.env.JWT_TTL ?? 86400,
-      refreshTtl: process.env.JWT_REFRESH_TTL ?? 604800,
+      ttl: process.env.JWT_TTL ?? seconds.DAY,
+      refreshTtl: process.env.JWT_REFRESH_TTL ?? seconds.WEEK,
     },
   },
   email: {
@@ -30,7 +31,7 @@ export default () => ({
   storage: {
     credential: process.env.GOOGLE_APPLICATION_CREDENTIALS,
     bucket: process.env.STORAGE_BUCKET_NAME,
-    signatureTtl: process.env.STORAGE_SIGNATURE_TTL ?? 86400,
+    signatureTtl: process.env.STORAGE_SIGNATURE_TTL ?? seconds.DAY,
   },
   static: {
     servePath: '/static',
@@ -39,5 +40,11 @@ export default () => ({
   multer: {
     dir: process.env.TEMP_DIR,
     maxFileSize: process.env.MAX_UPLOAD_SIZE ?? GIGABYTE,
+  },
+  ffmpeg: {
+    path: {
+      ffmpeg: process.env.FFMPEG_PATH || undefined,
+      ffprobe: process.env.FFPROBE_PATH || undefined,
+    },
   },
 });

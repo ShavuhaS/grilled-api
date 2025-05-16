@@ -14,7 +14,7 @@ export class SecurityConfigService {
   }
 
   get accessTtl (): number {
-    return this.configService.get<number>('security.jwt.ttl');
+    return parseInt(this.configService.get<string>('security.jwt.ttl'));
   }
 
   get accessTtlStr (): string {
@@ -23,7 +23,7 @@ export class SecurityConfigService {
   }
 
   get refreshTtl (): number {
-    return this.configService.get<number>('security.jwt.refreshTtl');
+    return parseInt(this.configService.get<string>('security.jwt.refreshTtl'));
   }
 
   get refreshTtlStr (): string {

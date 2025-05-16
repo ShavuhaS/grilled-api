@@ -4,6 +4,7 @@ import { EmailConfigService } from './services/email-config.service';
 import { UrlConfigService } from './services/url-config.service';
 import { StorageConfigService } from './services/storage-config.service';
 import { MulterConfigService } from './services/multer-config.service';
+import { MediaConfigService } from './services/media-config.service';
 
 @Module({
   providers: [
@@ -12,6 +13,7 @@ import { MulterConfigService } from './services/multer-config.service';
     UrlConfigService,
     StorageConfigService,
     MulterConfigService,
+    MediaConfigService,
   ],
   exports: [
     SecurityConfigService,
@@ -19,6 +21,7 @@ import { MulterConfigService } from './services/multer-config.service';
     UrlConfigService,
     StorageConfigService,
     MulterConfigService,
+    MediaConfigService,
   ],
 })
 export class ConfigurationModule {}

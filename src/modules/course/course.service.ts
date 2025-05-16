@@ -17,6 +17,8 @@ import { CourseEvent } from '../../common/enums/course-event.enum';
 import { CourseModuleService } from '../course-module/course-module.service';
 import { CourseLessonDisconnectionException } from '../../common/exceptions/course-lesson-disconnection.exception';
 import { FILE_PROCESSED_EVENT } from '../upload/events/file-processed.event';
+import { FileProcessedEvent } from '../../common/events/file-processed.event';
+import { LessonCreatedEvent } from '../../common/events/lesson-created.event';
 
 @Injectable()
 export class CourseService {
@@ -195,12 +197,12 @@ export class CourseService {
 
       return await this.lessonService.uploadVideo(courseId, lessonId, file);
     } finally {
-      this.eventEmitter.emit(FILE_PROCESSED_EVENT, file);
+      this.eventEmitter.emit(FILE_PROCESSED_EVENT, new FileProcessedEvent(file.path));
     }
   }
 
   @OnEvent(CourseEvent.LESSON_CREATED)
-  private async updateEstimatedTime (lesson: DbCourseLesson) {
+  private async updateEstimatedTime ({ lesson }: LessonCreatedEvent) {
     if (!lesson.estimatedTime) {
       return;
     }

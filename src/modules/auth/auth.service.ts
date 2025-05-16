@@ -17,7 +17,7 @@ import { RegistrationDto } from '../../common/dtos/registration.dto';
 import { AlreadyRegisteredException } from '../../common/exceptions/already-registered.exception';
 import { EmailTokenRepository } from '../../database/repositories/email-token.repository';
 import { EmailAlreadySentException } from '../../common/exceptions/email-already-sent.exception';
-import { HOUR } from '../../common/utils/time.constants';
+import { milliseconds } from '../../common/utils/time.constants';
 import { EmailService } from '../email/email.service';
 import { InvalidTokenException } from '../../common/exceptions/invalid-token.exception';
 import { TokenExpiredException } from '../../common/exceptions/token-expired.exception';
@@ -160,7 +160,7 @@ export class AuthService {
   // Every hour
   @Cron('0 0 */1 * * *')
   async deleteUnverifiedAccounts () {
-    const hourAgo = new Date(Date.now() - HOUR);
+    const hourAgo = new Date(Date.now() - milliseconds.HOUR);
     const { count } = await this.userRepository.deleteMany({
       state: UserState.PENDING,
       createdAt: {
@@ -179,7 +179,7 @@ export class AuthService {
     }
 
     const { user, createdAt } = res;
-    if (Date.now() - createdAt.getTime() > HOUR) {
+    if (Date.now() - createdAt.getTime() > milliseconds.HOUR) {
       await this.userRepository.delete({ id: user.id });
 
       throw new TokenExpiredException();

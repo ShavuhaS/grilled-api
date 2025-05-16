@@ -11,9 +11,13 @@ import { CreateResourceContext, CreateResourceFunction } from '../course/types/c
 import { ArticleLessonDto } from '../../common/dtos/article-lesson.dto';
 import { TestService } from '../test/test.service';
 import { StorageService } from '../storage/storage.service';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CourseEvent } from '../../common/enums/course-event.enum';
 import { InvalidEntityTypeException } from '../../common/exceptions/invalid-entity-type.exception';
+import { MediaService } from '../media/media.service';
+import { seconds } from '../../common/utils/time.constants';
+import { LessonCreatedEvent } from '../../common/events/lesson-created.event';
+import { ResourceDeletedEvent } from '../../common/events/resource-deleted.event';
 
 const storageResourceTypes = [
   ResourceTypeEnum.MARKDOWN,
@@ -30,6 +34,7 @@ export class LessonService {
     private lessonRepository: CourseLessonRepository,
     private testService: TestService,
     private storageService: StorageService,
+    private mediaService: MediaService,
     private eventEmitter: EventEmitter2,
   ) {
     this.createResourceMap = {
@@ -64,7 +69,7 @@ export class LessonService {
       dbLesson = await createResource(dbLesson, { courseId, lesson });
     }
 
-    this.eventEmitter.emit(CourseEvent.LESSON_CREATED, dbLesson);
+    this.eventEmitter.emit(CourseEvent.LESSON_CREATED, new LessonCreatedEvent(dbLesson));
 
     return dbLesson;
   }
@@ -110,13 +115,10 @@ export class LessonService {
 
   private async createArticle (
     dbLesson: DbCourseLesson,
-    { courseId, lesson }: CreateResourceContext,
+    { lesson }: CreateResourceContext,
   ): Promise<DbCourseLesson> {
     const { article } = lesson as ArticleLessonDto;
-    const { storagePath } = await this.storageService.uploadArticle(
-      courseId,
-      article,
-    );
+    const { storagePath } = await this.storageService.uploadArticle(article);
 
     const { resources } = await this.lessonRepository.update(
       { id: dbLesson.id },
@@ -152,13 +154,14 @@ export class LessonService {
       throw new InvalidEntityTypeException('Lesson');
     }
 
-    const { storagePath } = await this.storageService.uploadVideo(courseId, file);
+    const { storagePath } = await this.storageService.uploadVideo(file);
 
-    const oldVideo = lesson.resources?.find((res) => res.type === ResourceTypeEnum.VIDEO);
+    const durationInSeconds = await this.mediaService.getVideoDuration(file);
+    const duration = Math.ceil(durationInSeconds / seconds.MINUTE);
 
-    if (oldVideo?.link) {
-      await this.storageService.deleteFile(oldVideo.link);
-    }
+    const oldVideo = lesson.resources?.find(
+      (res) => res.type === ResourceTypeEnum.VIDEO
+    );
 
     const resourceAction =
       oldVideo === undefined
@@ -181,9 +184,16 @@ export class LessonService {
 
     const updatedLesson = await this.lessonRepository.update(
       { id: lessonId },
-      { resources: resourceAction },
+      { resources: resourceAction, estimatedTime: duration },
       { resources: true },
     );
+
+    if (oldVideo) {
+      this.eventEmitter.emit(
+        CourseEvent.RESOURCE_DELETED,
+        new ResourceDeletedEvent(oldVideo.link, oldVideo.type),
+      );
+    }
 
     return this.signLessonResources(updatedLesson);
   }
@@ -216,5 +226,20 @@ export class LessonService {
       await this.signResourceUrl(resource);
     }
     return resources;
+  }
+
+  @OnEvent(CourseEvent.RESOURCE_DELETED)
+  async handleResourceDelete ({ storagePath, resourceType }: ResourceDeletedEvent) {
+    if (!storageResourceTypes.includes(resourceType)) {
+      return;
+    }
+
+    const lessons = await this.lessonRepository.findMany({
+      resources: { some: { type: resourceType, link: storagePath } },
+    });
+
+    if (lessons.length === 0) {
+      await this.storageService.deleteFile(storagePath);
+    }
   }
 }

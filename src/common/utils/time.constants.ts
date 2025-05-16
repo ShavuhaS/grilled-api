@@ -1,11 +1,14 @@
-export const SECOND = 1000;
+const getTimeConstants = (secondSize: number) => {
+  const SECOND = secondSize;
+  const MINUTE = 60 * SECOND;
+  const HOUR = 60 * MINUTE;
+  const DAY = 24 * HOUR;
+  const WEEK = 7 * DAY;
+  const FORTNIGHT = 2 * WEEK;
 
-export const MINUTE = 60 * SECOND;
+  return { SECOND, MINUTE, HOUR, DAY, WEEK, FORTNIGHT };
+};
 
-export const HOUR = 60 * MINUTE;
+export const milliseconds = getTimeConstants(1000);
 
-export const DAY = 24 * HOUR;
-
-export const WEEK = 7 * DAY;
-
-export const FORTNIGHT = 2 * WEEK;
+export const seconds = getTimeConstants(1);

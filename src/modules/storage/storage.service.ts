@@ -23,15 +23,16 @@ export class StorageService {
     this.bucket = getStorage(app).bucket();
   }
 
-  async uploadVideo (
-    courseId: string,
-    video: Express.Multer.File,
-  ): Promise<{ storagePath: string }> {
+  private getVideoPath (video: Express.Multer.File): string {
     const date = getDateString();
     const uuid = crypto.randomUUID().slice(0, 8);
     const filename = video.originalname;
 
-    const storagePath = `courses/${courseId}/videos/${date}-${uuid}-${filename}`;
+    return `videos/${date}-${uuid}-${filename}`;
+  }
+
+  async uploadVideo (video: Express.Multer.File): Promise<{ storagePath: string }> {
+    const storagePath = this.getVideoPath(video);
 
     await this.uploadFile(storagePath, video, {
       contentType: video.mimetype,
@@ -40,13 +41,14 @@ export class StorageService {
     return { storagePath };
   }
 
-  async uploadArticle (
-    courseId: string,
-    text: string,
-  ): Promise<{ storagePath: string }> {
+  private getArticlePath (): string {
+    const uuid = crypto.randomUUID();
+    return `articles/${uuid}.html`;
+  }
+
+  async uploadArticle (text: string): Promise<{ storagePath: string }> {
     const buffer = Buffer.from(text);
-    const articleId = crypto.randomUUID();
-    const storagePath = `courses/${courseId}/articles/${articleId}.html`;
+    const storagePath = this.getArticlePath();
 
     await this.uploadFile(storagePath, buffer, {
       contentType: 'text/html',

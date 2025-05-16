@@ -5,6 +5,7 @@ import { FILE_PROCESSED_EVENT } from '../../modules/upload/events/file-processed
 import { InvalidFileTypeException } from '../exceptions/invalid-file-type.exception';
 import { GIGABYTE } from '../utils/file.constants';
 import { FileIsTooLargeException } from '../exceptions/file-is-too-large.exception';
+import { FileProcessedEvent } from '../events/file-processed.event';
 
 const allowedExtensions = ['.mp4', '.mov', '.mkv', '.webm', '.avi'];
 
@@ -28,7 +29,7 @@ export class VideoValidationPipe implements PipeTransform {
 
       return video;
     } catch (err) {
-      this.eventEmitter.emit(FILE_PROCESSED_EVENT, video);
+      this.eventEmitter.emit(FILE_PROCESSED_EVENT, new FileProcessedEvent(video.path));
       throw err;
     }
   }

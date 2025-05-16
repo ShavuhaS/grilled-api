@@ -5,6 +5,7 @@ import { CourseModuleRepository } from '../../database/repositories/course-modul
 import { OnEvent } from '@nestjs/event-emitter';
 import { CourseEvent } from '../../common/enums/course-event.enum';
 import { DbCourseLesson } from '../../database/entities/course-lesson.entity';
+import { LessonCreatedEvent } from '../../common/events/lesson-created.event';
 
 @Injectable()
 export class CourseModuleService {
@@ -65,7 +66,7 @@ export class CourseModuleService {
   }
 
   @OnEvent(CourseEvent.LESSON_CREATED)
-  private async updateEstimatedTime (lesson: DbCourseLesson) {
+  private async updateEstimatedTime ({ lesson }: LessonCreatedEvent) {
     if (!lesson.estimatedTime) {
       return;
     }
