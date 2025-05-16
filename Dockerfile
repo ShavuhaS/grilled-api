@@ -19,6 +19,10 @@ FROM node:22-alpine AS runtime
 
 WORKDIR /app
 
+RUN apk update
+
+RUN apk add --no-cache ffmpeg
+
 RUN corepack enable && corepack prepare yarn@4.3.1
 
 COPY --from=builder /app/yarn.lock ./yarn.lock
