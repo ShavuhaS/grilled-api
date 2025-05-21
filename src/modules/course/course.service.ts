@@ -6,11 +6,9 @@ import { DbUser } from '../../database/entities/user.entity';
 import { CourseModuleDisconnectionException } from '../../common/exceptions/course-module-disconnection.exception';
 import { CreateLessonDto } from '../../common/dtos/create-lesson.dto';
 import { DbCourseLesson } from '../../database/entities/course-lesson.entity';
-import { CourseMappingOptions } from './interfaces/mapping-options.interfaces';
-import {
-  CourseProgress,
-  ModuleProgress,
-} from './interfaces/course-progress.interface';
+import { CourseMappingOptions } from './interfaces/course-mapping-options.interface';
+import { CourseProgress } from './interfaces/course-progress.interface';
+import { ModuleProgress } from '../course-module/interfaces/module-progress.interface';
 import { LessonService } from '../lesson/lesson.service';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CourseEvent } from '../../common/enums/course-event.enum';
@@ -18,7 +16,9 @@ import { CourseModuleService } from '../course-module/course-module.service';
 import { CourseLessonDisconnectionException } from '../../common/exceptions/course-lesson-disconnection.exception';
 import { FILE_PROCESSED_EVENT } from '../upload/events/file-processed.event';
 import { FileProcessedEvent } from '../../common/events/file-processed.event';
-import { LessonCreatedEvent } from '../../common/events/lesson-created.event';
+import { DurationUpdatedEvent } from '../../common/events/duration-updated.event';
+import { LessonUserContext } from './types/lesson-user-context.type';
+import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity-id.exception';
 
 @Injectable()
 export class CourseService {
@@ -143,6 +143,28 @@ export class CourseService {
     return { course: courseProgress, modules };
   }
 
+  async getLesson (courseId: string, lessonId: string): Promise<DbCourseLesson> {
+    await this.checkLessonConnected(courseId, lessonId);
+
+    return this.lessonService.getById(lessonId, true);
+  }
+
+  async getLessonUserContext (user: DbUser, lesson: DbCourseLesson): Promise<LessonUserContext> {
+    const course = await this.courseRepository.findOne({
+      modules: { some: { lessons: { some: { id: lesson.id } } } },
+    });
+
+    if (!course) {
+      throw new InvalidEntityIdException('Lesson');
+    }
+
+    if (course.authorId === user.id) {
+      return { isStudent: false };
+    }
+
+    return this.lessonService.getUserContext(user.id, lesson.id);
+  }
+
   async personalizeCourseResponse (
     user: DbUser,
     course: DbCourse,
@@ -187,6 +209,12 @@ export class CourseService {
     }
   }
 
+  async deleteLesson (courseId: string, lessonId: string): Promise<DbCourseLesson> {
+    await this.checkLessonConnected(courseId, lessonId);
+
+    return this.lessonService.delete(lessonId);
+  }
+
   async uploadVideo (
     courseId: string,
     lessonId: string,
@@ -195,30 +223,28 @@ export class CourseService {
     try {
       await this.checkLessonConnected(courseId, lessonId);
 
-      return await this.lessonService.uploadVideo(courseId, lessonId, file);
+      return await this.lessonService.uploadVideo(lessonId, file);
     } finally {
       this.eventEmitter.emit(FILE_PROCESSED_EVENT, new FileProcessedEvent(file.path));
     }
   }
 
-  @OnEvent(CourseEvent.LESSON_CREATED)
-  private async updateEstimatedTime ({ lesson }: LessonCreatedEvent) {
-    if (!lesson.estimatedTime) {
+  @OnEvent(CourseEvent.DURATION_UPDATED)
+  private async updateEstimatedTime ({ courseId, durationDelta }: DurationUpdatedEvent) {
+    if (!durationDelta) {
       return;
     }
 
-    const course = await this.courseRepository.findOne({
-      modules: { some: { lessons: { some: { id: lesson.id } } } },
-    });
+    const course = await this.courseRepository.findById(courseId);
 
     if (!course) {
-      console.error(`Course with lesson ${lesson.id} was not found`);
+      console.error(`Course with id ${courseId} was not found`);
       return;
     }
 
     await this.courseRepository.update(
       { id: course.id },
-      { estimatedTime: { increment: lesson.estimatedTime } },
+      { estimatedTime: { increment: durationDelta } },
     );
   }
 }

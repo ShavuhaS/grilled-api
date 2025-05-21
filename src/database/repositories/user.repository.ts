@@ -2,18 +2,24 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { DbUser } from '../entities/user.entity';
+import { Repository } from '../interfaces/repository.interface';
 
 @Injectable()
-export class UserRepository {
+export class UserRepository implements Repository<DbUser> {
   constructor (private prisma: PrismaService) {}
 
-  async findById (id: string, include?: Prisma.UserInclude): Promise<DbUser> {
+  async find (
+    where: Prisma.UserWhereUniqueInput,
+    include?: Prisma.UserInclude,
+  ): Promise<DbUser> {
     return this.prisma.user.findUnique({
-      where: {
-        id,
-      },
+      where,
       include,
     }) as Promise<DbUser>;
+  }
+
+  async findById (id: string, include?: Prisma.UserInclude): Promise<DbUser> {
+    return this.find({ id }, include);
   }
 
   async findOne (

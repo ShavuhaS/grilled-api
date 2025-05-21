@@ -1,18 +1,10 @@
-import { Injectable, PipeTransform } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CourseLessonRepository } from '../../database/repositories/course-lesson.repository';
-import { InvalidEntityIdException } from '../exceptions/invalid-entity-id.exception';
+import { EntityByIdPipe } from './entity-by-id.pipe';
 
 @Injectable()
-export class LessonByIdPipe implements PipeTransform {
-  constructor (private lessonRepository: CourseLessonRepository) {}
-
-  async transform (id: string): Promise<string> {
-    const lesson = await this.lessonRepository.find({ id });
-
-    if (!lesson) {
-      throw new InvalidEntityIdException('Lesson');
-    }
-
-    return id;
+export class LessonByIdPipe extends EntityByIdPipe {
+  constructor (private lessonRepository: CourseLessonRepository) {
+    super(lessonRepository, 'Lesson');
   }
 }

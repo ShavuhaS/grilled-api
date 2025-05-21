@@ -5,5 +5,6 @@ export enum CourseAction {
   UPDATE = 'update',
   DELETE = 'delete',
   ENROLL = 'enroll',
+  ACCESS_CONTENT = 'access_content',
   DRAFT = 'draft',
 }

@@ -1,12 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CourseAbilityFactory } from './factories/course-ability.factory';
-import { CourseEnrollPolicy } from './policies/course/enroll';
-import { PrismaModule } from '../../database/prisma.module';
-import { CourseUpdatePolicy } from './policies/course/update';
+import { CaslPolicyModule } from './policies/casl-policy.module';
+import { CaslFactoryModule } from './factories/casl-factory.module';
 
 @Module({
-  providers: [CourseAbilityFactory, CourseEnrollPolicy, CourseUpdatePolicy],
-  exports: [CourseAbilityFactory, CourseEnrollPolicy, CourseUpdatePolicy],
-  imports: [PrismaModule],
+  exports: [CaslPolicyModule, CaslFactoryModule],
+  imports: [CaslPolicyModule, CaslFactoryModule],
 })
 export class CaslModule {}

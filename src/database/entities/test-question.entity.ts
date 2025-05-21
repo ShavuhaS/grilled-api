@@ -1,7 +1,7 @@
 import { DbLessonTest } from './lesson-test.entity';
 import { QuestionTypeEnum } from '../../common/enums/question-type.enum';
 import { DbTestQuestionAnswer } from './test-question-answer.entity';
-import { DbUserQuestionAnswer } from './user-question-answer.entity';
+import { DbTestAttemptAnswer } from './test-attempt-answer.entity';
 
 export class DbTestQuestion {
   id: string;
@@ -12,5 +12,5 @@ export class DbTestQuestion {
   createdAt?: Date;
   updatedAt?: Date;
   answers?: DbTestQuestionAnswer[];
-  userAnswers?: DbUserQuestionAnswer[];
+  userAnswers?: DbTestAttemptAnswer[];
 }

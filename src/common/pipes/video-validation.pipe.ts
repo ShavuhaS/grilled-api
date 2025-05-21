@@ -6,6 +6,7 @@ import { InvalidFileTypeException } from '../exceptions/invalid-file-type.except
 import { GIGABYTE } from '../utils/file.constants';
 import { FileIsTooLargeException } from '../exceptions/file-is-too-large.exception';
 import { FileProcessedEvent } from '../events/file-processed.event';
+import { NoFileException } from '../exceptions/no-file.exception';
 
 const allowedExtensions = ['.mp4', '.mov', '.mkv', '.webm', '.avi'];
 
@@ -17,6 +18,9 @@ export class VideoValidationPipe implements PipeTransform {
 
   transform (video: Express.Multer.File): Express.Multer.File {
     try {
+      if (!video) {
+        throw new NoFileException();
+      }
       const extension = path.extname(video.originalname);
 
       if (!allowedExtensions.includes(extension)) {

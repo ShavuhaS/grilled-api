@@ -5,7 +5,7 @@ import { TeacherMapper } from '../../teacher/mappers/teacher.mapper';
 import { CourseCategoryMapper } from '../../course-category/mappers/course-category.mapper';
 import { CourseResponse } from '../../../common/responses/course.response';
 import { CourseModuleMapper } from '../../course-module/mappers/course-module.mapper';
-import { CourseMappingOptions } from '../interfaces/mapping-options.interfaces';
+import { CourseMappingOptions } from '../interfaces/course-mapping-options.interface';
 
 @Injectable()
 export class CourseMapper {

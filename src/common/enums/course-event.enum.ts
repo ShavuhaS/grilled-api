@@ -1,4 +1,4 @@
 export enum CourseEvent {
-  LESSON_CREATED = 'lesson.created',
+  DURATION_UPDATED = 'duration.updated',
   RESOURCE_DELETED = 'resource.deleted',
 }

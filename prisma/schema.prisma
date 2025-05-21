@@ -48,8 +48,7 @@ model User {
   courseQuestions       CourseQuestion[]
   courseQuestionReplies CourseQuestionReply[]
   completedLessons      CompletedLesson[]
-  testResults           TestResult[]
-  testQuestionAnswers   UserQuestionAnswer[]
+  testAttempts          TestAttempt[]
 
   @@map("users")
 }
@@ -345,22 +344,24 @@ model LessonTest {
   createdAt     DateTime?      @default(now()) @map("created_at")
   updatedAt     DateTime?      @default(now()) @updatedAt @map("updated_at")
   questions     TestQuestion[]
-  results       TestResult[]
+  userAttempts  TestAttempt[]
 
   @@map("lesson_tests")
 }
 
-model TestResult {
-  userId    String     @map("user_id")
-  user      User       @relation(fields: [userId], references: [id])
-  testId    String     @map("test_id")
-  test      LessonTest @relation(fields: [testId], references: [id])
-  result    Int
-  createdAt DateTime?  @default(now()) @map("created_at")
-  updatedAt DateTime?  @default(now()) @updatedAt @map("updated_at")
+model TestAttempt {
+  id        String              @id @default(uuid())
+  userId    String              @map("user_id")
+  user      User                @relation(fields: [userId], references: [id])
+  testId    String              @map("test_id")
+  test      LessonTest          @relation(fields: [testId], references: [id])
+  result    Decimal
+  createdAt DateTime?           @default(now()) @map("created_at")
+  updatedAt DateTime?           @default(now()) @updatedAt @map("updated_at")
+  answers   TestAttemptAnswer[]
 
   @@unique([userId, testId])
-  @@map("test_results")
+  @@map("test_attempts")
 }
 
 enum QuestionType {
@@ -372,32 +373,32 @@ enum QuestionType {
 }
 
 model TestQuestion {
-  id          String               @id @default(uuid())
-  testId      String               @map("test_id")
-  test        LessonTest           @relation(fields: [testId], references: [id], onDelete: Cascade)
-  text        String
-  type        QuestionType
-  createdAt   DateTime?            @default(now()) @map("created_at")
-  updatedAt   DateTime?            @default(now()) @updatedAt @map("updated_at")
-  answers     TestQuestionAnswer[]
-  userAnswers UserQuestionAnswer[]
+  id         String               @id @default(uuid())
+  testId     String               @map("test_id")
+  test       LessonTest           @relation(fields: [testId], references: [id], onDelete: Cascade)
+  text       String
+  type       QuestionType
+  createdAt  DateTime?            @default(now()) @map("created_at")
+  updatedAt  DateTime?            @default(now()) @updatedAt @map("updated_at")
+  answers    TestQuestionAnswer[]
+  answeredBy TestAttemptAnswer[]
 
   @@map("test_questions")
 }
 
-model UserQuestionAnswer {
+model TestAttemptAnswer {
   id             String             @id @default(uuid())
-  userId         String             @map("user_id")
-  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attemptId      String             @map("test_attempt_id")
+  attempt        TestAttempt        @relation(fields: [attemptId], references: [id], onDelete: Cascade)
   testQuestionId String             @map("test_question_id")
   testQuestion   TestQuestion       @relation(fields: [testQuestionId], references: [id], onDelete: Cascade)
   answer         String?
   createdAt      DateTime?          @default(now()) @map("created_at")
   updatedAt      DateTime?          @default(now()) @updatedAt @map("updated_at")
-  choices        UserChoiceAnswer[]
+  choices        TestChoiceAnswer[]
 
-  @@unique([userId, testQuestionId])
-  @@map("user_question_answers")
+  @@unique([attemptId, testQuestionId])
+  @@map("test_attempt_answers")
 }
 
 model TestQuestionAnswer {
@@ -409,19 +410,19 @@ model TestQuestionAnswer {
   correct    Boolean
   createdAt  DateTime?          @default(now()) @map("created_at")
   updatedAt  DateTime?          @default(now()) @updatedAt @map("updated_at")
-  chosenBy   UserChoiceAnswer[]
+  chosenBy   TestChoiceAnswer[]
 
   @@map("test_question_answers")
 }
 
-model UserChoiceAnswer {
-  userAnswerId String             @map("user_answer_id")
-  userAnswer   UserQuestionAnswer @relation(fields: [userAnswerId], references: [id], onDelete: Cascade)
-  testAnswerId String             @map("test_answer_id")
-  testAnswer   TestQuestionAnswer @relation(fields: [testAnswerId], references: [id], onDelete: Cascade)
-  createdAt    DateTime?          @default(now()) @map("created_at")
-  updatedAt    DateTime?          @default(now()) @updatedAt @map("updated_at")
+model TestChoiceAnswer {
+  attemptAnswerId String             @map("attempt_answer_id")
+  attemptAnswer   TestAttemptAnswer  @relation(fields: [attemptAnswerId], references: [id], onDelete: Cascade)
+  testAnswerId    String             @map("test_answer_id")
+  testAnswer      TestQuestionAnswer @relation(fields: [testAnswerId], references: [id], onDelete: Cascade)
+  createdAt       DateTime?          @default(now()) @map("created_at")
+  updatedAt       DateTime?          @default(now()) @updatedAt @map("updated_at")
 
-  @@unique([userAnswerId, testAnswerId])
-  @@map("user_choice_answers")
+  @@unique([attemptAnswerId, testAnswerId])
+  @@map("test_choice_answers")
 }

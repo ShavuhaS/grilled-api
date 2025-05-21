@@ -1,5 +1,5 @@
 import { DbTestQuestion } from './test-question.entity';
-import { DbUserChoiceAnswer } from './user-choice-answer.entity';
+import { DbTestChoiceAnswer } from './test-choice-answer.entity';
 
 export class DbTestQuestionAnswer {
   id: string;
@@ -10,5 +10,5 @@ export class DbTestQuestionAnswer {
   correct: boolean;
   createdAt?: Date;
   updatedAt?: Date;
-  chosenBy?: DbUserChoiceAnswer[];
+  chosenBy?: DbTestChoiceAnswer[];
 }

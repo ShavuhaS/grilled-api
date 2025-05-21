@@ -15,6 +15,8 @@ import { CourseTestRepository } from '../../database/repositories/course-test.re
 import { QuestionTypeEnum } from '../../common/enums/question-type.enum';
 import { ValidateQuestionFunction } from '../course/types/validate-question.type';
 import { CreateTestQuestionFunction } from '../course/types/create-question.types';
+import { TestResults } from './types/test-results.type';
+import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity-id.exception';
 
 @Injectable()
 export class TestService {
@@ -37,6 +39,29 @@ export class TestService {
     private testRepository: CourseTestRepository,
     private questionRepository: TestQuestionRepository,
   ) {}
+
+  async getUserResults (id: string, userId: string): Promise<TestResults> {
+    const test = await this.testRepository.findById(id);
+
+    if (!test) {
+      throw new InvalidEntityIdException('Test');
+    }
+
+    const userTest = await this.testRepository.findOne(
+      {
+        id,
+        userAttempts: { some: { userId } },
+      },
+      { userAttempts: true },
+    );
+
+    const userAttempt = userTest?.userAttempts?.find((a) => a.userId === userId);
+
+    return {
+      score: userAttempt?.result?.toNumber() ?? null,
+      maxScore: test.questionCount,
+    };
+  }
 
   async create (
     dbLesson: DbCourseLesson,

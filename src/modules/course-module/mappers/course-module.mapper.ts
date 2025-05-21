@@ -3,7 +3,7 @@ import { DbCourseModule } from '../../../database/entities/course-module.entity'
 import { CourseModuleResponse } from '../../../common/responses/course-module.response';
 import { LessonMapper } from '../../lesson/mappers/lesson.mapper';
 import { BaseCourseModuleResponse } from '../../../common/responses/base-course-module.response';
-import { ModuleMappingOptions } from '../../course/interfaces/mapping-options.interfaces';
+import { ModuleMappingOptions } from '../interfaces/module-mapping-options.interface';
 
 @Injectable()
 export class CourseModuleMapper {

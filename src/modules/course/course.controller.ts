@@ -129,6 +129,41 @@ export class CourseController {
   }
 
   @ApiEndpoint({
+    summary: 'Get course lesson info (for enrolled student and teacher)',
+    documentation: CourseDocumentation.GET_LESSON,
+    policies: CoursePolicies.ACCESS_CONTENT,
+  })
+  @Get('/:courseId/lessons/:lessonId')
+  async getLesson (
+    @Param('courseId') courseId: string,
+    @Param('lessonId') lessonId: string,
+    @User() user: DbUser,
+  ) {
+    const lesson = await this.courseService.getLesson(courseId, lessonId);
+    const context = await this.courseService.getLessonUserContext(user, lesson);
+
+    if (!context.isStudent) {
+      return this.lessonMapper.toLessonTeacherResponse(lesson);
+    }
+
+    return this.lessonMapper.toLessonStudentResponse(lesson, context);
+  }
+
+  @ApiEndpoint({
+    summary: 'Delete a course lesson',
+    documentation: CourseDocumentation.DELETE_LESSON,
+    policies: CoursePolicies.LESSON_DELETE,
+  })
+  @Delete('/:courseId/lessons/:lessonId')
+  async deleteLesson (
+    @Param('courseId', CourseByIdPipe) courseId: string,
+    @Param('lessonId', LessonByIdPipe) lessonId: string,
+  ) {
+    const lesson = await this.courseService.deleteLesson(courseId, lessonId);
+    return this.lessonMapper.toLessonResponse(lesson, { links: true });
+  }
+
+  @ApiEndpoint({
     summary: 'Upload a video to a lesson of type VIDEO',
     documentation: CourseDocumentation.UPLOAD_VIDEO,
     policies: CoursePolicies.VIDEO_UPLOAD,

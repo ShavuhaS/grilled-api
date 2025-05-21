@@ -8,8 +8,8 @@ import { DbUserCourse } from './user-course.entity';
 import { DbCourseQuestion } from './course-question.entity';
 import { DbCourseQuestionReply } from './course-question-reply.entity';
 import { DbCompletedLesson } from './completed-lesson.entity';
-import { DbTestResult } from './test-result.entity';
-import { DbUserQuestionAnswer } from './user-question-answer.entity';
+import { DbTestAttempt } from './test-attempt.entity';
+import { DbTestAttemptAnswer } from './test-attempt-answer.entity';
 
 export class DbUser {
   id: string;
@@ -34,6 +34,5 @@ export class DbUser {
   courseQuestions?: DbCourseQuestion[];
   courseQuestionReplies?: DbCourseQuestionReply[];
   completedLessons?: DbCompletedLesson[];
-  testResults?: DbTestResult[];
-  testQuestionAnswers?: DbUserQuestionAnswer[];
+  testAttempts?: DbTestAttempt[];
 }

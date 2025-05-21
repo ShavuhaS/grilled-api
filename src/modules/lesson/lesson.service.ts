@@ -16,8 +16,11 @@ import { CourseEvent } from '../../common/enums/course-event.enum';
 import { InvalidEntityTypeException } from '../../common/exceptions/invalid-entity-type.exception';
 import { MediaService } from '../media/media.service';
 import { seconds } from '../../common/utils/time.constants';
-import { LessonCreatedEvent } from '../../common/events/lesson-created.event';
+import { DurationUpdatedEvent } from '../../common/events/duration-updated.event';
 import { ResourceDeletedEvent } from '../../common/events/resource-deleted.event';
+import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity-id.exception';
+import { LessonUserContext } from '../course/types/lesson-user-context.type';
+import { TestResults } from '../test/types/test-results.type';
 
 const storageResourceTypes = [
   ResourceTypeEnum.MARKDOWN,
@@ -41,6 +44,52 @@ export class LessonService {
       [LessonTypeEnum.ARTICLE]: this.createArticle.bind(this),
       [LessonTypeEnum.TEST]: testService.create.bind(testService),
     } as const;
+  }
+
+  async getById (id: string, signResources = false): Promise<DbCourseLesson> {
+    const lesson = await this.lessonRepository.findById(id, {
+      resources: true,
+      test: {
+        include: {
+          questions: {
+            include: {
+              answers: true,
+            },
+          },
+        },
+      },
+    });
+
+    if (signResources) {
+      await this.signLessonResources(lesson);
+    }
+
+    return lesson;
+  }
+
+  async getUserContext (userId: string, lessonId: string): Promise<LessonUserContext> {
+    const lesson = await this.lessonRepository.findById(
+      lessonId,
+      { test: true },
+    );
+
+    if (!lesson) {
+      throw new InvalidEntityIdException('Lesson');
+    }
+
+    const completedLesson = await this.lessonRepository.findOne({
+      id: lessonId,
+      completedBy: { some: { userId } },
+    });
+
+    const completed = !!completedLesson;
+
+    let testResults: TestResults;
+    if (lesson?.type === LessonTypeEnum.TEST) {
+      testResults = await this.testService.getUserResults(lesson.test.id, userId);
+    }
+
+    return { isStudent: true, completed, testResults };
   }
 
   async getCompletedBy (
@@ -69,7 +118,15 @@ export class LessonService {
       dbLesson = await createResource(dbLesson, { courseId, lesson });
     }
 
-    this.eventEmitter.emit(CourseEvent.LESSON_CREATED, new LessonCreatedEvent(dbLesson));
+    this.eventEmitter.emit(
+      CourseEvent.DURATION_UPDATED,
+      new DurationUpdatedEvent(
+        dbLesson.id,
+        moduleId,
+        courseId,
+        dbLesson.estimatedTime,
+      ),
+    );
 
     return dbLesson;
   }
@@ -140,15 +197,51 @@ export class LessonService {
     return dbLesson;
   }
 
+  async delete (id: string): Promise<DbCourseLesson> {
+    const lesson = await this.lessonRepository.findById(id, {
+      resources: true,
+      module: true,
+    });
+
+    if (!lesson) {
+      throw new InvalidEntityIdException('Lesson');
+    }
+
+    await this.lessonRepository.delete({ id });
+
+    await this.lessonRepository.updateMany(
+      {
+        moduleId: lesson.moduleId,
+        order: { gt: lesson.order },
+      },
+      { order: { decrement: 1 } },
+    );
+
+    for (const { link, type } of lesson.resources) {
+      this.eventEmitter.emit(
+        CourseEvent.RESOURCE_DELETED,
+        new ResourceDeletedEvent(link, type),
+      );
+    }
+
+    this.eventEmitter.emit(
+      CourseEvent.DURATION_UPDATED,
+      new DurationUpdatedEvent(
+        id,
+        lesson.moduleId,
+        lesson.module.courseId,
+        -lesson.estimatedTime,
+      ),
+    );
+
+    return lesson;
+  }
+
   async uploadVideo (
-    courseId: string,
     lessonId: string,
     file: Express.Multer.File,
   ): Promise<DbCourseLesson> {
-    const lesson = await this.lessonRepository.find(
-      { id: lessonId },
-      { resources: true },
-    );
+    const lesson = await this.lessonRepository.findById(lessonId, { resources: true });
 
     if (lesson.type !== LessonTypeEnum.VIDEO) {
       throw new InvalidEntityTypeException('Lesson');
@@ -185,7 +278,7 @@ export class LessonService {
     const updatedLesson = await this.lessonRepository.update(
       { id: lessonId },
       { resources: resourceAction, estimatedTime: duration },
-      { resources: true },
+      { resources: true, module: true },
     );
 
     if (oldVideo) {
@@ -194,6 +287,16 @@ export class LessonService {
         new ResourceDeletedEvent(oldVideo.link, oldVideo.type),
       );
     }
+
+    this.eventEmitter.emit(
+      CourseEvent.DURATION_UPDATED,
+      new DurationUpdatedEvent(
+        lessonId,
+        updatedLesson.moduleId,
+        updatedLesson.module.courseId,
+        updatedLesson.estimatedTime - (lesson.estimatedTime ?? 0),
+      ),
+    );
 
     return this.signLessonResources(updatedLesson);
   }
@@ -234,11 +337,11 @@ export class LessonService {
       return;
     }
 
-    const lessons = await this.lessonRepository.findMany({
+    const otherLesson = await this.lessonRepository.findOne({
       resources: { some: { type: resourceType, link: storagePath } },
     });
 
-    if (lessons.length === 0) {
+    if (!otherLesson) {
       await this.storageService.deleteFile(storagePath);
     }
   }

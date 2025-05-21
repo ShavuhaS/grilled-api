@@ -4,13 +4,19 @@ import { BaseLessonResponse } from '../../../common/responses/base-lesson.respon
 import { LessonResponse } from '../../../common/responses/lesson.response';
 import { ResourceTypeEnum } from '../../../common/enums/resource-type.enum';
 import { LessonResourceMapper } from './lesson-resource.mapper';
-import { LessonMappingOptions } from '../../course/interfaces/mapping-options.interfaces';
+import { LessonMappingOptions } from '../interfaces/lesson-mapping-options.interface';
 import { LessonTeacherResponse } from '../../../common/responses/lesson-teacher.response';
 import { LessonTypeEnum } from '../../../common/enums/lesson-type.enum';
 import { VideoLessonTeacherResponse } from '../../../common/responses/video-lesson-teacher.response';
 import { ArticleLessonTeacherResponse } from '../../../common/responses/article-lesson-teacher.response';
 import { TestLessonTeacherResponse } from '../../../common/responses/test-lesson-teacher.response';
 import { TestMapper } from '../../test/mappers/test.mapper';
+import { LessonStudentResponse } from '../../../common/responses/lesson-student.response';
+import { LessonUserContext } from '../../course/types/lesson-user-context.type';
+import { ArticleLessonStudentResponse } from '../../../common/responses/article-lesson-student.response';
+import { VideoLessonStudentResponse } from '../../../common/responses/video-lesson-student.response';
+import { TestLessonStudentResponse } from '../../../common/responses/test-lesson-student.response';
+import { TestResults } from '../../test/types/test-results.type';
 
 @Injectable()
 export class LessonMapper {
@@ -70,7 +76,7 @@ export class LessonMapper {
 
     return {
       ...this.toLessonResponse(lesson, { links: true }),
-      articleLink: article?.link,
+      articleLink: article?.link ?? null,
     } as ArticleLessonTeacherResponse;
   }
 
@@ -83,7 +89,7 @@ export class LessonMapper {
 
     return {
       ...this.toLessonResponse(lesson, { links: true }),
-      videoLink: video?.link,
+      videoLink: video?.link ?? null,
     } as VideoLessonTeacherResponse;
   }
 
@@ -92,7 +98,64 @@ export class LessonMapper {
   ): TestLessonTeacherResponse {
     return {
       ...this.toLessonResponse(lesson, { links: true }),
-      test: this.testMapper.toTestTeacherResponse(lesson.test),
+      test: lesson.test && this.testMapper.toTestTeacherResponse(lesson.test),
     } as TestLessonTeacherResponse;
+  }
+
+  toLessonStudentResponse (
+    lesson: DbCourseLesson,
+    context: LessonUserContext,
+  ): LessonStudentResponse {
+    if (!context.isStudent) return null;
+
+    switch (lesson.type) {
+      case LessonTypeEnum.ARTICLE:
+        return this.toArticleLessonStudentResponse(lesson, context.completed);
+      case LessonTypeEnum.VIDEO:
+        return this.toVideoLessonStudentResponse(lesson, context.completed);
+      case LessonTypeEnum.TEST:
+        return this.toTestLessonStudentResponse(lesson, context.completed, context.testResults);
+      default:
+        return null;
+    }
+  }
+
+  toArticleLessonStudentResponse (
+    lesson: DbCourseLesson,
+    completed: boolean,
+  ): ArticleLessonStudentResponse {
+    const article = lesson.resources?.find(
+      ({ type }) => type === ResourceTypeEnum.MARKDOWN,
+    );
+
+    return {
+      ...this.toLessonResponse(lesson, { links: true, completed }),
+      articleLink: article?.link ?? null,
+    } as ArticleLessonStudentResponse;
+  }
+
+  toVideoLessonStudentResponse (
+    lesson: DbCourseLesson,
+    completed: boolean,
+  ): VideoLessonStudentResponse {
+    const video = lesson.resources?.find(
+      ({ type }) => type === ResourceTypeEnum.VIDEO,
+    );
+
+    return {
+      ...this.toLessonResponse(lesson, { links: true, completed }),
+      videoLink: video?.link ?? null,
+    } as VideoLessonStudentResponse;
+  }
+
+  toTestLessonStudentResponse (
+    lesson: DbCourseLesson,
+    completed: boolean,
+    testResults: TestResults,
+  ): TestLessonStudentResponse {
+    return {
+      ...this.toLessonResponse(lesson, { links: true, completed }),
+      testResults,
+    } as TestLessonStudentResponse;
   }
 }

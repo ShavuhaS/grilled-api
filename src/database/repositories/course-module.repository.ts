@@ -2,12 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { DbCourseModule } from '../entities/course-module.entity';
+import { Repository } from '../interfaces/repository.interface';
 
 @Injectable()
-export class CourseModuleRepository {
+export class CourseModuleRepository implements Repository<DbCourseModule> {
   constructor (private prisma: PrismaService) {}
 
-  async findOne (
+  async find (
     where: Prisma.CourseModuleWhereUniqueInput,
     include?: Prisma.CourseModuleInclude,
   ): Promise<DbCourseModule> {
@@ -17,7 +18,7 @@ export class CourseModuleRepository {
     }) as Promise<DbCourseModule>;
   }
 
-  async findFirst (
+  async findOne (
     where: Prisma.CourseModuleWhereInput,
     include?: Prisma.CourseModuleInclude,
   ): Promise<DbCourseModule> {
@@ -31,7 +32,7 @@ export class CourseModuleRepository {
     id: string,
     include?: Prisma.CourseModuleInclude,
   ): Promise<DbCourseModule> {
-    return this.findOne({ id }, include);
+    return this.find({ id }, include);
   }
 
   async findMany (

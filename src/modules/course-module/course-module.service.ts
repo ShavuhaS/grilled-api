@@ -5,7 +5,7 @@ import { CourseModuleRepository } from '../../database/repositories/course-modul
 import { OnEvent } from '@nestjs/event-emitter';
 import { CourseEvent } from '../../common/enums/course-event.enum';
 import { DbCourseLesson } from '../../database/entities/course-lesson.entity';
-import { LessonCreatedEvent } from '../../common/events/lesson-created.event';
+import { DurationUpdatedEvent } from '../../common/events/duration-updated.event';
 
 @Injectable()
 export class CourseModuleService {
@@ -65,24 +65,22 @@ export class CourseModuleService {
     return module;
   }
 
-  @OnEvent(CourseEvent.LESSON_CREATED)
-  private async updateEstimatedTime ({ lesson }: LessonCreatedEvent) {
-    if (!lesson.estimatedTime) {
+  @OnEvent(CourseEvent.DURATION_UPDATED)
+  private async updateEstimatedTime ({ moduleId, durationDelta }: DurationUpdatedEvent) {
+    if (!durationDelta) {
       return;
     }
 
-    const module = await this.moduleRepository.findFirst({
-      lessons: { some: { id: lesson.id } },
-    });
+    const module = await this.moduleRepository.findById(moduleId);
 
     if (!module) {
-      console.error(`Module with lesson ${lesson.id} was not found`);
+      console.error(`Module with id ${moduleId} was not found`);
       return;
     }
 
     await this.moduleRepository.update(
       { id: module.id },
-      { estimatedTime: { increment: lesson.estimatedTime } },
+      { estimatedTime: { increment: durationDelta } },
     );
   }
 }

@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { DbCourse } from '../entities/course.entity';
+import { Repository } from '../interfaces/repository.interface';
 
 @Injectable()
-export class CourseRepository {
+export class CourseRepository implements Repository<DbCourse> {
   private include: Prisma.CourseInclude = {
     author: {
       include: {
@@ -46,6 +47,16 @@ export class CourseRepository {
         ...include,
       },
     }) as Promise<DbCourse>;
+  }
+
+  async findMany (
+    where: Prisma.CourseWhereInput,
+    include?: Prisma.CourseInclude,
+  ): Promise<DbCourse[]> {
+    return this.prisma.course.findMany({
+      where,
+      include,
+    }) as Promise<DbCourse[]>;
   }
 
   async update (

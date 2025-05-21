@@ -40,7 +40,10 @@ export const UploadVideoDocumentation: ApiDocumentationParams = {
       Invalid Lesson type
       
     CourseLessonDisconnectionException:
-      Course with such id has no lesson with such id`,
+      Course with such id has no lesson with such id
+      
+    NoFileException:
+      No file provided`,
   },
   unauthorized: DefaultUnauthorizedResponse,
   forbidden: DefaultForbiddenResponse,
