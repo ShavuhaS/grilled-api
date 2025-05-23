@@ -27,7 +27,7 @@ export const UploadVideoDocumentation: ApiDocumentationParams = {
     Allowed extensions: .mp4, .mov, .mkv, .webm, .avi
     Max size: 1GB`,
   },
-  created: {
+  ok: {
     type: VideoLessonTeacherResponse,
   },
   badRequest: {

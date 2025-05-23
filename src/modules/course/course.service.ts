@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { CourseRepository } from '../../database/repositories/course.repository';
 import { CreateCourseDto } from '../../common/dtos/create-course.dto';
 import { DbCourse } from '../../database/entities/course.entity';
@@ -10,15 +11,14 @@ import { CourseMappingOptions } from './interfaces/course-mapping-options.interf
 import { CourseProgress } from './interfaces/course-progress.interface';
 import { ModuleProgress } from '../course-module/interfaces/module-progress.interface';
 import { LessonService } from '../lesson/lesson.service';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CourseEvent } from '../../common/enums/course-event.enum';
 import { CourseModuleService } from '../course-module/course-module.service';
 import { CourseLessonDisconnectionException } from '../../common/exceptions/course-lesson-disconnection.exception';
-import { FILE_PROCESSED_EVENT } from '../upload/events/file-processed.event';
-import { FileProcessedEvent } from '../../common/events/file-processed.event';
 import { DurationUpdatedEvent } from '../../common/events/duration-updated.event';
 import { LessonUserContext } from './types/lesson-user-context.type';
 import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity-id.exception';
+import { UpdateArticleDto } from '../../common/dtos/update-article.dto';
+import { IUpdateLessonDto } from '../../common/dtos/update-lesson.dto';
 
 @Injectable()
 export class CourseService {
@@ -26,7 +26,6 @@ export class CourseService {
     private courseRepository: CourseRepository,
     private moduleService: CourseModuleService,
     private lessonService: LessonService,
-    private eventEmitter: EventEmitter2,
   ) {}
 
   async getById (id: string, signResources = false): Promise<DbCourse> {
@@ -220,13 +219,29 @@ export class CourseService {
     lessonId: string,
     file: Express.Multer.File,
   ): Promise<DbCourseLesson> {
-    try {
-      await this.checkLessonConnected(courseId, lessonId);
+    await this.checkLessonConnected(courseId, lessonId);
 
-      return await this.lessonService.uploadVideo(lessonId, file);
-    } finally {
-      this.eventEmitter.emit(FILE_PROCESSED_EVENT, new FileProcessedEvent(file.path));
-    }
+    return await this.lessonService.uploadVideo(lessonId, file);
+  }
+
+  async updateArticle (
+    courseId: string,
+    lessonId: string,
+    body: UpdateArticleDto,
+  ): Promise<DbCourseLesson> {
+    await this.checkLessonConnected(courseId, lessonId);
+
+    return this.lessonService.updateArticle(lessonId, body.text);
+  }
+
+  async updateLesson (
+    courseId: string,
+    lessonId: string,
+    body: IUpdateLessonDto,
+  ): Promise<DbCourseLesson> {
+    await this.checkLessonConnected(courseId, lessonId);
+
+    return this.lessonService.update(lessonId, body);
   }
 
   @OnEvent(CourseEvent.DURATION_UPDATED)

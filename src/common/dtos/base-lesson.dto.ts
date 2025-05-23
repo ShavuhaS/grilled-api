@@ -41,5 +41,8 @@ export class BaseLessonDto {
   @ValidateNested({ each: true })
     links?: LessonLinkDto[];
 
-  estimatedTime?: number;
+  @IsInt({ message: 'Estimated time must be an integer' })
+  @Min(1, { message: 'Estimated time must be positive' })
+  @Max(180, { message: 'Estimated time can not be longer than 3 hours' })
+    estimatedTime?: number;
 }

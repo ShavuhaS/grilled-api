@@ -1,7 +1,7 @@
 import {
   ArgumentsHost,
   Catch,
-  ExceptionFilter,
+  ExceptionFilter, ExecutionContext,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
@@ -9,14 +9,19 @@ import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Request, Response } from 'express';
 import * as process from 'node:process';
 import { nonEmptyObject, formattedJson } from '../utils/object.utils';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { FILE_PROCESSED_EVENT } from '../../modules/upload/events/file-processed.event';
+import { FileProcessedEvent } from '../events/file-processed.event';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  constructor () {}
+  constructor (private eventEmitter: EventEmitter2) {}
 
   async catch (exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
+
+    this.handleDanglingFiles(ctx);
 
     let status: number, message: object;
     const errorName = exception.constructor.name;
@@ -49,6 +54,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
       const errMsg = this.getErrorMsg(exception, ctx);
       console.error(errMsg);
+    }
+  }
+
+  private handleDanglingFiles (ctx: HttpArgumentsHost) {
+    const req = ctx.getRequest<Request>();
+
+    if (req.file) {
+      this.eventEmitter.emit(FILE_PROCESSED_EVENT, new FileProcessedEvent(req.file.path));
+    }
+
+    if (Array.isArray(req.files)) {
+      for (const file of req.files) {
+        this.eventEmitter.emit(FILE_PROCESSED_EVENT, new FileProcessedEvent(file.path));
+      }
     }
   }
 

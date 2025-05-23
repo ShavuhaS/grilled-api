@@ -2,8 +2,7 @@ import { BaseLessonDto } from './base-lesson.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsInt,
-  IsNotEmpty,
-  IsOptional,
+  IsNotEmpty, IsOptional,
   IsString,
   Max,
   MaxLength,
@@ -30,8 +29,9 @@ export class ArticleLessonDto extends BaseLessonDto {
 
   @ApiProperty({
     description:
-      'Estimated time in minutes to complete the lesson (required if lesson type is not VIDEO)',
+      'Estimated time in minutes to complete the lesson (required if lesson type is ARTICLE)',
   })
+  @IsNotEmpty({ message: 'Article must not be empty' })
   @IsInt({ message: 'Estimated time must be an integer' })
   @Min(1, { message: 'Estimated time must be positive' })
   @Max(180, { message: 'Estimated time can not be longer than 3 hours' })

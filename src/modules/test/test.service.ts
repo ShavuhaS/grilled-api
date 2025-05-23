@@ -17,6 +17,7 @@ import { ValidateQuestionFunction } from '../course/types/validate-question.type
 import { CreateTestQuestionFunction } from '../course/types/create-question.types';
 import { TestResults } from './types/test-results.type';
 import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity-id.exception';
+import { DbLessonTest } from '../../database/entities/lesson-test.entity';
 
 @Injectable()
 export class TestService {
@@ -63,16 +64,20 @@ export class TestService {
     };
   }
 
+  async createEmpty (lessonId: string): Promise<DbLessonTest> {
+    return this.testRepository.create({
+      lesson: { connect: { id: lessonId } },
+      questionCount: 0,
+    });
+  }
+
   async create (
     dbLesson: DbCourseLesson,
     { lesson }: CreateResourceContext,
   ): Promise<DbCourseLesson> {
     const { questions } = lesson as TestLessonDto;
 
-    const test = await this.testRepository.create({
-      lesson: { connect: { id: dbLesson.id } },
-      questionCount: questions.length,
-    });
+    const test = await this.createEmpty(dbLesson.id);
 
     const dbQuestions: DbTestQuestion[] = [];
     for (const question of questions) {
@@ -83,8 +88,13 @@ export class TestService {
       }
     }
 
-    test.questions = dbQuestions;
-    dbLesson.test = test;
+    const updatedTest = await this.testRepository.updateById(
+      test.id,
+      { questionCount: dbQuestions.length },
+    );
+
+    updatedTest.questions = dbQuestions;
+    dbLesson.test = updatedTest;
 
     return dbLesson;
   }

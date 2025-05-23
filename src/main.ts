@@ -12,6 +12,7 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './modules/app.module';
 import { validationExceptionFactory } from './common/utils/validation-exception.factory';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 async function bootstrap () {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -31,7 +32,7 @@ async function bootstrap () {
       exceptionFactory: validationExceptionFactory(),
     }),
   );
-  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalFilters(new HttpExceptionFilter(app.get(EventEmitter2)));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.enableVersioning({
     type: VersioningType.URI,

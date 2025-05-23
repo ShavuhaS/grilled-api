@@ -37,4 +37,6 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
+# Google
 *-firebase-adminsdk-*.json
+cors.json

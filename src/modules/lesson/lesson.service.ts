@@ -21,6 +21,8 @@ import { ResourceDeletedEvent } from '../../common/events/resource-deleted.event
 import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity-id.exception';
 import { LessonUserContext } from '../course/types/lesson-user-context.type';
 import { TestResults } from '../test/types/test-results.type';
+import { IUpdateLessonDto } from '../../common/dtos/update-lesson.dto';
+import { nonEmptyObject } from '../../common/utils/object.utils';
 
 const storageResourceTypes = [
   ResourceTypeEnum.MARKDOWN,
@@ -32,6 +34,12 @@ export class LessonService {
   private readonly createResourceMap: Partial<
     Record<LessonTypeEnum, CreateResourceFunction>
   >;
+  private readonly lessonToResourceMap: Partial<
+    Record<LessonTypeEnum, ResourceTypeEnum>
+  > = {
+      [LessonTypeEnum.VIDEO]: ResourceTypeEnum.VIDEO,
+      [LessonTypeEnum.ARTICLE]: ResourceTypeEnum.MARKDOWN,
+    };
 
   constructor (
     private lessonRepository: CourseLessonRepository,
@@ -237,10 +245,7 @@ export class LessonService {
     return lesson;
   }
 
-  async uploadVideo (
-    lessonId: string,
-    file: Express.Multer.File,
-  ): Promise<DbCourseLesson> {
+  async uploadVideo (lessonId: string, file: Express.Multer.File): Promise<DbCourseLesson> {
     const lesson = await this.lessonRepository.findById(lessonId, { resources: true });
 
     if (lesson.type !== LessonTypeEnum.VIDEO) {
@@ -248,45 +253,16 @@ export class LessonService {
     }
 
     const { storagePath } = await this.storageService.uploadVideo(file);
+    await this.updateStorageResource(lesson, ResourceTypeEnum.VIDEO, storagePath);
 
     const durationInSeconds = await this.mediaService.getVideoDuration(file);
     const duration = Math.ceil(durationInSeconds / seconds.MINUTE);
 
-    const oldVideo = lesson.resources?.find(
-      (res) => res.type === ResourceTypeEnum.VIDEO
-    );
-
-    const resourceAction =
-      oldVideo === undefined
-        ? {
-          create: {
-            type: ResourceTypeEnum.VIDEO,
-            link: storagePath,
-          },
-        }
-        : {
-          update: {
-            where: {
-              id: oldVideo.id,
-            },
-            data: {
-              link: storagePath,
-            },
-          },
-        };
-
-    const updatedLesson = await this.lessonRepository.update(
-      { id: lessonId },
-      { resources: resourceAction, estimatedTime: duration },
+    const updatedLesson = await this.lessonRepository.updateById(
+      lessonId,
+      { estimatedTime: duration },
       { resources: true, module: true },
     );
-
-    if (oldVideo) {
-      this.eventEmitter.emit(
-        CourseEvent.RESOURCE_DELETED,
-        new ResourceDeletedEvent(oldVideo.link, oldVideo.type),
-      );
-    }
 
     this.eventEmitter.emit(
       CourseEvent.DURATION_UPDATED,
@@ -299,6 +275,157 @@ export class LessonService {
     );
 
     return this.signLessonResources(updatedLesson);
+  }
+
+  async updateArticle (lessonId: string, text: string): Promise<DbCourseLesson> {
+    const lesson = await this.lessonRepository.findById(lessonId, { resources: true });
+
+    if (lesson.type !== LessonTypeEnum.ARTICLE) {
+      throw new InvalidEntityTypeException('Lesson');
+    }
+
+    const { storagePath } = await this.storageService.uploadArticle(text);
+    await this.updateStorageResource(lesson, ResourceTypeEnum.MARKDOWN, storagePath);
+
+    const updatedLesson = await this.lessonRepository.findById(lessonId, { resources: true });
+    return this.signLessonResources(updatedLesson);
+  }
+
+  async update (id: string, dto: IUpdateLessonDto): Promise<DbCourseLesson> {
+    dto = nonEmptyObject(dto);
+    if (!dto) {
+      return this.getById(id, true);
+    }
+
+    const lesson = await this.lessonRepository.findById(id, {
+      resources: true,
+      module: true,
+    });
+
+    if (!lesson) {
+      throw new InvalidEntityIdException('Lesson');
+    }
+
+    if (dto.type && lesson.type !== dto.type) {
+      if (dto.type === LessonTypeEnum.VIDEO) {
+        dto.estimatedTime = null;
+      }
+
+      if (lesson.type in this.lessonToResourceMap) {
+        await this.deleteResources(lesson, this.lessonToResourceMap[lesson.type]);
+      }
+
+      if (dto.type === LessonTypeEnum.TEST) {
+        await this.testService.createEmpty(lesson.id);
+      }
+    }
+
+    if (dto.order) {
+      await this.updateOrder(lesson, dto.order);
+      delete dto.order;
+    }
+
+    await this.lessonRepository.updateById(id, { ...dto });
+
+    if (dto.estimatedTime !== undefined) {
+      const durationDelta = dto.estimatedTime - lesson.estimatedTime;
+      if (durationDelta !== 0) {
+        this.eventEmitter.emit(
+          CourseEvent.DURATION_UPDATED,
+          new DurationUpdatedEvent(
+            id,
+            lesson.moduleId,
+            lesson.module.courseId,
+            durationDelta,
+          ),
+        );
+      }
+    }
+
+    return this.getById(id, true);
+  }
+
+  private async updateOrder ({ id, moduleId, order }: DbCourseLesson, newOrder: number) {
+    if (order === newOrder) return;
+
+    const lessonCount = await this.lessonRepository.count({ moduleId });
+    newOrder = Math.min(newOrder, lessonCount);
+    newOrder = Math.max(newOrder, 1);
+
+    let orderFilter, increment;
+    if (newOrder > order) {
+      orderFilter = { gt: order, lte: newOrder };
+      increment = -1;
+    } else {
+      orderFilter = { gte: newOrder, lt: order };
+      increment = 1;
+    }
+
+    await this.lessonRepository.updateMany(
+      { moduleId, order: orderFilter },
+      { order: { increment } },
+    );
+
+    await this.lessonRepository.updateById(id, { order: newOrder });
+  }
+
+  private async deleteResources (
+    { id, resources }: DbCourseLesson,
+    type: ResourceTypeEnum,
+  ) {
+    const typeResources = resources?.filter((res) => res.type === type);
+    const resourceIds = typeResources?.map(({ id }) => id) ?? [];
+
+    await this.lessonRepository.updateById(id, {
+      resources: {
+        deleteMany: {
+          id: { in: resourceIds },
+        },
+      },
+    });
+
+    for (const { link, type } of typeResources) {
+      this.eventEmitter.emit(
+        CourseEvent.RESOURCE_DELETED,
+        new ResourceDeletedEvent(link, type),
+      );
+    }
+  }
+
+  private async updateStorageResource (
+    { id, resources }: DbCourseLesson,
+    type: ResourceTypeEnum,
+    storagePath: string,
+  ) {
+    const oldResource = resources?.find((res) => res.type === type);
+
+    const resourceAction =
+      oldResource === undefined
+        ? {
+          create: {
+            type,
+            link: storagePath,
+          },
+        }
+        : {
+          update: {
+            where: {
+              id: oldResource.id,
+            },
+            data: {
+              link: storagePath,
+            },
+          },
+        };
+
+    await this.lessonRepository.updateById(id, { resources: resourceAction });
+
+    if (oldResource) {
+      this.eventEmitter.emit(
+        CourseEvent.RESOURCE_DELETED,
+        new ResourceDeletedEvent(oldResource.link, oldResource.type),
+      );
+    }
   }
 
   async signLessonResources (lesson: DbCourseLesson): Promise<DbCourseLesson> {

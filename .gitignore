@@ -42,3 +42,4 @@ lerna-debug.log*
 /.production.env
 
 *-firebase-adminsdk-*.json
+cors.json

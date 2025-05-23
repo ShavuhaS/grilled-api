@@ -5,9 +5,7 @@ import * as crypto from 'node:crypto';
 import { join, extname } from 'node:path';
 import { tmpdir } from 'os';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { FILE_PROCESSED_EVENT } from '../upload/events/file-processed.event';
 import { MediaConfigService } from '../../config/services/media-config.service';
-import { FileProcessedEvent } from '../../common/events/file-processed.event';
 
 @Injectable()
 export class MediaService {
@@ -29,12 +27,9 @@ export class MediaService {
       const fileName = `${crypto.randomUUID()}${extension}`;
       const filePath = join(tmpdir(), fileName);
 
-      try {
-        await fs.writeFile(filePath, video.buffer);
-        return await this.getVideoDurationFromFile(filePath);
-      } finally {
-        this.eventEmitter.emit(FILE_PROCESSED_EVENT, new FileProcessedEvent(filePath));
-      }
+      await fs.writeFile(filePath, video.buffer);
+
+      return await this.getVideoDurationFromFile(filePath);
     }
 
     return this.getVideoDurationFromFile(video.path);

@@ -33,6 +33,8 @@ import { LessonMapper } from '../lesson/mappers/lesson.mapper';
 import { CourseModuleService } from '../course-module/course-module.service';
 import { LessonByIdPipe } from '../../common/pipes/lesson-by-id.pipe';
 import { VideoValidationPipe } from '../../common/pipes/video-validation.pipe';
+import { UpdateArticleDto } from '../../common/dtos/update-article.dto';
+import { UpdateLessonDto } from '../../common/dtos/update-lesson.dto';
 
 @ApiTags('Courses')
 @ApiExtraModels(...CourseExtraModels)
@@ -177,6 +179,36 @@ export class CourseController {
   ) {
     const lesson = await this.courseService.uploadVideo(courseId, lessonId, file);
     return this.lessonMapper.toVideoLessonTeacherResponse(lesson);
+  }
+
+  @ApiEndpoint({
+    summary: 'Update content on a lesson of type ARTICLE',
+    documentation: CourseDocumentation.UPDATE_ARTICLE,
+    policies: CoursePolicies.ARTICLE_UPDATE,
+  })
+  @Patch('/:courseId/lessons/:lessonId/article')
+  async updateArticle (
+    @Param('courseId', CourseByIdPipe) courseId: string,
+    @Param('lessonId', LessonByIdPipe) lessonId: string,
+    @Body() body: UpdateArticleDto,
+  ) {
+    const lesson = await this.courseService.updateArticle(courseId, lessonId, body);
+    return this.lessonMapper.toArticleLessonTeacherResponse(lesson);
+  }
+
+  @ApiEndpoint({
+    summary: 'Update lesson info',
+    documentation: CourseDocumentation.UPDATE_LESSON,
+    policies: CoursePolicies.UPDATE_LESSON,
+  })
+  @Patch('/:courseId/lessons/:lessonId')
+  async updateLesson (
+    @Param('courseId', CourseByIdPipe) courseId: string,
+    @Param('lessonId', LessonByIdPipe) lessonId: string,
+    @Body() body: UpdateLessonDto,
+  ) {
+    const lesson = await this.courseService.updateLesson(courseId, lessonId, body);
+    return this.lessonMapper.toLessonTeacherResponse(lesson);
   }
 
   @ApiEndpoint({

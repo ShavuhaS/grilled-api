@@ -70,6 +70,14 @@ export class CourseLessonRepository implements Repository<DbCourseLesson> {
     }) as Promise<DbCourseLesson>;
   }
 
+  async updateById (
+    id: string,
+    data: Prisma.CourseLessonUpdateInput,
+    include?: Prisma.CourseLessonInclude,
+  ): Promise<DbCourseLesson> {
+    return this.update({ id }, data, include);
+  }
+
   async updateMany (
     where: Prisma.CourseLessonWhereInput,
     data: Prisma.CourseLessonUpdateInput,

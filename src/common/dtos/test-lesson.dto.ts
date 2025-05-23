@@ -44,9 +44,6 @@ export class TestLessonDto extends BaseLessonDto {
       'Estimated time in minutes to complete the lesson (required if lesson type is ARTICLE)',
   })
   @IsOptional()
-  @IsInt({ message: 'Estimated time must be an integer' })
-  @Min(1, { message: 'Estimated time must be positive' })
-  @Max(180, { message: 'Estimated time can not be longer than 3 hours' })
     estimatedTime?: number;
 
   @ApiProperty({

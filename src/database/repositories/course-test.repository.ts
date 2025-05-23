@@ -37,4 +37,25 @@ export class CourseTestRepository implements Repository<DbLessonTest> {
       data,
     }) as Promise<DbLessonTest>;
   }
+
+  async update (
+    where: Prisma.LessonTestWhereUniqueInput,
+    data: Prisma.LessonTestUpdateInput,
+    include?: Prisma.LessonTestInclude,
+  ): Promise<DbLessonTest> {
+    return this.prisma.lessonTest.update({
+      where,
+      data,
+      include,
+    }) as Promise<DbLessonTest>;
+  }
+
+  async updateById (
+    id: string,
+    data: Prisma.LessonTestUpdateInput,
+    include?: Prisma.LessonTestInclude,
+  ): Promise<DbLessonTest> {
+    return this.update({ id }, data, include);
+  }
+
 }

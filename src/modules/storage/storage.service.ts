@@ -6,7 +6,6 @@ import * as crypto from 'node:crypto';
 import * as fs from 'fs';
 import { StorageConfigService } from '../../config/services/storage-config.service';
 import { getDateString } from '../../common/utils/date.utils';
-import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class StorageService {
@@ -14,7 +13,6 @@ export class StorageService {
 
   constructor (
     private storageConfig: StorageConfigService,
-    private eventEmitter: EventEmitter2,
   ) {
     const app = initializeApp({
       credential: cert(storageConfig.credential),
