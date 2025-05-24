@@ -220,6 +220,12 @@ export class AuthService {
     });
   }
 
+  clearAccessTokenCookie (res: Response) {
+    res.clearCookie(ACCESS_TOKEN_COOKIE, {
+      domain: this.urlConfig.domain,
+    });
+  }
+
   setRefreshTokenCookie (res: Response, refreshToken: string) {
     res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {
       domain: this.urlConfig.domain,
@@ -228,6 +234,13 @@ export class AuthService {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+    });
+  }
+
+  clearRefreshTokenCookie (res: Response) {
+    res.clearCookie(REFRESH_TOKEN_COOKIE, {
+      domain: this.urlConfig.domain,
+      path: '/v1/auth',
     });
   }
 }

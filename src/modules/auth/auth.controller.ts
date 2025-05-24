@@ -20,6 +20,8 @@ import { AccessTokenResponse } from '../../common/responses/access-token.respons
 import { TokensResponse } from '../../common/responses/tokens.response';
 import { UserService } from '../user/user.service';
 import { UserMapper } from '../user/mappers/user.mapper';
+import { User } from '../../common/decorators/user.decorator';
+import { DbUser } from '../../database/entities/user.entity';
 
 @ApiTags('Auth')
 @Controller({
@@ -76,13 +78,24 @@ export class AuthController {
   })
   @Post('/login')
   async login (
-    @Request() req,
+    @User() user: DbUser,
     @Res({ passthrough: true }) res: Response,
   ): Promise<TokensResponse> {
-    const { accessToken, refreshToken } = this.authService.login(req.user);
+    const { accessToken, refreshToken } = this.authService.login(user);
     this.authService.setAccessTokenCookie(res, accessToken);
     this.authService.setRefreshTokenCookie(res, refreshToken);
     return { accessToken, refreshToken };
+  }
+
+  @ApiEndpoint({
+    summary: 'Log out of the account',
+    documentation: AuthDocumentation.LOGOUT,
+    guards: JwtGuard,
+  })
+  @Post('/logout')
+  async logout (@Res({ passthrough: true }) res: Response) {
+    this.authService.clearAccessTokenCookie(res);
+    this.authService.clearRefreshTokenCookie(res);
   }
 
   @ApiEndpoint({
@@ -92,10 +105,10 @@ export class AuthController {
   })
   @Get('/refresh')
   async refresh (
-    @Request() req,
+    @User() user: DbUser,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AccessTokenResponse> {
-    const { accessToken } = this.authService.refreshToken(req.user);
+    const { accessToken } = this.authService.refreshToken(user);
     this.authService.setAccessTokenCookie(res, accessToken);
     return { accessToken };
   }
