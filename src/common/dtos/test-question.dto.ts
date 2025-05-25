@@ -32,7 +32,7 @@ export class BaseTestQuestionDto {
   @MaxLength(300, {
     message: 'Question test must be at most 300 characters long',
   })
-    text: string;
+  text: string;
 
   @IsNotEmpty({ message: 'Question type must not be empty' })
   @IsEnum(
@@ -43,7 +43,7 @@ export class BaseTestQuestionDto {
     ],
     { message: 'Question type must be CHOICE, MULTICHOICE or SHORT_ANSWER' },
   )
-    type: QuestionTypeEnum;
+  type: QuestionTypeEnum;
 }
 
 export class ChoiceTestQuestionDto extends BaseTestQuestionDto {
@@ -51,7 +51,7 @@ export class ChoiceTestQuestionDto extends BaseTestQuestionDto {
     description: 'Question type (CHOICE)',
     enum: [QuestionTypeEnum.CHOICE],
   })
-    type: QuestionTypeEnum.CHOICE;
+  type: QuestionTypeEnum.CHOICE;
 
   @ApiProperty({
     description: 'Right answer to the question (index in the array of answers)',
@@ -59,7 +59,7 @@ export class ChoiceTestQuestionDto extends BaseTestQuestionDto {
   @IsNotEmpty({ message: 'Question right answer must not be empty' })
   @IsInt({ message: 'Question right answer must be an integer' })
   @Min(0, { message: 'Question right answer must not be negative' })
-    rightAnswer: number;
+  rightAnswer: number;
 
   @ApiProperty({
     description: 'Possible question answers',
@@ -68,7 +68,7 @@ export class ChoiceTestQuestionDto extends BaseTestQuestionDto {
   @ValidateNested({ each: true })
   @IsArray({ message: 'Question answers must be an array' })
   @ArrayNotEmpty({ message: 'Question answers must not be empty' })
-    answers: TestQuestionAnswerDto[];
+  answers: TestQuestionAnswerDto[];
 }
 
 export class MultiChoiceTestQuestionDto extends BaseTestQuestionDto {
@@ -76,7 +76,7 @@ export class MultiChoiceTestQuestionDto extends BaseTestQuestionDto {
     description: 'Question type (MULTICHOICE)',
     enum: [QuestionTypeEnum.MULTICHOICE],
   })
-    type: QuestionTypeEnum.MULTICHOICE;
+  type: QuestionTypeEnum.MULTICHOICE;
 
   @ApiProperty({
     description:
@@ -90,7 +90,7 @@ export class MultiChoiceTestQuestionDto extends BaseTestQuestionDto {
     each: true,
     message: 'Question right answers must not be negative',
   })
-    rightAnswers: number[];
+  rightAnswers: number[];
 
   @ApiProperty({
     description: 'Possible question answers',
@@ -99,7 +99,7 @@ export class MultiChoiceTestQuestionDto extends BaseTestQuestionDto {
   @IsArray({ message: 'Question answers must be an array' })
   @ArrayNotEmpty({ message: 'Question answers must not be empty' })
   @ValidateNested({ each: true })
-    answers: TestQuestionAnswerDto[];
+  answers: TestQuestionAnswerDto[];
 }
 
 export class ShortTestQuestionDto extends BaseTestQuestionDto {
@@ -107,7 +107,7 @@ export class ShortTestQuestionDto extends BaseTestQuestionDto {
     description: 'Question type (SHORT_ANSWER)',
     enum: [QuestionTypeEnum.SHORT_ANSWER],
   })
-    type: QuestionTypeEnum.SHORT_ANSWER;
+  type: QuestionTypeEnum.SHORT_ANSWER;
 
   @ApiProperty({
     description: 'Right answer to the question',
@@ -115,5 +115,5 @@ export class ShortTestQuestionDto extends BaseTestQuestionDto {
   @IsNotEmptyObject({}, { message: 'Question right answer must not be empty' })
   @Type(() => TestQuestionAnswerDto)
   @ValidateNested()
-    rightAnswer: TestQuestionAnswerDto;
+  rightAnswer: TestQuestionAnswerDto;
 }

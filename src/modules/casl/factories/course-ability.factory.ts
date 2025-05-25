@@ -19,9 +19,9 @@ import { CourseRepository } from '../../../database/repositories/course.reposito
 
 @Injectable()
 export class CourseAbilityFactory implements AbilityFactory<CourseAction> {
-  constructor (private courseRepository: CourseRepository) {}
+  constructor(private courseRepository: CourseRepository) {}
 
-  async createForUser (user: DbUser): Promise<AppAbility<CourseAction>> {
+  async createForUser(user: DbUser): Promise<AppAbility<CourseAction>> {
     const { can, cannot, build } = new AbilityBuilder(
       createMongoAbility as CreateAbility<AppAbility<CourseAction>>,
     );
@@ -40,7 +40,7 @@ export class CourseAbilityFactory implements AbilityFactory<CourseAction> {
     });
   }
 
-  async setStudentAbility (
+  async setStudentAbility(
     user: DbUser,
     can: AbilityBuilder<AppAbility<CourseAction>>['can'],
     cannot: AbilityBuilder<AppAbility<CourseAction>>['cannot'],
@@ -61,7 +61,7 @@ export class CourseAbilityFactory implements AbilityFactory<CourseAction> {
     });
   }
 
-  setTeacherAbility (
+  setTeacherAbility(
     user: DbUser,
     can: AbilityBuilder<AppAbility<CourseAction>>['can'],
     cannot: AbilityBuilder<AppAbility<CourseAction>>['cannot'],
@@ -69,9 +69,13 @@ export class CourseAbilityFactory implements AbilityFactory<CourseAction> {
     cannot(CourseAction.MANAGE, DbCourse);
     can(CourseAction.CREATE, DbCourse);
     can(CourseAction.READ, DbCourse);
-    can([CourseAction.UPDATE, CourseAction.DELETE, CourseAction.ACCESS_CONTENT], DbCourse, {
-      authorId: user.id,
-    });
+    can(
+      [CourseAction.UPDATE, CourseAction.DELETE, CourseAction.ACCESS_CONTENT],
+      DbCourse,
+      {
+        authorId: user.id,
+      },
+    );
     cannot([CourseAction.UPDATE, CourseAction.DELETE], DbCourse, {
       enrolledCount: { $gt: 0 },
     });

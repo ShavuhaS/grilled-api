@@ -5,9 +5,9 @@ import { SendEmailParams } from './types/send-email-params.type';
 
 @Injectable()
 export class EmailService {
-  constructor (private mailerService: MailerService) {}
+  constructor(private mailerService: MailerService) {}
 
-  async sendEmail ({
+  async sendEmail({
     to,
     subject,
     template,
@@ -23,7 +23,7 @@ export class EmailService {
     });
   }
 
-  async sendVerificationEmail ({ to, link }: EmailVerificationParams) {
+  async sendVerificationEmail({ to, link }: EmailVerificationParams) {
     await this.sendEmail({
       to,
       subject: 'Email verification for GrillEd',

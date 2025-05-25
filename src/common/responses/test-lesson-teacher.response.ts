@@ -6,5 +6,5 @@ export class TestLessonTeacherResponse extends LessonBaseTeacherResponse {
   @ApiProperty({
     description: 'Test information',
   })
-    test: TestTeacherResponse;
+  test: TestTeacherResponse;
 }

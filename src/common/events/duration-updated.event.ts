@@ -1,5 +1,5 @@
 export class DurationUpdatedEvent {
-  constructor (
+  constructor(
     public lessonId: string,
     public moduleId: string,
     public courseId: string,

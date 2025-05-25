@@ -17,7 +17,7 @@ export class RegistrationDto {
   @IsNotEmpty({ message: 'Email should not be empty' })
   @IsString({ message: 'Email should be a string' })
   @IsEmail({}, { message: 'Email should be a valid email' })
-    email: string;
+  email: string;
 
   @ApiProperty({
     description: 'User password',
@@ -35,7 +35,7 @@ export class RegistrationDto {
         'having from 8 to 64 characters in total',
     },
   )
-    password: string;
+  password: string;
 
   @ApiProperty({
     description: 'User first name',
@@ -44,7 +44,7 @@ export class RegistrationDto {
   @IsString({ message: 'Name should be a string' })
   @MinLength(2, { message: 'Name should be at least 2 characters long' })
   @MaxLength(40, { message: 'Name should be at most 40 characters long' })
-    name: string;
+  name: string;
 
   @ApiProperty({
     description: 'User first name',
@@ -53,7 +53,7 @@ export class RegistrationDto {
   @IsString({ message: 'Surname should be a string' })
   @MinLength(3, { message: 'Surname should be at least 3 characters long' })
   @MaxLength(40, { message: 'Surname should be at most 40 characters long' })
-    surname: string;
+  surname: string;
 
   @ApiProperty({
     description: 'User role (STUDENT or TEACHER)',
@@ -63,5 +63,5 @@ export class RegistrationDto {
   @IsEnum([RoleEnum.STUDENT, RoleEnum.TEACHER], {
     message: 'Role should be either STUDENT, or TEACHER',
   })
-    role: RoleEnum;
+  role: RoleEnum;
 }

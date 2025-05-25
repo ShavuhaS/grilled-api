@@ -11,9 +11,9 @@ import { InvalidEntityIdException } from '../../../../common/exceptions/invalid-
 
 @Injectable()
 export class CourseUpdatePolicy implements IPolicyHandler<CourseAction> {
-  constructor (private courseRepository: CourseRepository) {}
+  constructor(private courseRepository: CourseRepository) {}
 
-  async handle (
+  async handle(
     ability: AppAbility<CourseAction>,
     req: Request,
   ): Promise<boolean> {

@@ -11,9 +11,9 @@ import { ShortAnswerQuestionTeacherResponse } from '../../../common/responses/sh
 
 @Injectable()
 export class TestQuestionMapper {
-  constructor () {}
+  constructor() {}
 
-  toTestQuestionTeacherResponse (
+  toTestQuestionTeacherResponse(
     question: DbTestQuestion,
   ): TestQuestionTeacherResponse {
     switch (question.type) {
@@ -28,7 +28,7 @@ export class TestQuestionMapper {
     }
   }
 
-  toTestQuestionResponse ({
+  toTestQuestionResponse({
     id,
     type,
     text,
@@ -36,7 +36,7 @@ export class TestQuestionMapper {
     return { id, type, text };
   }
 
-  toTestQuestionAnswerTeacherResponse ({
+  toTestQuestionAnswerTeacherResponse({
     id,
     text,
     commentary,
@@ -48,7 +48,7 @@ export class TestQuestionMapper {
     };
   }
 
-  toChoiceQuestionTeacherResponse (
+  toChoiceQuestionTeacherResponse(
     question: DbTestQuestion,
   ): ChoiceQuestionTeacherResponse {
     const answers = question.answers;
@@ -63,7 +63,7 @@ export class TestQuestionMapper {
     };
   }
 
-  toMultichoiceQuestionTeacherResponse (
+  toMultichoiceQuestionTeacherResponse(
     question: DbTestQuestion,
   ): MultichoiceQuestionTeacherResponse {
     const answers = question.answers;
@@ -78,7 +78,7 @@ export class TestQuestionMapper {
     };
   }
 
-  toShortAnswerQuestionTeacherResponse (
+  toShortAnswerQuestionTeacherResponse(
     question: DbTestQuestion,
   ): ShortAnswerQuestionTeacherResponse {
     const answers = question.answers;

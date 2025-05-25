@@ -9,13 +9,13 @@ import { CourseMappingOptions } from '../interfaces/course-mapping-options.inter
 
 @Injectable()
 export class CourseMapper {
-  constructor (
+  constructor(
     private teacherMapper: TeacherMapper,
     private categoryMapper: CourseCategoryMapper,
     private moduleMapper: CourseModuleMapper,
   ) {}
 
-  toBaseCourseResponse (course: DbCourse): BaseCourseResponse {
+  toBaseCourseResponse(course: DbCourse): BaseCourseResponse {
     return {
       id: course.id,
       author: this.teacherMapper.toCourseTeacherResponse(course.author),
@@ -32,7 +32,7 @@ export class CourseMapper {
     };
   }
 
-  toCourseResponse (
+  toCourseResponse(
     course: DbCourse,
     { links, progress }: CourseMappingOptions,
   ): CourseResponse {

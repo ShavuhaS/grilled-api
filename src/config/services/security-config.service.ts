@@ -3,30 +3,30 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SecurityConfigService {
-  constructor (private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {}
 
-  get accessSecret (): string {
+  get accessSecret(): string {
     return this.configService.get<string>('security.secret.access');
   }
 
-  get refreshSecret (): string {
+  get refreshSecret(): string {
     return this.configService.get<string>('security.secret.refresh');
   }
 
-  get accessTtl (): number {
+  get accessTtl(): number {
     return parseInt(this.configService.get<string>('security.jwt.ttl'));
   }
 
-  get accessTtlStr (): string {
+  get accessTtlStr(): string {
     const ttl = this.accessTtl;
     return `${ttl}s`;
   }
 
-  get refreshTtl (): number {
+  get refreshTtl(): number {
     return parseInt(this.configService.get<string>('security.jwt.refreshTtl'));
   }
 
-  get refreshTtlStr (): string {
+  get refreshTtlStr(): string {
     const ttl = this.refreshTtl;
     return `${ttl}s`;
   }

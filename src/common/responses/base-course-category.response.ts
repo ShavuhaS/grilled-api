@@ -4,10 +4,10 @@ export class BaseCourseCategoryResponse {
   @ApiProperty({
     description: 'Course category id',
   })
-    id: string;
+  id: string;
 
   @ApiProperty({
     description: 'Course category name',
   })
-    name: string;
+  name: string;
 }

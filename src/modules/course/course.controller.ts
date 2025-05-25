@@ -3,7 +3,8 @@ import {
   Controller,
   Delete,
   Get,
-  Param, Patch,
+  Param,
+  Patch,
   Post,
   Request,
   UploadedFile,
@@ -44,7 +45,7 @@ import { UpdateLessonDto } from '../../common/dtos/update-lesson.dto';
 })
 @SetAbilityFactory(CourseAbilityFactory)
 export class CourseController {
-  constructor (
+  constructor(
     private courseService: CourseService,
     private moduleService: CourseModuleService,
     private courseMapper: CourseMapper,
@@ -58,7 +59,7 @@ export class CourseController {
     policies: CoursePolicies.CREATE,
   })
   @Post('/')
-  async create (
+  async create(
     @Body('categoryId', CourseCategoryByIdPipe) categoryId: string,
     @Body() body: CreateCourseDto,
     @Request() req,
@@ -73,7 +74,7 @@ export class CourseController {
     guards: OptionalJwtGuard,
   })
   @Get('/:courseId')
-  async get (
+  async get(
     @Param('courseId', CourseByIdPipe) courseId: string,
     @User() user: DbUser,
   ) {
@@ -91,7 +92,7 @@ export class CourseController {
     policies: CoursePolicies.MODULE_CREATE,
   })
   @Post('/:courseId/modules')
-  async createModule (
+  async createModule(
     @Param('courseId', CourseByIdPipe) courseId: string,
     @Body() body: CreateCourseModuleDto,
   ) {
@@ -104,7 +105,7 @@ export class CourseController {
     policies: CoursePolicies.MODULE_DELETE,
   })
   @Delete('/:courseId/modules/:moduleId')
-  async deleteModule (
+  async deleteModule(
     @Param('courseId') courseId: string,
     @Param('moduleId', ModuleByIdPipe) moduleId: string,
   ) {
@@ -117,7 +118,7 @@ export class CourseController {
     policies: CoursePolicies.LESSON_CREATE,
   })
   @Post('/:courseId/modules/:moduleId/lessons')
-  async createLesson (
+  async createLesson(
     @Param('courseId') courseId: string,
     @Param('moduleId', ModuleByIdPipe) moduleId: string,
     @Body() body: CreateLessonDto,
@@ -136,7 +137,7 @@ export class CourseController {
     policies: CoursePolicies.ACCESS_CONTENT,
   })
   @Get('/:courseId/lessons/:lessonId')
-  async getLesson (
+  async getLesson(
     @Param('courseId') courseId: string,
     @Param('lessonId') lessonId: string,
     @User() user: DbUser,
@@ -157,7 +158,7 @@ export class CourseController {
     policies: CoursePolicies.LESSON_DELETE,
   })
   @Delete('/:courseId/lessons/:lessonId')
-  async deleteLesson (
+  async deleteLesson(
     @Param('courseId', CourseByIdPipe) courseId: string,
     @Param('lessonId', LessonByIdPipe) lessonId: string,
   ) {
@@ -172,12 +173,16 @@ export class CourseController {
   })
   @UseInterceptors(FileInterceptor('video'))
   @Patch('/:courseId/lessons/:lessonId/video')
-  async uploadVideo (
+  async uploadVideo(
     @Param('courseId') courseId: string,
     @Param('lessonId', LessonByIdPipe) lessonId: string,
     @UploadedFile(VideoValidationPipe) file: Express.Multer.File,
   ) {
-    const lesson = await this.courseService.uploadVideo(courseId, lessonId, file);
+    const lesson = await this.courseService.uploadVideo(
+      courseId,
+      lessonId,
+      file,
+    );
     return this.lessonMapper.toVideoLessonTeacherResponse(lesson);
   }
 
@@ -187,12 +192,16 @@ export class CourseController {
     policies: CoursePolicies.ARTICLE_UPDATE,
   })
   @Patch('/:courseId/lessons/:lessonId/article')
-  async updateArticle (
+  async updateArticle(
     @Param('courseId', CourseByIdPipe) courseId: string,
     @Param('lessonId', LessonByIdPipe) lessonId: string,
     @Body() body: UpdateArticleDto,
   ) {
-    const lesson = await this.courseService.updateArticle(courseId, lessonId, body);
+    const lesson = await this.courseService.updateArticle(
+      courseId,
+      lessonId,
+      body,
+    );
     return this.lessonMapper.toArticleLessonTeacherResponse(lesson);
   }
 
@@ -202,12 +211,16 @@ export class CourseController {
     policies: CoursePolicies.UPDATE_LESSON,
   })
   @Patch('/:courseId/lessons/:lessonId')
-  async updateLesson (
+  async updateLesson(
     @Param('courseId', CourseByIdPipe) courseId: string,
     @Param('lessonId', LessonByIdPipe) lessonId: string,
     @Body() body: UpdateLessonDto,
   ) {
-    const lesson = await this.courseService.updateLesson(courseId, lessonId, body);
+    const lesson = await this.courseService.updateLesson(
+      courseId,
+      lessonId,
+      body,
+    );
     return this.lessonMapper.toLessonTeacherResponse(lesson);
   }
 
@@ -217,7 +230,7 @@ export class CourseController {
     policies: CoursePolicies.ENROLL,
   })
   @Post('/:courseId/enroll')
-  async enroll () {
+  async enroll() {
     return 'Test';
   }
 }

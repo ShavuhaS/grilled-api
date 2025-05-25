@@ -1,5 +1,8 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
-import { DefaultForbiddenResponse, DefaultUnauthorizedResponse } from '../../default-responses.constants';
+import {
+  DefaultForbiddenResponse,
+  DefaultUnauthorizedResponse,
+} from '../../default-responses.constants';
 import { getSchemaPath } from '@nestjs/swagger';
 import { ArticleLessonStudentResponse } from '../../../responses/article-lesson-student.response';
 import { VideoLessonStudentResponse } from '../../../responses/video-lesson-student.response';
@@ -10,9 +13,7 @@ import { TestLessonTeacherResponse } from '../../../responses/test-lesson-teache
 
 export const GetLessonDocumentation: ApiDocumentationParams = {
   authRequired: true,
-  policies: [
-    'Only the owner and enrolled users can get lesson content',
-  ],
+  policies: ['Only the owner and enrolled users can get lesson content'],
   params: [
     {
       name: 'courseId',

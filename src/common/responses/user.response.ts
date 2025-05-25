@@ -4,7 +4,7 @@ import { BaseTeacherResponse } from './base-teacher.response';
 
 export class UserResponse extends BaseUserResponse {
   @ApiPropertyOptional({
-    description: 'Teacher\'s bio information',
+    description: "Teacher's bio information",
   })
-    teacher?: BaseTeacherResponse;
+  teacher?: BaseTeacherResponse;
 }

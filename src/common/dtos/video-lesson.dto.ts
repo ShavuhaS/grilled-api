@@ -8,8 +8,8 @@ export class VideoLessonDto extends BaseLessonDto {
     description: 'Lesson type (VIDEO)',
     enum: [LessonTypeEnum.VIDEO],
   })
-    type: LessonTypeEnum.VIDEO;
+  type: LessonTypeEnum.VIDEO;
 
   @IsOptional()
-    estimatedTime?: number;
+  estimatedTime?: number;
 }

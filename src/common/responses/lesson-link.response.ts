@@ -4,15 +4,15 @@ export class LessonLinkResponse {
   @ApiProperty({
     description: 'Lesson link id',
   })
-    id: string;
+  id: string;
 
   @ApiProperty({
     description: 'Lesson link name',
   })
-    name: string;
+  name: string;
 
   @ApiProperty({
     description: 'Lesson link url',
   })
-    url: string;
+  url: string;
 }

@@ -1,7 +1,7 @@
 import { ParentChildDisconnectionException } from './parent-child-disconnection.exception';
 
 export class CourseModuleDisconnectionException extends ParentChildDisconnectionException {
-  constructor () {
+  constructor() {
     super('Course', 'module');
   }
 }

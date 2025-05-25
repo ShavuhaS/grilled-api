@@ -6,7 +6,7 @@ import {
 
 export const DeleteModuleDocumentatiton: ApiDocumentationParams = {
   authRequired: true,
-  policies: ['Teacher should own the module\'s course'],
+  policies: ["Teacher should own the module's course"],
   params: [
     {
       name: 'courseId',

@@ -5,13 +5,13 @@ import { ConfigService } from '@nestjs/config';
 export class UrlConfigService {
   private _domain: string;
 
-  constructor (private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {}
 
-  get base (): string {
+  get base(): string {
     return this.configService.get<string>('baseUrl');
   }
 
-  get domain (): string {
+  get domain(): string {
     if (this._domain !== undefined) {
       return this._domain;
     }
@@ -28,7 +28,7 @@ export class UrlConfigService {
     return this._domain;
   }
 
-  get front (): string {
+  get front(): string {
     return this.configService.get<string>('frontBaseUrl');
   }
 }

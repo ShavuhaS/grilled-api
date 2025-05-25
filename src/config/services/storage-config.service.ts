@@ -3,17 +3,17 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StorageConfigService {
-  constructor (private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {}
 
-  get credential (): string {
+  get credential(): string {
     return this.configService.get<string>('storage.credential');
   }
 
-  get bucket (): string {
+  get bucket(): string {
     return this.configService.get<string>('storage.bucket');
   }
 
-  get signatureTtl (): number {
+  get signatureTtl(): number {
     return parseInt(this.configService.get<string>('storage.signatureTtl'));
   }
 }

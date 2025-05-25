@@ -9,5 +9,5 @@ export class UpdateArticleDto {
   @IsString({ message: 'Article must be a string' })
   @MinLength(50, { message: 'Article must be at least 50 characters long' })
   @MaxLength(5000, { message: 'Article must be at most 5000 characters long' })
-    text: string;
+  text: string;
 }

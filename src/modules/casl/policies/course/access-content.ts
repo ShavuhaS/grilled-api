@@ -11,9 +11,12 @@ import { DbCourse } from '../../../../database/entities/course.entity';
 
 @Injectable()
 export class CourseAccessContentPolicy implements IPolicyHandler<CourseAction> {
-  constructor (private courseRepository: CourseRepository) {}
+  constructor(private courseRepository: CourseRepository) {}
 
-  async handle (ability: AppAbility<CourseAction>, req: Request): Promise<boolean> {
+  async handle(
+    ability: AppAbility<CourseAction>,
+    req: Request,
+  ): Promise<boolean> {
     const courseId = RequestUtils.get<string>(req, 'courseId');
     const course = await this.courseRepository.findById(courseId);
 
@@ -21,6 +24,9 @@ export class CourseAccessContentPolicy implements IPolicyHandler<CourseAction> {
       throw new InvalidEntityIdException('Course');
     }
 
-    return ability.can(CourseAction.ACCESS_CONTENT, plainToInstance(DbCourse, course));
+    return ability.can(
+      CourseAction.ACCESS_CONTENT,
+      plainToInstance(DbCourse, course),
+    );
   }
 }

@@ -4,10 +4,10 @@ export class TestScoreResponse {
   @ApiProperty({
     description: 'User score',
   })
-    score: number;
+  score: number;
 
   @ApiProperty({
     description: 'Max test score',
   })
-    maxScore: number;
+  maxScore: number;
 }

@@ -5,16 +5,16 @@ export class TestQuestionResponse {
   @ApiProperty({
     description: 'Question id',
   })
-    id: string;
+  id: string;
 
   @ApiProperty({
     description: 'Question text',
   })
-    text: string;
+  text: string;
 
   @ApiProperty({
     description: 'Question type',
     enum: QuestionTypeEnum,
   })
-    type: QuestionTypeEnum;
+  type: QuestionTypeEnum;
 }

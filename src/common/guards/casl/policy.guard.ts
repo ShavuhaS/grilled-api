@@ -19,12 +19,12 @@ import { isClass } from '../../utils/object.utils';
 
 @Injectable()
 export class PolicyGuard implements CanActivate {
-  constructor (
+  constructor(
     private reflector: Reflector,
     private moduleRef: ModuleRef,
   ) {}
 
-  async canActivate (ctx: ExecutionContext): Promise<boolean> {
+  async canActivate(ctx: ExecutionContext): Promise<boolean> {
     const handlers = this.reflector.get<PolicyHandler<any>[]>(
       CHECK_POLICIES_KEY,
       ctx.getHandler(),

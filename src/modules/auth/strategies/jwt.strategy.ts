@@ -10,7 +10,7 @@ import { ACCESS_TOKEN_COOKIE } from '../constants/cookie-names.const';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor (
+  constructor(
     private securityConfig: SecurityConfigService,
     private authService: AuthService,
   ) {
@@ -24,7 +24,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     } as any);
   }
 
-  async validate (payload: JwtPayload): Promise<DbUser> {
+  async validate(payload: JwtPayload): Promise<DbUser> {
     return this.authService.validateUserPayload(payload);
   }
 }

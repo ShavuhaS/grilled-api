@@ -4,25 +4,25 @@ export class CourseTeacherResponse {
   @ApiProperty({
     description: 'Teacher id',
   })
-    id: string;
+  id: string;
 
   @ApiPropertyOptional({
     description: 'Teacher avatar',
   })
-    avatar?: string;
+  avatar?: string;
 
   @ApiProperty({
     description: 'Teacher name',
   })
-    name: string;
+  name: string;
 
   @ApiProperty({
     description: 'Teacher surname',
   })
-    surname: string;
+  surname: string;
 
   @ApiPropertyOptional({
     description: 'Teacher workplace',
   })
-    workplace?: string;
+  workplace?: string;
 }

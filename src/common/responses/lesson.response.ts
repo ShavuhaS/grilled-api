@@ -6,10 +6,10 @@ export class LessonResponse extends BaseLessonResponse {
   @ApiPropertyOptional({
     description: 'Lesson links',
   })
-    links?: LessonLinkResponse[];
+  links?: LessonLinkResponse[];
 
   @ApiPropertyOptional({
     description: 'Is lesson completed',
   })
-    completed?: boolean;
+  completed?: boolean;
 }

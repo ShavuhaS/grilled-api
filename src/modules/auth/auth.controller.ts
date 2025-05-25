@@ -29,7 +29,7 @@ import { DbUser } from '../../database/entities/user.entity';
   version: '1',
 })
 export class AuthController {
-  constructor (
+  constructor(
     private authService: AuthService,
     private userService: UserService,
     private userMapper: UserMapper,
@@ -40,7 +40,7 @@ export class AuthController {
     documentation: AuthDocumentation.SIGN_UP,
   })
   @Post('/signUp')
-  async signUp (@Body() body: RegistrationDto) {
+  async signUp(@Body() body: RegistrationDto) {
     return this.authService.signUp(body);
   }
 
@@ -49,7 +49,7 @@ export class AuthController {
     documentation: AuthDocumentation.VERIFY_EMAIL,
   })
   @Post('/verifyEmail/:token')
-  async verifyEmail (
+  async verifyEmail(
     @Param('token') token: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<TokensResponse> {
@@ -66,7 +66,7 @@ export class AuthController {
     guards: JwtGuard,
   })
   @Get('/me')
-  async getMe (@Request() req) {
+  async getMe(@Request() req) {
     const user = await this.userService.getById(req.user.id);
     return this.userMapper.toUserResponse(user);
   }
@@ -77,7 +77,7 @@ export class AuthController {
     guards: LocalAuthGuard,
   })
   @Post('/login')
-  async login (
+  async login(
     @User() user: DbUser,
     @Res({ passthrough: true }) res: Response,
   ): Promise<TokensResponse> {
@@ -93,7 +93,7 @@ export class AuthController {
     guards: JwtGuard,
   })
   @Post('/logout')
-  async logout (@Res({ passthrough: true }) res: Response) {
+  async logout(@Res({ passthrough: true }) res: Response) {
     this.authService.clearAccessTokenCookie(res);
     this.authService.clearRefreshTokenCookie(res);
   }
@@ -104,7 +104,7 @@ export class AuthController {
     guards: RefreshGuard,
   })
   @Get('/refresh')
-  async refresh (
+  async refresh(
     @User() user: DbUser,
     @Res({ passthrough: true }) res: Response,
   ): Promise<AccessTokenResponse> {

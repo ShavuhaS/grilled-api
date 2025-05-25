@@ -22,13 +22,13 @@ import { IUpdateLessonDto } from '../../common/dtos/update-lesson.dto';
 
 @Injectable()
 export class CourseService {
-  constructor (
+  constructor(
     private courseRepository: CourseRepository,
     private moduleService: CourseModuleService,
     private lessonService: LessonService,
   ) {}
 
-  async getById (id: string, signResources = false): Promise<DbCourse> {
+  async getById(id: string, signResources = false): Promise<DbCourse> {
     const course = await this.courseRepository.findById(id, {
       modules: {
         orderBy: { order: 'asc' },
@@ -50,7 +50,7 @@ export class CourseService {
     return course;
   }
 
-  private async signCourseResources (course: DbCourse): Promise<DbCourse> {
+  private async signCourseResources(course: DbCourse): Promise<DbCourse> {
     if (!course.modules) {
       return course;
     }
@@ -67,14 +67,14 @@ export class CourseService {
     return course;
   }
 
-  async create (user: DbUser, body: CreateCourseDto): Promise<DbCourse> {
+  async create(user: DbUser, body: CreateCourseDto): Promise<DbCourse> {
     return this.courseRepository.create({
       ...body,
       authorId: user.id,
     });
   }
 
-  async isUserEnrolled (user: DbUser, course: DbCourse): Promise<boolean> {
+  async isUserEnrolled(user: DbUser, course: DbCourse): Promise<boolean> {
     const enrollee = await this.courseRepository.findOne({
       id: course.id,
       enrollees: {
@@ -87,11 +87,11 @@ export class CourseService {
     return !!enrollee;
   }
 
-  private async ownsCourse (user: DbUser, course: DbCourse): Promise<boolean> {
+  private async ownsCourse(user: DbUser, course: DbCourse): Promise<boolean> {
     return course.authorId === user.id;
   }
 
-  private async checkModuleConnected (courseId: string, moduleId: string) {
+  private async checkModuleConnected(courseId: string, moduleId: string) {
     const course = await this.courseRepository.findOne({
       id: courseId,
       modules: { some: { id: moduleId } },
@@ -102,13 +102,13 @@ export class CourseService {
     }
   }
 
-  async deleteModule (courseId: string, moduleId: string) {
+  async deleteModule(courseId: string, moduleId: string) {
     await this.checkModuleConnected(courseId, moduleId);
 
     await this.moduleService.deleteById(moduleId);
   }
 
-  async getUserProgress (
+  async getUserProgress(
     user: DbUser,
     course: DbCourse,
   ): Promise<CourseProgress> {
@@ -142,13 +142,16 @@ export class CourseService {
     return { course: courseProgress, modules };
   }
 
-  async getLesson (courseId: string, lessonId: string): Promise<DbCourseLesson> {
+  async getLesson(courseId: string, lessonId: string): Promise<DbCourseLesson> {
     await this.checkLessonConnected(courseId, lessonId);
 
     return this.lessonService.getById(lessonId, true);
   }
 
-  async getLessonUserContext (user: DbUser, lesson: DbCourseLesson): Promise<LessonUserContext> {
+  async getLessonUserContext(
+    user: DbUser,
+    lesson: DbCourseLesson,
+  ): Promise<LessonUserContext> {
     const course = await this.courseRepository.findOne({
       modules: { some: { lessons: { some: { id: lesson.id } } } },
     });
@@ -164,7 +167,7 @@ export class CourseService {
     return this.lessonService.getUserContext(user.id, lesson.id);
   }
 
-  async personalizeCourseResponse (
+  async personalizeCourseResponse(
     user: DbUser,
     course: DbCourse,
   ): Promise<CourseMappingOptions> {
@@ -188,7 +191,7 @@ export class CourseService {
     return { links: false };
   }
 
-  async createLesson (
+  async createLesson(
     courseId: string,
     moduleId: string,
     dto: CreateLessonDto,
@@ -198,7 +201,7 @@ export class CourseService {
     return this.lessonService.create(courseId, moduleId, dto);
   }
 
-  private async checkLessonConnected (courseId: string, lessonId: string) {
+  private async checkLessonConnected(courseId: string, lessonId: string) {
     const course = await this.courseRepository.findOne({
       modules: { some: { lessons: { some: { id: lessonId } } } },
     });
@@ -208,13 +211,16 @@ export class CourseService {
     }
   }
 
-  async deleteLesson (courseId: string, lessonId: string): Promise<DbCourseLesson> {
+  async deleteLesson(
+    courseId: string,
+    lessonId: string,
+  ): Promise<DbCourseLesson> {
     await this.checkLessonConnected(courseId, lessonId);
 
     return this.lessonService.delete(lessonId);
   }
 
-  async uploadVideo (
+  async uploadVideo(
     courseId: string,
     lessonId: string,
     file: Express.Multer.File,
@@ -224,7 +230,7 @@ export class CourseService {
     return await this.lessonService.uploadVideo(lessonId, file);
   }
 
-  async updateArticle (
+  async updateArticle(
     courseId: string,
     lessonId: string,
     body: UpdateArticleDto,
@@ -234,7 +240,7 @@ export class CourseService {
     return this.lessonService.updateArticle(lessonId, body.text);
   }
 
-  async updateLesson (
+  async updateLesson(
     courseId: string,
     lessonId: string,
     body: IUpdateLessonDto,
@@ -245,7 +251,10 @@ export class CourseService {
   }
 
   @OnEvent(CourseEvent.DURATION_UPDATED)
-  private async updateEstimatedTime ({ courseId, durationDelta }: DurationUpdatedEvent) {
+  private async updateEstimatedTime({
+    courseId,
+    durationDelta,
+  }: DurationUpdatedEvent) {
     if (!durationDelta) {
       return;
     }

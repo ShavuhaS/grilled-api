@@ -4,9 +4,9 @@ import { DbLessonResource } from '../../../database/entities/lesson-resource.ent
 
 @Injectable()
 export class LessonResourceMapper {
-  constructor () {}
+  constructor() {}
 
-  toLinkResponse ({ id, name, link }: DbLessonResource): LessonLinkResponse {
+  toLinkResponse({ id, name, link }: DbLessonResource): LessonLinkResponse {
     return { id, name, url: link };
   }
 }

@@ -5,9 +5,9 @@ import { TestQuestionMapper } from './test-question.mapper';
 
 @Injectable()
 export class TestMapper {
-  constructor (private questionMapper: TestQuestionMapper) {}
+  constructor(private questionMapper: TestQuestionMapper) {}
 
-  toTestTeacherResponse ({
+  toTestTeacherResponse({
     questionCount,
     questions,
   }: DbLessonTest): TestTeacherResponse {

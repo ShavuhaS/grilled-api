@@ -6,5 +6,5 @@ export class LessonBaseTeacherResponse extends BaseLessonResponse {
   @ApiProperty({
     description: 'Lesson links',
   })
-    links: LessonLinkResponse[];
+  links: LessonLinkResponse[];
 }

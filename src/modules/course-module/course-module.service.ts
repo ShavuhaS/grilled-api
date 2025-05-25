@@ -9,20 +9,17 @@ import { DurationUpdatedEvent } from '../../common/events/duration-updated.event
 
 @Injectable()
 export class CourseModuleService {
-  constructor (
-    private moduleRepository: CourseModuleRepository,
-  ) {}
+  constructor(private moduleRepository: CourseModuleRepository) {}
 
-  async create (
+  async create(
     courseId: string,
     body: CreateCourseModuleDto,
   ): Promise<DbCourseModule> {
-    const modules = await this.moduleRepository.findMany({
-      where: { courseId },
-      orderBy: {
-        order: 'desc',
-      },
-    });
+    const modules = await this.moduleRepository.findMany(
+      { courseId },
+      undefined,
+      { order: 'desc' },
+    );
 
     let order = 1;
     if (modules.length > 0) order = modules[0].order + 1;
@@ -45,7 +42,7 @@ export class CourseModuleService {
     );
   }
 
-  async deleteById (id: string): Promise<DbCourseModule> {
+  async deleteById(id: string): Promise<DbCourseModule> {
     const module = await this.moduleRepository.delete({ id });
 
     await this.moduleRepository.updateMany(
@@ -66,7 +63,10 @@ export class CourseModuleService {
   }
 
   @OnEvent(CourseEvent.DURATION_UPDATED)
-  private async updateEstimatedTime ({ moduleId, durationDelta }: DurationUpdatedEvent) {
+  private async updateEstimatedTime({
+    moduleId,
+    durationDelta,
+  }: DurationUpdatedEvent) {
     if (!durationDelta) {
       return;
     }

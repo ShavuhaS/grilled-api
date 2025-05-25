@@ -6,5 +6,5 @@ export class CourseCategoriesResponse {
     description: 'Course categories',
     type: [BaseCourseCategoryResponse],
   })
-    categories: BaseCourseCategoryResponse[];
+  categories: BaseCourseCategoryResponse[];
 }

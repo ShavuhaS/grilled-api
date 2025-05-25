@@ -7,7 +7,10 @@ import { LessonDto } from '../../common/dtos/lesson.dto';
 import { ResourceTypeEnum } from '../../common/enums/resource-type.enum';
 import { CourseLessonRepository } from '../../database/repositories/course-lesson.repository';
 import { DbLessonResource } from '../../database/entities/lesson-resource.entity';
-import { CreateResourceContext, CreateResourceFunction } from '../course/types/create-resource.types';
+import {
+  CreateResourceContext,
+  CreateResourceFunction,
+} from '../course/types/create-resource.types';
 import { ArticleLessonDto } from '../../common/dtos/article-lesson.dto';
 import { TestService } from '../test/test.service';
 import { StorageService } from '../storage/storage.service';
@@ -37,11 +40,11 @@ export class LessonService {
   private readonly lessonToResourceMap: Partial<
     Record<LessonTypeEnum, ResourceTypeEnum>
   > = {
-      [LessonTypeEnum.VIDEO]: ResourceTypeEnum.VIDEO,
-      [LessonTypeEnum.ARTICLE]: ResourceTypeEnum.MARKDOWN,
-    };
+    [LessonTypeEnum.VIDEO]: ResourceTypeEnum.VIDEO,
+    [LessonTypeEnum.ARTICLE]: ResourceTypeEnum.MARKDOWN,
+  };
 
-  constructor (
+  constructor(
     private lessonRepository: CourseLessonRepository,
     private testService: TestService,
     private storageService: StorageService,
@@ -54,7 +57,7 @@ export class LessonService {
     } as const;
   }
 
-  async getById (id: string, signResources = false): Promise<DbCourseLesson> {
+  async getById(id: string, signResources = false): Promise<DbCourseLesson> {
     const lesson = await this.lessonRepository.findById(id, {
       resources: true,
       test: {
@@ -75,11 +78,13 @@ export class LessonService {
     return lesson;
   }
 
-  async getUserContext (userId: string, lessonId: string): Promise<LessonUserContext> {
-    const lesson = await this.lessonRepository.findById(
-      lessonId,
-      { test: true },
-    );
+  async getUserContext(
+    userId: string,
+    lessonId: string,
+  ): Promise<LessonUserContext> {
+    const lesson = await this.lessonRepository.findById(lessonId, {
+      test: true,
+    });
 
     if (!lesson) {
       throw new InvalidEntityIdException('Lesson');
@@ -94,13 +99,16 @@ export class LessonService {
 
     let testResults: TestResults;
     if (lesson?.type === LessonTypeEnum.TEST) {
-      testResults = await this.testService.getUserResults(lesson.test.id, userId);
+      testResults = await this.testService.getUserResults(
+        lesson.test.id,
+        userId,
+      );
     }
 
     return { isStudent: true, completed, testResults };
   }
 
-  async getCompletedBy (
+  async getCompletedBy(
     userId: string,
     courseId: string,
   ): Promise<DbCourseLesson[]> {
@@ -110,7 +118,7 @@ export class LessonService {
     });
   }
 
-  async create (
+  async create(
     courseId: string,
     moduleId: string,
     { lesson }: CreateLessonDto,
@@ -139,7 +147,7 @@ export class LessonService {
     return dbLesson;
   }
 
-  async createGeneric (
+  async createGeneric(
     moduleId: string,
     lesson: LessonDto,
   ): Promise<DbCourseLesson> {
@@ -156,12 +164,12 @@ export class LessonService {
       links === undefined
         ? {}
         : {
-          resources: {
-            createMany: {
-              data: links,
+            resources: {
+              createMany: {
+                data: links,
+              },
             },
-          },
-        };
+          };
 
     return this.lessonRepository.create(
       {
@@ -178,7 +186,7 @@ export class LessonService {
     );
   }
 
-  private async createArticle (
+  private async createArticle(
     dbLesson: DbCourseLesson,
     { lesson }: CreateResourceContext,
   ): Promise<DbCourseLesson> {
@@ -205,7 +213,7 @@ export class LessonService {
     return dbLesson;
   }
 
-  async delete (id: string): Promise<DbCourseLesson> {
+  async delete(id: string): Promise<DbCourseLesson> {
     const lesson = await this.lessonRepository.findById(id, {
       resources: true,
       module: true,
@@ -245,15 +253,24 @@ export class LessonService {
     return lesson;
   }
 
-  async uploadVideo (lessonId: string, file: Express.Multer.File): Promise<DbCourseLesson> {
-    const lesson = await this.lessonRepository.findById(lessonId, { resources: true });
+  async uploadVideo(
+    lessonId: string,
+    file: Express.Multer.File,
+  ): Promise<DbCourseLesson> {
+    const lesson = await this.lessonRepository.findById(lessonId, {
+      resources: true,
+    });
 
     if (lesson.type !== LessonTypeEnum.VIDEO) {
       throw new InvalidEntityTypeException('Lesson');
     }
 
     const { storagePath } = await this.storageService.uploadVideo(file);
-    await this.updateStorageResource(lesson, ResourceTypeEnum.VIDEO, storagePath);
+    await this.updateStorageResource(
+      lesson,
+      ResourceTypeEnum.VIDEO,
+      storagePath,
+    );
 
     const durationInSeconds = await this.mediaService.getVideoDuration(file);
     const duration = Math.ceil(durationInSeconds / seconds.MINUTE);
@@ -277,21 +294,29 @@ export class LessonService {
     return this.signLessonResources(updatedLesson);
   }
 
-  async updateArticle (lessonId: string, text: string): Promise<DbCourseLesson> {
-    const lesson = await this.lessonRepository.findById(lessonId, { resources: true });
+  async updateArticle(lessonId: string, text: string): Promise<DbCourseLesson> {
+    const lesson = await this.lessonRepository.findById(lessonId, {
+      resources: true,
+    });
 
     if (lesson.type !== LessonTypeEnum.ARTICLE) {
       throw new InvalidEntityTypeException('Lesson');
     }
 
     const { storagePath } = await this.storageService.uploadArticle(text);
-    await this.updateStorageResource(lesson, ResourceTypeEnum.MARKDOWN, storagePath);
+    await this.updateStorageResource(
+      lesson,
+      ResourceTypeEnum.MARKDOWN,
+      storagePath,
+    );
 
-    const updatedLesson = await this.lessonRepository.findById(lessonId, { resources: true });
+    const updatedLesson = await this.lessonRepository.findById(lessonId, {
+      resources: true,
+    });
     return this.signLessonResources(updatedLesson);
   }
 
-  async update (id: string, dto: IUpdateLessonDto): Promise<DbCourseLesson> {
+  async update(id: string, dto: IUpdateLessonDto): Promise<DbCourseLesson> {
     dto = nonEmptyObject(dto);
     if (!dto) {
       return this.getById(id, true);
@@ -312,7 +337,10 @@ export class LessonService {
       }
 
       if (lesson.type in this.lessonToResourceMap) {
-        await this.deleteResources(lesson, this.lessonToResourceMap[lesson.type]);
+        await this.deleteResources(
+          lesson,
+          this.lessonToResourceMap[lesson.type],
+        );
       }
 
       if (dto.type === LessonTypeEnum.TEST) {
@@ -345,7 +373,10 @@ export class LessonService {
     return this.getById(id, true);
   }
 
-  private async updateOrder ({ id, moduleId, order }: DbCourseLesson, newOrder: number) {
+  private async updateOrder(
+    { id, moduleId, order }: DbCourseLesson,
+    newOrder: number,
+  ) {
     if (order === newOrder) return;
 
     const lessonCount = await this.lessonRepository.count({ moduleId });
@@ -369,7 +400,7 @@ export class LessonService {
     await this.lessonRepository.updateById(id, { order: newOrder });
   }
 
-  private async deleteResources (
+  private async deleteResources(
     { id, resources }: DbCourseLesson,
     type: ResourceTypeEnum,
   ) {
@@ -392,7 +423,7 @@ export class LessonService {
     }
   }
 
-  private async updateStorageResource (
+  private async updateStorageResource(
     { id, resources }: DbCourseLesson,
     type: ResourceTypeEnum,
     storagePath: string,
@@ -402,21 +433,21 @@ export class LessonService {
     const resourceAction =
       oldResource === undefined
         ? {
-          create: {
-            type,
-            link: storagePath,
-          },
-        }
-        : {
-          update: {
-            where: {
-              id: oldResource.id,
-            },
-            data: {
+            create: {
+              type,
               link: storagePath,
             },
-          },
-        };
+          }
+        : {
+            update: {
+              where: {
+                id: oldResource.id,
+              },
+              data: {
+                link: storagePath,
+              },
+            },
+          };
 
     await this.lessonRepository.updateById(id, { resources: resourceAction });
 
@@ -428,7 +459,7 @@ export class LessonService {
     }
   }
 
-  async signLessonResources (lesson: DbCourseLesson): Promise<DbCourseLesson> {
+  async signLessonResources(lesson: DbCourseLesson): Promise<DbCourseLesson> {
     if (!lesson.resources) {
       return lesson;
     }
@@ -440,7 +471,7 @@ export class LessonService {
     return lesson;
   }
 
-  private async signResourceUrl (
+  private async signResourceUrl(
     resource: DbLessonResource,
   ): Promise<DbLessonResource> {
     if (storageResourceTypes.includes(resource.type)) {
@@ -449,7 +480,7 @@ export class LessonService {
     return resource;
   }
 
-  private async signResourceUrls (
+  private async signResourceUrls(
     resources: DbLessonResource[],
   ): Promise<DbLessonResource[]> {
     for (const resource of resources) {
@@ -459,7 +490,10 @@ export class LessonService {
   }
 
   @OnEvent(CourseEvent.RESOURCE_DELETED)
-  async handleResourceDelete ({ storagePath, resourceType }: ResourceDeletedEvent) {
+  async handleResourceDelete({
+    storagePath,
+    resourceType,
+  }: ResourceDeletedEvent) {
     if (!storageResourceTypes.includes(resourceType)) {
       return;
     }

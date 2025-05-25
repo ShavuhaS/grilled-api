@@ -2,17 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class BaseTeacherResponse {
   @ApiProperty({
-    description: 'Teacher\'s workplace',
+    description: "Teacher's workplace",
   })
-    workplace?: string;
+  workplace?: string;
 
   @ApiProperty({
-    description: 'Teacher\'s job position',
+    description: "Teacher's job position",
   })
-    position?: string;
+  position?: string;
 
   @ApiProperty({
-    description: 'Teacher\'s bio description',
+    description: "Teacher's bio description",
   })
-    aboutMe?: string;
+  aboutMe?: string;
 }

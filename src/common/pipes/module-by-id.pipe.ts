@@ -4,7 +4,7 @@ import { EntityByIdPipe } from './entity-by-id.pipe';
 
 @Injectable()
 export class ModuleByIdPipe extends EntityByIdPipe {
-  constructor (private moduleRepository: CourseModuleRepository) {
+  constructor(private moduleRepository: CourseModuleRepository) {
     super(moduleRepository, 'Module');
   }
 }

@@ -9,7 +9,7 @@ import { MediaConfigService } from '../../config/services/media-config.service';
 
 @Injectable()
 export class MediaService {
-  constructor (
+  constructor(
     private mediaConfig: MediaConfigService,
     private eventEmitter: EventEmitter2,
   ) {
@@ -21,7 +21,7 @@ export class MediaService {
     }
   }
 
-  async getVideoDuration (video: Express.Multer.File): Promise<number> {
+  async getVideoDuration(video: Express.Multer.File): Promise<number> {
     if (video.buffer) {
       const extension = extname(video.originalname);
       const fileName = `${crypto.randomUUID()}${extension}`;
@@ -35,7 +35,7 @@ export class MediaService {
     return this.getVideoDurationFromFile(video.path);
   }
 
-  private async getVideoDurationFromFile (path: string): Promise<number> {
+  private async getVideoDurationFromFile(path: string): Promise<number> {
     return new Promise((resolve, reject) => {
       ffmpeg(path).ffprobe((err, metadata) => {
         if (err) reject(err);

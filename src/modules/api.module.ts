@@ -7,6 +7,7 @@ import { CourseCategoryModule } from './course-category/course-category.module';
 import { LessonModule } from './lesson/lesson.module';
 import { TestModule } from './test/test.module';
 import { CourseModuleModule } from './course-module/course-module.module';
+import { SkillModule } from './skill/skill.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CourseModuleModule } from './course-module/course-module.module';
     LessonModule,
     TestModule,
     CourseModuleModule,
+    SkillModule,
   ],
   exports: [
     AuthModule,
@@ -25,6 +27,10 @@ import { CourseModuleModule } from './course-module/course-module.module';
     TeacherModule,
     CourseModule,
     CourseCategoryModule,
+    LessonModule,
+    TestModule,
+    CourseModuleModule,
+    SkillModule,
   ],
 })
 export class ApiModule {}

@@ -24,7 +24,7 @@ type DocDecoratorParams = {
   documentation?: ApiDocumentationParams;
 };
 
-export function getDocumentationDecorators ({
+export function getDocumentationDecorators({
   summary,
   description,
   documentation,

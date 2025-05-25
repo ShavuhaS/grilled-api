@@ -6,4 +6,3 @@ export type LessonStudentResponse =
   | TestLessonStudentResponse
   | ArticleLessonStudentResponse
   | VideoLessonStudentResponse;
-

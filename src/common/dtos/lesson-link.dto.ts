@@ -15,7 +15,7 @@ export class LessonLinkDto {
   @IsString({ message: 'Link name must be a string' })
   @MinLength(3, { message: 'Link name must be at least 3 characters long' })
   @MaxLength(20, { message: 'Link name must be at most 20 characters long' })
-    name: string;
+  name: string;
 
   @ApiProperty({
     description: 'Lesson link',
@@ -23,5 +23,5 @@ export class LessonLinkDto {
   @IsNotEmpty({ message: 'Link must not be empty' })
   @IsString({ message: 'Link must be a string' })
   @IsUrl({}, { message: 'Link must be a valid URL' })
-    link: string;
+  link: string;
 }

@@ -3,13 +3,13 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MediaConfigService {
-  constructor (private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {}
 
-  get ffmpegPath (): string {
+  get ffmpegPath(): string {
     return this.configService.get<string>('ffmpeg.path.ffmpeg');
   }
 
-  get ffprobePath (): string {
+  get ffprobePath(): string {
     return this.configService.get<string>('ffmpeg.path.ffprobe');
   }
 }

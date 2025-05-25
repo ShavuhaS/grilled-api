@@ -17,20 +17,20 @@ import { EmailConfigService } from '../../config/services/email-config.service';
       useFactory: (config: EmailConfigService) => ({
         transport: !!config.mailgunApiKey
           ? mailgunTransporter({
-            auth: {
-              apiKey: config.mailgunApiKey,
-              domain: config.mailgunDomain,
-            },
-          })
+              auth: {
+                apiKey: config.mailgunApiKey,
+                domain: config.mailgunDomain,
+              },
+            })
           : {
-            host: config.smtpHost,
-            port: config.smtpPort,
-            secure: config.smtpSecure,
-            auth: {
-              user: config.smtpUsername,
-              pass: config.smtpPassword,
+              host: config.smtpHost,
+              port: config.smtpPort,
+              secure: config.smtpSecure,
+              auth: {
+                user: config.smtpUsername,
+                pass: config.smtpPassword,
+              },
             },
-          },
         defaults: {
           from: '"GrillEd" <noreply@grilled.com>',
         },

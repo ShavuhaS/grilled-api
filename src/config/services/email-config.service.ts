@@ -3,33 +3,33 @@ import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EmailConfigService {
-  constructor (private configService: ConfigService) {}
+  constructor(private configService: ConfigService) {}
 
-  get smtpHost (): string {
+  get smtpHost(): string {
     return this.configService.get<string>('email.smtp.host');
   }
 
-  get smtpPort (): number {
+  get smtpPort(): number {
     return this.configService.get<number>('email.smtp.port');
   }
 
-  get smtpSecure (): boolean {
+  get smtpSecure(): boolean {
     return this.configService.get<boolean>('email.smtp.secure');
   }
 
-  get smtpUsername (): string {
+  get smtpUsername(): string {
     return this.configService.get<string>('email.smtp.username');
   }
 
-  get smtpPassword (): string {
+  get smtpPassword(): string {
     return this.configService.get<string>('email.smtp.password');
   }
 
-  get mailgunDomain (): string {
+  get mailgunDomain(): string {
     return this.configService.get<string>('email.mailgun.domain');
   }
 
-  get mailgunApiKey (): string {
+  get mailgunApiKey(): string {
     return this.configService.get<string>('email.mailgun.apiKey');
   }
 }

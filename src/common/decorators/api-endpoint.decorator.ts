@@ -5,7 +5,7 @@ import { JwtGuard } from '../guards/auth/jwt.guard';
 import { SetPolicies } from '../guards/casl/set-policies.meta';
 import { PolicyGuard } from '../guards/casl/policy.guard';
 
-export function ApiEndpoint ({
+export function ApiEndpoint({
   summary,
   guards,
   policies,

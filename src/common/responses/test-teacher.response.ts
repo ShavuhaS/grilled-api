@@ -18,7 +18,7 @@ export class TestTeacherResponse {
     description: 'Number of questions in the test',
     type: 'integer',
   })
-    questionCount: number;
+  questionCount: number;
 
   @ApiProperty({
     description: 'List of questions (with answers)',
@@ -28,5 +28,5 @@ export class TestTeacherResponse {
       { $ref: getSchemaPath(ShortAnswerQuestionTeacherResponse) },
     ],
   })
-    questions: TestQuestionTeacherResponse[];
+  questions: TestQuestionTeacherResponse[];
 }

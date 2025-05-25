@@ -4,5 +4,5 @@ export class AccessTokenResponse {
   @ApiProperty({
     description: 'Access token',
   })
-    accessToken: string;
+  accessToken: string;
 }

@@ -1,4 +1,4 @@
-export async function everyAsync<T> (
+export async function everyAsync<T>(
   array: T[],
   predicate: (item: T) => Promise<boolean> | boolean,
 ): Promise<boolean> {
@@ -6,7 +6,7 @@ export async function everyAsync<T> (
   return booleans.every((b) => b);
 }
 
-export async function orAsync (promises: Promise<boolean>[]): Promise<boolean> {
+export async function orAsync(promises: Promise<boolean>[]): Promise<boolean> {
   for (const promise of promises) {
     if ((await promise) === true) {
       return true;

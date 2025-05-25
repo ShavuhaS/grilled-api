@@ -5,5 +5,5 @@ export class TokensResponse extends AccessTokenResponse {
   @ApiProperty({
     description: 'Refresh token',
   })
-    refreshToken: string;
+  refreshToken: string;
 }

@@ -5,9 +5,9 @@ import { CourseTeacherResponse } from '../../../common/responses/course-teacher.
 
 @Injectable()
 export class TeacherMapper {
-  constructor () {}
+  constructor() {}
 
-  toBaseTeacherResponse (teacher: DbTeacher): BaseTeacherResponse {
+  toBaseTeacherResponse(teacher: DbTeacher): BaseTeacherResponse {
     return {
       workplace: teacher.workplace,
       position: teacher.position,
@@ -15,7 +15,7 @@ export class TeacherMapper {
     };
   }
 
-  toCourseTeacherResponse (teacher: DbTeacher): CourseTeacherResponse {
+  toCourseTeacherResponse(teacher: DbTeacher): CourseTeacherResponse {
     return {
       id: teacher.userId,
       avatar: teacher.user?.avatar,

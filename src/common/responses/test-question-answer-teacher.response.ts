@@ -4,15 +4,15 @@ export class TestQuestionAnswerTeacherResponse {
   @ApiProperty({
     description: 'Answer id',
   })
-    id: string;
+  id: string;
 
   @ApiProperty({
     description: 'Answer text',
   })
-    answer: string;
+  answer: string;
 
   @ApiProperty({
     description: 'Answer commentary (why it is right or wrong)',
   })
-    commentary: string;
+  commentary: string;
 }

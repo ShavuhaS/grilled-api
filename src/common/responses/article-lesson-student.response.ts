@@ -5,5 +5,5 @@ export class ArticleLessonStudentResponse extends LessonResponse {
   @ApiProperty({
     description: 'Lesson article link',
   })
-    articleLink?: string;
+  articleLink?: string;
 }

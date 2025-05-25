@@ -8,54 +8,54 @@ export class BaseCourseResponse {
   @ApiProperty({
     description: 'Course id',
   })
-    id: string;
+  id: string;
 
   @ApiProperty({
     description: 'Course author',
     type: CourseTeacherResponse,
   })
-    author: CourseTeacherResponse;
+  author: CourseTeacherResponse;
 
   @ApiProperty({
     description: 'Course category',
     type: BaseCourseCategoryResponse,
   })
-    category: BaseCourseCategoryResponse;
+  category: BaseCourseCategoryResponse;
 
   @ApiProperty({
     description: 'Course name',
   })
-    name: string;
+  name: string;
 
   @ApiProperty({
     description: 'Course description',
   })
-    about: string;
+  about: string;
 
   @ApiProperty({
     description: 'Course level (BEGINNER, INTERMEDIATE or EXPERT)',
     enum: CourseLevelEnum,
   })
-    level: CourseLevelEnum;
+  level: CourseLevelEnum;
 
   @ApiProperty({
     description: 'Course status (DRAFT, ARCHIVED or PUBLISHED)',
     enum: CourseStatusEnum,
   })
-    status: CourseStatusEnum;
+  status: CourseStatusEnum;
 
   @ApiProperty({
     description: 'Estimated time for course completion',
   })
-    estimatedTime: number;
+  estimatedTime: number;
 
   @ApiProperty({
     description: 'Number of students enrolled onto a course',
   })
-    enrolledCount: number;
+  enrolledCount: number;
 
   @ApiProperty({
     description: 'Course rating',
   })
-    rating: number;
+  rating: number;
 }

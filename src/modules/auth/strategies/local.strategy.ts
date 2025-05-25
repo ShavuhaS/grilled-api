@@ -6,11 +6,11 @@ import { DbUser } from '../../../database/entities/user.entity';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor (private authService: AuthService) {
+  constructor(private authService: AuthService) {
     super({ usernameField: 'email' } as any);
   }
 
-  async validate (email: string, password: string): Promise<DbUser | null> {
+  async validate(email: string, password: string): Promise<DbUser | null> {
     return this.authService.validateUser(email, password);
   }
 }

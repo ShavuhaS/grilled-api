@@ -25,7 +25,7 @@ export class DbCourse {
   estimatedTime: number;
   enrolledCount: number;
   @Type(() => DecimalNumber)
-    avgRating: DecimalNumber;
+  avgRating: DecimalNumber;
   reviewCount: number;
   createdAt?: Date;
   updatedAt?: Date;

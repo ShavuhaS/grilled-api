@@ -31,5 +31,5 @@ export class CreateLessonDto {
     },
   })
   @ValidateNested()
-    lesson: LessonDto;
+  lesson: LessonDto;
 }

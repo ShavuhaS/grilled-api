@@ -6,10 +6,10 @@ import { FileProcessedEvent } from '../../common/events/file-processed.event';
 
 @Injectable()
 export class UploadService {
-  constructor () {}
+  constructor() {}
 
   @OnEvent(FILE_PROCESSED_EVENT)
-  async deleteUnprocessedFile ({ filePath }: FileProcessedEvent) {
+  async deleteUnprocessedFile({ filePath }: FileProcessedEvent) {
     if (filePath) {
       await fs.unlink(filePath);
     }

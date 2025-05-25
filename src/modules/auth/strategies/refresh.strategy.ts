@@ -10,7 +10,7 @@ import { REFRESH_TOKEN_COOKIE } from '../constants/cookie-names.const';
 
 @Injectable()
 export class RefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
-  constructor (
+  constructor(
     private securityConfig: SecurityConfigService,
     private authService: AuthService,
   ) {
@@ -24,7 +24,7 @@ export class RefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {
     } as any);
   }
 
-  async validate (payload: JwtPayload): Promise<DbUser> {
+  async validate(payload: JwtPayload): Promise<DbUser> {
     return this.authService.validateUserPayload(payload);
   }
 }

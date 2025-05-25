@@ -36,12 +36,12 @@ export class TestService {
     [QuestionTypeEnum.SHORT_ANSWER]: this.createShortAnswerQuestion.bind(this),
   } as const;
 
-  constructor (
+  constructor(
     private testRepository: CourseTestRepository,
     private questionRepository: TestQuestionRepository,
   ) {}
 
-  async getUserResults (id: string, userId: string): Promise<TestResults> {
+  async getUserResults(id: string, userId: string): Promise<TestResults> {
     const test = await this.testRepository.findById(id);
 
     if (!test) {
@@ -56,7 +56,9 @@ export class TestService {
       { userAttempts: true },
     );
 
-    const userAttempt = userTest?.userAttempts?.find((a) => a.userId === userId);
+    const userAttempt = userTest?.userAttempts?.find(
+      (a) => a.userId === userId,
+    );
 
     return {
       score: userAttempt?.result?.toNumber() ?? null,
@@ -64,14 +66,14 @@ export class TestService {
     };
   }
 
-  async createEmpty (lessonId: string): Promise<DbLessonTest> {
+  async createEmpty(lessonId: string): Promise<DbLessonTest> {
     return this.testRepository.create({
       lesson: { connect: { id: lessonId } },
       questionCount: 0,
     });
   }
 
-  async create (
+  async create(
     dbLesson: DbCourseLesson,
     { lesson }: CreateResourceContext,
   ): Promise<DbCourseLesson> {
@@ -88,10 +90,9 @@ export class TestService {
       }
     }
 
-    const updatedTest = await this.testRepository.updateById(
-      test.id,
-      { questionCount: dbQuestions.length },
-    );
+    const updatedTest = await this.testRepository.updateById(test.id, {
+      questionCount: dbQuestions.length,
+    });
 
     updatedTest.questions = dbQuestions;
     dbLesson.test = updatedTest;
@@ -99,7 +100,7 @@ export class TestService {
     return dbLesson;
   }
 
-  validateTest ({ questions }: TestLessonDto) {
+  validateTest({ questions }: TestLessonDto) {
     for (const question of questions) {
       const isValid = this.questionValidMap[question.type];
       if (isValid !== undefined && !isValid(question)) {
@@ -108,21 +109,21 @@ export class TestService {
     }
   }
 
-  private isChoiceQuestionValid ({
+  private isChoiceQuestionValid({
     answers,
     rightAnswer,
   }: ChoiceTestQuestionDto): boolean {
     return 0 <= rightAnswer && rightAnswer < answers.length;
   }
 
-  private isMultiChoiceQuestionValid ({
+  private isMultiChoiceQuestionValid({
     answers,
     rightAnswers,
   }: MultiChoiceTestQuestionDto): boolean {
     return rightAnswers.every((ans) => 0 <= ans && ans < answers.length);
   }
 
-  private async createBaseQuestion (
+  private async createBaseQuestion(
     testId: string,
     { text, type }: TestQuestionDto,
   ): Promise<DbTestQuestion> {
@@ -133,7 +134,7 @@ export class TestService {
     });
   }
 
-  private async createChoiceQuestion (
+  private async createChoiceQuestion(
     testId: string,
     question: TestQuestionDto,
   ): Promise<DbTestQuestion> {
@@ -158,7 +159,7 @@ export class TestService {
     );
   }
 
-  private async createMultiChoiceQuestion (
+  private async createMultiChoiceQuestion(
     testId: string,
     question: TestQuestionDto,
   ): Promise<DbTestQuestion> {
@@ -183,7 +184,7 @@ export class TestService {
     );
   }
 
-  private async createShortAnswerQuestion (
+  private async createShortAnswerQuestion(
     testId: string,
     question: TestQuestionDto,
   ): Promise<DbTestQuestion> {

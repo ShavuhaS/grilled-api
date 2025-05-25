@@ -6,9 +6,9 @@ import { CourseCategoryResponse } from '../../../common/responses/course-categor
 
 @Injectable()
 export class CourseCategoryMapper {
-  constructor () {}
+  constructor() {}
 
-  toBaseCourseCategoryResponse (
+  toBaseCourseCategoryResponse(
     category: DbCourseCategory,
   ): BaseCourseCategoryResponse {
     return {
@@ -17,7 +17,7 @@ export class CourseCategoryMapper {
     };
   }
 
-  toCourseCategoriesResponse (
+  toCourseCategoriesResponse(
     categories: DbCourseCategory[],
   ): CourseCategoriesResponse {
     return {
@@ -27,7 +27,7 @@ export class CourseCategoryMapper {
     };
   }
 
-  toCourseCategoryResponse ({
+  toCourseCategoryResponse({
     subcategories,
     ...category
   }: DbCourseCategory): CourseCategoryResponse {

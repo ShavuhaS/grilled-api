@@ -1,14 +1,15 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
-import { DefaultForbiddenResponse, DefaultUnauthorizedResponse } from '../../default-responses.constants';
+import {
+  DefaultForbiddenResponse,
+  DefaultUnauthorizedResponse,
+} from '../../default-responses.constants';
 import { VideoUploadDto } from '../../../dtos/video-upload.dto';
 import { VideoLessonTeacherResponse } from '../../../responses/video-lesson-teacher.response';
 
 export const UploadVideoDocumentation: ApiDocumentationParams = {
   authRequired: true,
   acceptsFile: true,
-  policies: [
-    'Only the course owner can upload the file',
-  ],
+  policies: ['Only the course owner can upload the file'],
   params: [
     {
       name: 'courseId',

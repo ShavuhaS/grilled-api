@@ -30,7 +30,7 @@ import {
 
 @Injectable()
 export class AuthService {
-  constructor (
+  constructor(
     private userRepository: UserRepository,
     private emailTokenRepository: EmailTokenRepository,
     private jwtService: JwtService,
@@ -39,7 +39,7 @@ export class AuthService {
     private emailService: EmailService,
   ) {}
 
-  async validateUser (email: string, password: string): Promise<DbUser> {
+  async validateUser(email: string, password: string): Promise<DbUser> {
     const user = await this.userRepository.findOne({ email });
 
     if (!user) {
@@ -58,7 +58,7 @@ export class AuthService {
     return user;
   }
 
-  async validateUserPayload (payload: JwtPayload): Promise<DbUser> {
+  async validateUserPayload(payload: JwtPayload): Promise<DbUser> {
     if (!payload) {
       throw new UnauthorizedException();
     }
@@ -78,17 +78,17 @@ export class AuthService {
     return user;
   }
 
-  async hashPassword (password: string): Promise<string> {
+  async hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
     const salt = await bcrypt.genSalt(saltRounds);
     return bcrypt.hash(password, salt);
   }
 
-  async checkPassword (password: string, hash: string): Promise<boolean> {
+  async checkPassword(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
   }
 
-  createPayload (user: DbUser): JwtPayload {
+  createPayload(user: DbUser): JwtPayload {
     return {
       sub: user.id,
       username: user.email,
@@ -96,7 +96,7 @@ export class AuthService {
     };
   }
 
-  getTokens (user: DbUser): TokensResponse {
+  getTokens(user: DbUser): TokensResponse {
     const payload = this.createPayload(user);
 
     return {
@@ -105,18 +105,18 @@ export class AuthService {
     };
   }
 
-  getAccessToken (user: JwtPayload): string {
+  getAccessToken(user: JwtPayload): string {
     return this.jwtService.sign(user);
   }
 
-  getRefreshToken (user: JwtPayload): string {
+  getRefreshToken(user: JwtPayload): string {
     return this.jwtService.sign(user, {
       secret: this.securityConfig.refreshSecret,
       expiresIn: this.securityConfig.refreshTtlStr,
     } as any);
   }
 
-  login (user: DbUser): TokensResponse {
+  login(user: DbUser): TokensResponse {
     if (user.state !== UserStateEnum.CONFIRMED) {
       throw new EmailNotConfirmedException();
     }
@@ -124,13 +124,13 @@ export class AuthService {
     return this.getTokens(user);
   }
 
-  refreshToken (user: DbUser): AccessTokenResponse {
+  refreshToken(user: DbUser): AccessTokenResponse {
     const payload = this.createPayload(user);
 
     return { accessToken: this.getAccessToken(payload) };
   }
 
-  async signUp (dto: RegistrationDto) {
+  async signUp(dto: RegistrationDto) {
     const user = await this.userRepository.findOne({ email: dto.email });
     if (!!user) {
       throw new AlreadyRegisteredException();
@@ -144,14 +144,14 @@ export class AuthService {
     await this.sendVerificationEmail(newUser);
   }
 
-  async sendVerificationEmail (user: DbUser) {
+  async sendVerificationEmail(user: DbUser) {
     const existingToken = await this.emailTokenRepository.findByUserId(user.id);
     if (!!existingToken) {
       throw new EmailAlreadySentException();
     }
 
     const { id: userId, email: to } = user;
-    const { token } = await this.emailTokenRepository.create(userId);
+    const { token } = await this.emailTokenRepository.create({ userId });
     const link = `${this.urlConfig.front}/signup/finish?token=${token}`;
 
     await this.emailService.sendVerificationEmail({ to, link });
@@ -159,7 +159,7 @@ export class AuthService {
 
   // Every hour
   @Cron('0 0 */1 * * *')
-  async deleteUnverifiedAccounts () {
+  async deleteUnverifiedAccounts() {
     const hourAgo = new Date(Date.now() - milliseconds.HOUR);
     const { count } = await this.userRepository.deleteMany({
       state: UserState.PENDING,
@@ -171,8 +171,8 @@ export class AuthService {
     console.info(`Successfully deleted ${count} unverified users`);
   }
 
-  async verifyEmail (token: string): Promise<TokensResponse> {
-    const res = await this.emailTokenRepository.find(token, { user: true });
+  async verifyEmail(token: string): Promise<TokensResponse> {
+    const res = await this.emailTokenRepository.find({ token }, { user: true });
 
     if (!res) {
       throw new InvalidTokenException();
@@ -210,7 +210,7 @@ export class AuthService {
     return this.getTokens(updatedUser);
   }
 
-  setAccessTokenCookie (res: Response, accessToken: string) {
+  setAccessTokenCookie(res: Response, accessToken: string) {
     res.cookie(ACCESS_TOKEN_COOKIE, accessToken, {
       domain: this.urlConfig.domain,
       maxAge: this.securityConfig.accessTtl * 1000,
@@ -220,13 +220,13 @@ export class AuthService {
     });
   }
 
-  clearAccessTokenCookie (res: Response) {
+  clearAccessTokenCookie(res: Response) {
     res.clearCookie(ACCESS_TOKEN_COOKIE, {
       domain: this.urlConfig.domain,
     });
   }
 
-  setRefreshTokenCookie (res: Response, refreshToken: string) {
+  setRefreshTokenCookie(res: Response, refreshToken: string) {
     res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {
       domain: this.urlConfig.domain,
       path: '/v1/auth',
@@ -237,7 +237,7 @@ export class AuthService {
     });
   }
 
-  clearRefreshTokenCookie (res: Response) {
+  clearRefreshTokenCookie(res: Response) {
     res.clearCookie(REFRESH_TOKEN_COOKIE, {
       domain: this.urlConfig.domain,
       path: '/v1/auth',

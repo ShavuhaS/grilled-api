@@ -1,7 +1,8 @@
 import {
   ArgumentsHost,
   Catch,
-  ExceptionFilter, ExecutionContext,
+  ExceptionFilter,
+  ExecutionContext,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
@@ -15,9 +16,9 @@ import { FileProcessedEvent } from '../events/file-processed.event';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
-  constructor (private eventEmitter: EventEmitter2) {}
+  constructor(private eventEmitter: EventEmitter2) {}
 
-  async catch (exception: Error, host: ArgumentsHost) {
+  async catch(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse<Response>();
 
@@ -57,21 +58,27 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
   }
 
-  private handleDanglingFiles (ctx: HttpArgumentsHost) {
+  private handleDanglingFiles(ctx: HttpArgumentsHost) {
     const req = ctx.getRequest<Request>();
 
     if (req.file) {
-      this.eventEmitter.emit(FILE_PROCESSED_EVENT, new FileProcessedEvent(req.file.path));
+      this.eventEmitter.emit(
+        FILE_PROCESSED_EVENT,
+        new FileProcessedEvent(req.file.path),
+      );
     }
 
     if (Array.isArray(req.files)) {
       for (const file of req.files) {
-        this.eventEmitter.emit(FILE_PROCESSED_EVENT, new FileProcessedEvent(file.path));
+        this.eventEmitter.emit(
+          FILE_PROCESSED_EVENT,
+          new FileProcessedEvent(file.path),
+        );
       }
     }
   }
 
-  private getErrorMsg (exception: Error, ctx: HttpArgumentsHost): string {
+  private getErrorMsg(exception: Error, ctx: HttpArgumentsHost): string {
     const req = ctx.getRequest<Request>();
     const { method, path } = req;
     const environment = process.env.NODE_ENV?.toUpperCase();

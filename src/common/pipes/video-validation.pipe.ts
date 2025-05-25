@@ -11,9 +11,9 @@ const MAX_VIDEO_SIZE = GIGABYTE;
 
 @Injectable()
 export class VideoValidationPipe implements PipeTransform {
-  constructor () {}
+  constructor() {}
 
-  transform (video: Express.Multer.File): Express.Multer.File {
+  transform(video: Express.Multer.File): Express.Multer.File {
     if (!video) {
       throw new NoFileException();
     }

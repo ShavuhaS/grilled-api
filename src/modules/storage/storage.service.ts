@@ -11,9 +11,7 @@ import { getDateString } from '../../common/utils/date.utils';
 export class StorageService {
   private readonly bucket: Bucket;
 
-  constructor (
-    private storageConfig: StorageConfigService,
-  ) {
+  constructor(private storageConfig: StorageConfigService) {
     const app = initializeApp({
       credential: cert(storageConfig.credential),
       storageBucket: storageConfig.bucket,
@@ -21,7 +19,7 @@ export class StorageService {
     this.bucket = getStorage(app).bucket();
   }
 
-  private getVideoPath (video: Express.Multer.File): string {
+  private getVideoPath(video: Express.Multer.File): string {
     const date = getDateString();
     const uuid = crypto.randomUUID().slice(0, 8);
     const filename = video.originalname;
@@ -29,7 +27,9 @@ export class StorageService {
     return `videos/${date}-${uuid}-${filename}`;
   }
 
-  async uploadVideo (video: Express.Multer.File): Promise<{ storagePath: string }> {
+  async uploadVideo(
+    video: Express.Multer.File,
+  ): Promise<{ storagePath: string }> {
     const storagePath = this.getVideoPath(video);
 
     await this.uploadFile(storagePath, video, {
@@ -39,12 +39,12 @@ export class StorageService {
     return { storagePath };
   }
 
-  private getArticlePath (): string {
+  private getArticlePath(): string {
     const uuid = crypto.randomUUID();
     return `articles/${uuid}.html`;
   }
 
-  async uploadArticle (text: string): Promise<{ storagePath: string }> {
+  async uploadArticle(text: string): Promise<{ storagePath: string }> {
     const buffer = Buffer.from(text);
     const storagePath = this.getArticlePath();
 
@@ -55,7 +55,7 @@ export class StorageService {
     return { storagePath };
   }
 
-  async getSignedUrl (storagePath: string): Promise<string> {
+  async getSignedUrl(storagePath: string): Promise<string> {
     return (
       await this.bucket.file(storagePath).getSignedUrl({
         action: 'read',
@@ -64,11 +64,11 @@ export class StorageService {
     )[0];
   }
 
-  async deleteFile (storagePath: string) {
+  async deleteFile(storagePath: string) {
     await this.bucket.file(storagePath).delete();
   }
 
-  private async uploadFile (
+  private async uploadFile(
     storagePath: string,
     file: Express.Multer.File | Buffer,
     options?: CreateWriteStreamOptions,
@@ -84,7 +84,7 @@ export class StorageService {
     return this.uploadFileFromDisk(storagePath, file, options);
   }
 
-  private async uploadFileFromMemory (
+  private async uploadFileFromMemory(
     storagePath: string,
     buffer: Buffer,
     options?: CreateWriteStreamOptions,
@@ -92,7 +92,7 @@ export class StorageService {
     return this.bucket.file(storagePath).save(buffer, options);
   }
 
-  private async uploadFileFromDisk (
+  private async uploadFileFromDisk(
     storagePath: string,
     file: Express.Multer.File,
     options?: CreateWriteStreamOptions,
@@ -103,10 +103,7 @@ export class StorageService {
       .createWriteStream(options);
 
     return new Promise<void>((resolve, reject) => {
-      fileStream
-        .pipe(uploadStream)
-        .on('error', reject)
-        .on('finish', resolve);
+      fileStream.pipe(uploadStream).on('error', reject).on('finish', resolve);
     });
   }
 }

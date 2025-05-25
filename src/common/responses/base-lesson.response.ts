@@ -5,26 +5,26 @@ export class BaseLessonResponse {
   @ApiProperty({
     description: 'Course lesson id',
   })
-    id: string;
+  id: string;
 
   @ApiProperty({
     description: 'Course lesson name',
   })
-    name: string;
+  name: string;
 
   @ApiProperty({
     description: 'Course lesson number (within module)',
   })
-    number: number;
+  number: number;
 
   @ApiProperty({
     description: 'Course lesson type (VIDEO, ARTICLE or TEST)',
     enum: LessonTypeEnum,
   })
-    type: LessonTypeEnum;
+  type: LessonTypeEnum;
 
   @ApiProperty({
     description: 'Estimated time to complete the lesson',
   })
-    estimatedTime: number;
+  estimatedTime: number;
 }

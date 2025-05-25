@@ -4,20 +4,20 @@ export class BaseCourseModuleResponse {
   @ApiProperty({
     description: 'Course module id',
   })
-    id: string;
+  id: string;
 
   @ApiProperty({
     description: 'Course module name',
   })
-    name: string;
+  name: string;
 
   @ApiProperty({
     description: 'Course module number (within course)',
   })
-    number: number;
+  number: number;
 
   @ApiProperty({
     description: 'Estimated time to complete the module (in minutes)',
   })
-    estimatedTime: number;
+  estimatedTime: number;
 }

@@ -14,7 +14,7 @@ import { validationExceptionFactory } from './common/utils/validation-exception.
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 
-async function bootstrap () {
+async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
   const port = configService.get<number>('port');

@@ -6,9 +6,9 @@ import { UserResponse } from '../../../common/responses/user.response';
 
 @Injectable()
 export class UserMapper {
-  constructor (private teacherMapper: TeacherMapper) {}
+  constructor(private teacherMapper: TeacherMapper) {}
 
-  toBaseUserResponse (user: DbUser): BaseUserResponse {
+  toBaseUserResponse(user: DbUser): BaseUserResponse {
     return {
       id: user.id,
       googleId: user.googleId,
@@ -22,7 +22,7 @@ export class UserMapper {
     };
   }
 
-  toUserResponse (user: DbUser): UserResponse {
+  toUserResponse(user: DbUser): UserResponse {
     return {
       ...this.toBaseUserResponse(user),
       teacher: user.teacher

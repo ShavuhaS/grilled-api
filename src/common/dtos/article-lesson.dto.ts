@@ -2,7 +2,8 @@ import { BaseLessonDto } from './base-lesson.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsInt,
-  IsNotEmpty, IsOptional,
+  IsNotEmpty,
+  IsOptional,
   IsString,
   Max,
   MaxLength,
@@ -19,13 +20,13 @@ export class ArticleLessonDto extends BaseLessonDto {
   @IsString({ message: 'Article must be a string' })
   @MinLength(50, { message: 'Article must be at least 50 characters long' })
   @MaxLength(5000, { message: 'Article must be at most 5000 characters long' })
-    article: string;
+  article: string;
 
   @ApiProperty({
     description: 'Lesson type (ARTICLE)',
     enum: [LessonTypeEnum.ARTICLE],
   })
-    type: LessonTypeEnum.ARTICLE;
+  type: LessonTypeEnum.ARTICLE;
 
   @ApiProperty({
     description:
@@ -35,5 +36,5 @@ export class ArticleLessonDto extends BaseLessonDto {
   @IsInt({ message: 'Estimated time must be an integer' })
   @Min(1, { message: 'Estimated time must be positive' })
   @Max(180, { message: 'Estimated time can not be longer than 3 hours' })
-    estimatedTime: number;
+  estimatedTime: number;
 }

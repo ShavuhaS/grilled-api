@@ -20,12 +20,12 @@ import { TestResults } from '../../test/types/test-results.type';
 
 @Injectable()
 export class LessonMapper {
-  constructor (
+  constructor(
     private resourceMapper: LessonResourceMapper,
     private testMapper: TestMapper,
   ) {}
 
-  toBaseLessonResponse (lesson: DbCourseLesson): BaseLessonResponse {
+  toBaseLessonResponse(lesson: DbCourseLesson): BaseLessonResponse {
     return {
       id: lesson.id,
       name: lesson.name,
@@ -35,7 +35,7 @@ export class LessonMapper {
     };
   }
 
-  toLessonResponse (
+  toLessonResponse(
     lesson: DbCourseLesson,
     options: LessonMappingOptions,
   ): LessonResponse {
@@ -54,7 +54,7 @@ export class LessonMapper {
     };
   }
 
-  toLessonTeacherResponse (lesson: DbCourseLesson): LessonTeacherResponse {
+  toLessonTeacherResponse(lesson: DbCourseLesson): LessonTeacherResponse {
     switch (lesson.type) {
       case LessonTypeEnum.ARTICLE:
         return this.toArticleLessonTeacherResponse(lesson);
@@ -67,7 +67,7 @@ export class LessonMapper {
     }
   }
 
-  toArticleLessonTeacherResponse (
+  toArticleLessonTeacherResponse(
     lesson: DbCourseLesson,
   ): ArticleLessonTeacherResponse {
     const article = lesson.resources?.find(
@@ -80,7 +80,7 @@ export class LessonMapper {
     } as ArticleLessonTeacherResponse;
   }
 
-  toVideoLessonTeacherResponse (
+  toVideoLessonTeacherResponse(
     lesson: DbCourseLesson,
   ): VideoLessonTeacherResponse {
     const video = lesson.resources?.find(
@@ -93,7 +93,7 @@ export class LessonMapper {
     } as VideoLessonTeacherResponse;
   }
 
-  toTestLessonTeacherResponse (
+  toTestLessonTeacherResponse(
     lesson: DbCourseLesson,
   ): TestLessonTeacherResponse {
     return {
@@ -102,7 +102,7 @@ export class LessonMapper {
     } as TestLessonTeacherResponse;
   }
 
-  toLessonStudentResponse (
+  toLessonStudentResponse(
     lesson: DbCourseLesson,
     context: LessonUserContext,
   ): LessonStudentResponse {
@@ -114,13 +114,17 @@ export class LessonMapper {
       case LessonTypeEnum.VIDEO:
         return this.toVideoLessonStudentResponse(lesson, context.completed);
       case LessonTypeEnum.TEST:
-        return this.toTestLessonStudentResponse(lesson, context.completed, context.testResults);
+        return this.toTestLessonStudentResponse(
+          lesson,
+          context.completed,
+          context.testResults,
+        );
       default:
         return null;
     }
   }
 
-  toArticleLessonStudentResponse (
+  toArticleLessonStudentResponse(
     lesson: DbCourseLesson,
     completed: boolean,
   ): ArticleLessonStudentResponse {
@@ -134,7 +138,7 @@ export class LessonMapper {
     } as ArticleLessonStudentResponse;
   }
 
-  toVideoLessonStudentResponse (
+  toVideoLessonStudentResponse(
     lesson: DbCourseLesson,
     completed: boolean,
   ): VideoLessonStudentResponse {
@@ -148,7 +152,7 @@ export class LessonMapper {
     } as VideoLessonStudentResponse;
   }
 
-  toTestLessonStudentResponse (
+  toTestLessonStudentResponse(
     lesson: DbCourseLesson,
     completed: boolean,
     testResults: TestResults,

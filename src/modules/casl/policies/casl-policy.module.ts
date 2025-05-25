@@ -5,7 +5,11 @@ import { CourseUpdatePolicy } from './course/update';
 import { CourseAccessContentPolicy } from './course/access-content';
 
 @Module({
-  providers: [CourseEnrollPolicy, CourseUpdatePolicy, CourseAccessContentPolicy],
+  providers: [
+    CourseEnrollPolicy,
+    CourseUpdatePolicy,
+    CourseAccessContentPolicy,
+  ],
   exports: [CourseEnrollPolicy, CourseUpdatePolicy, CourseAccessContentPolicy],
   imports: [PrismaModule],
 })

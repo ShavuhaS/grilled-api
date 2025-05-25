@@ -15,7 +15,7 @@ export class CreateCourseDto {
   })
   @IsNotEmpty({ message: 'Category id must not be empty' })
   @IsUUID(undefined, { message: 'Category id must be a valid UUID' })
-    categoryId: string;
+  categoryId: string;
 
   @ApiProperty({
     description: 'Course name',
@@ -24,7 +24,7 @@ export class CreateCourseDto {
   @IsString({ message: 'Course name must be a string' })
   @MinLength(5, { message: 'Course name must be at least 5 characters long' })
   @MaxLength(60, { message: 'Course name must be at most 60 characters long' })
-    name: string;
+  name: string;
 
   @ApiProperty({
     description: 'Course description',
@@ -34,7 +34,7 @@ export class CreateCourseDto {
   @MaxLength(1000, {
     message: 'Course decription must be at most 1000 characters long',
   })
-    about: string;
+  about: string;
 
   @ApiProperty({
     description: 'Course level (BEGINNER, INTERMEDIATE or EXPERT)',
@@ -44,5 +44,5 @@ export class CreateCourseDto {
   @IsEnum(CourseLevelEnum, {
     message: 'Course level must be either BEGINNER, INTERMEDIATE or EXPERT',
   })
-    level: CourseLevelEnum;
+  level: CourseLevelEnum;
 }

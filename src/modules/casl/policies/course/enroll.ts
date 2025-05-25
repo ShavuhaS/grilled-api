@@ -11,9 +11,9 @@ import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class CourseEnrollPolicy implements IPolicyHandler<CourseAction> {
-  constructor (private courseRepository: CourseRepository) {}
+  constructor(private courseRepository: CourseRepository) {}
 
-  async handle (
+  async handle(
     ability: AppAbility<CourseAction>,
     req: Request,
   ): Promise<boolean> {

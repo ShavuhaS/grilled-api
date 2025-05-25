@@ -11,7 +11,7 @@ import { ApiTags } from '@nestjs/swagger';
   version: '1',
 })
 export class CourseCategoryController {
-  constructor (
+  constructor(
     private categoryService: CourseCategoryService,
     private categoryMapper: CourseCategoryMapper,
   ) {}
@@ -21,7 +21,7 @@ export class CourseCategoryController {
     documentation: CourseCategoryDocumentation.GET_ALL,
   })
   @Get('/')
-  async getAll () {
+  async getAll() {
     const categories = await this.categoryService.getAllRootCategories();
     return this.categoryMapper.toCourseCategoriesResponse(categories);
   }
@@ -31,7 +31,7 @@ export class CourseCategoryController {
     documentation: CourseCategoryDocumentation.GET,
   })
   @Get('/:id')
-  async getWithSubcategories (@Param('id') categoryId: string) {
+  async getWithSubcategories(@Param('id') categoryId: string) {
     const category =
       await this.categoryService.getWithSubcategories(categoryId);
     return this.categoryMapper.toCourseCategoryResponse(category);

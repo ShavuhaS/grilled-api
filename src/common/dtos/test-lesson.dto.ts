@@ -37,14 +37,14 @@ export class TestLessonDto extends BaseLessonDto {
     description: 'Lesson type (TEST)',
     enum: [LessonTypeEnum.TEST],
   })
-    type: LessonTypeEnum.TEST;
+  type: LessonTypeEnum.TEST;
 
   @ApiPropertyOptional({
     description:
       'Estimated time in minutes to complete the lesson (required if lesson type is ARTICLE)',
   })
   @IsOptional()
-    estimatedTime?: number;
+  estimatedTime?: number;
 
   @ApiProperty({
     description: 'Test questions',
@@ -73,5 +73,5 @@ export class TestLessonDto extends BaseLessonDto {
     },
   })
   @ValidateNested({ each: true })
-    questions: TestQuestionDto[];
+  questions: TestQuestionDto[];
 }

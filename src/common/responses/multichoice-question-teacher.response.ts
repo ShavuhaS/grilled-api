@@ -6,10 +6,10 @@ export class MultichoiceQuestionTeacherResponse extends TestQuestionResponse {
   @ApiProperty({
     description: 'Question answer options',
   })
-    answers: TestQuestionAnswerTeacherResponse[];
+  answers: TestQuestionAnswerTeacherResponse[];
 
   @ApiProperty({
     description: 'Right answers (ids)',
   })
-    rightAnswers: string[];
+  rightAnswers: string[];
 }

@@ -25,11 +25,11 @@ export class BaseLessonDto {
   @IsString({ message: 'Name must be a string' })
   @MinLength(5, { message: 'Name must be at least 5 characters long' })
   @MaxLength(50, { message: 'Name must be at most 50 characters long' })
-    name: string;
+  name: string;
 
   @IsNotEmpty({ message: 'Type must not be empty' })
   @IsEnum(LessonTypeEnum, { message: 'Type must be ARTICLE, VIDEO or TEST' })
-    type: LessonTypeEnum;
+  type: LessonTypeEnum;
 
   @ApiPropertyOptional({
     description: 'Lesson useful links',
@@ -39,10 +39,10 @@ export class BaseLessonDto {
   @IsArray({ message: 'Links must be an array' })
   @Type(() => LessonLinkDto)
   @ValidateNested({ each: true })
-    links?: LessonLinkDto[];
+  links?: LessonLinkDto[];
 
   @IsInt({ message: 'Estimated time must be an integer' })
   @Min(1, { message: 'Estimated time must be positive' })
   @Max(180, { message: 'Estimated time can not be longer than 3 hours' })
-    estimatedTime?: number;
+  estimatedTime?: number;
 }

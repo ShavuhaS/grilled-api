@@ -8,10 +8,10 @@ export class CourseModuleResponse extends BaseCourseModuleResponse {
       'Course module lessons (with links if the user owns the course or enrolled onto it)',
     type: [BaseLessonResponse],
   })
-    lessons: BaseLessonResponse[];
+  lessons: BaseLessonResponse[];
 
   @ApiPropertyOptional({
     description: 'Module progress (if the user is enrolled)',
   })
-    progress?: number;
+  progress?: number;
 }

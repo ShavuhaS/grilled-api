@@ -2,27 +2,32 @@ import { PipeTransform } from '@nestjs/common';
 import { Repository } from '../../database/interfaces/repository.interface';
 import { InvalidEntityIdException } from '../exceptions/invalid-entity-id.exception';
 
-export class EntityByIdPipe<T = any> implements PipeTransform {
-  constructor (
-    protected readonly repository: Repository<T>,
+export class EntityByIdPipe implements PipeTransform {
+  constructor(
+    protected readonly repository: Repository<any, any>,
     protected readonly entityName: string,
   ) {}
 
-  async transform (value: string[] | string): Promise<any> {
+  async transform(value: string[] | string): Promise<any> {
     if (Array.isArray(value)) {
       return this.transformArray(value);
     }
     return this.transformId(value);
   }
 
-  async transformArray (ids: string[]): Promise<string[]> {
-    for (const id of ids) {
-      await this.transformId(id);
+  async transformArray(ids: string[]): Promise<string[]> {
+    const count = await this.repository.count({
+      id: { in: ids },
+    });
+
+    if (count < ids.length) {
+      throw new InvalidEntityIdException(this.entityName);
     }
+
     return ids;
   }
 
-  async transformId (id: string): Promise<string> {
+  async transformId(id: string): Promise<string> {
     const entity = await this.repository.findById(id);
 
     if (!entity) {
@@ -31,5 +36,4 @@ export class EntityByIdPipe<T = any> implements PipeTransform {
 
     return id;
   }
-
 }

@@ -1,5 +1,8 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
-import { DefaultForbiddenResponse, DefaultUnauthorizedResponse } from '../../default-responses.constants';
+import {
+  DefaultForbiddenResponse,
+  DefaultUnauthorizedResponse,
+} from '../../default-responses.constants';
 import { UpdateLessonDto } from '../../../dtos/update-lesson.dto';
 import { getSchemaPath } from '@nestjs/swagger';
 import { ArticleLessonTeacherResponse } from '../../../responses/article-lesson-teacher.response';
@@ -8,9 +11,7 @@ import { TestLessonTeacherResponse } from '../../../responses/test-lesson-teache
 
 export const UpdateLessonDocumentation: ApiDocumentationParams = {
   authRequired: true,
-  policies: [
-    'Only the course owner can update the lesson',
-  ],
+  policies: ['Only the course owner can update the lesson'],
   params: [
     {
       name: 'courseId',

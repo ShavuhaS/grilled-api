@@ -7,7 +7,7 @@ export class TestQuestionAnswerDto {
   })
   @IsNotEmpty({ message: 'Answer text must not be empty' })
   @IsString({ message: 'Answer text must be a string' })
-    text: string;
+  text: string;
 
   @ApiPropertyOptional({
     description: 'Answer commentary (why it correct or wrong)',
@@ -15,5 +15,5 @@ export class TestQuestionAnswerDto {
   @IsOptional()
   @IsNotEmpty({ message: 'Answer commentary must not be empty' })
   @IsString({ message: 'Answer commentary must be a string' })
-    commentary?: string;
+  commentary?: string;
 }

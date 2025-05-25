@@ -6,5 +6,5 @@ export class VideoUploadDto {
     type: 'string',
     format: 'binary',
   })
-    video: any;
+  video: any;
 }

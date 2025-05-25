@@ -7,9 +7,9 @@ import { ModuleMappingOptions } from '../interfaces/module-mapping-options.inter
 
 @Injectable()
 export class CourseModuleMapper {
-  constructor (private lessonMapper: LessonMapper) {}
+  constructor(private lessonMapper: LessonMapper) {}
 
-  toBaseCourseModuleResponse (module: DbCourseModule): BaseCourseModuleResponse {
+  toBaseCourseModuleResponse(module: DbCourseModule): BaseCourseModuleResponse {
     return {
       id: module.id,
       name: module.name,
@@ -18,7 +18,7 @@ export class CourseModuleMapper {
     };
   }
 
-  toCourseModuleResponse (
+  toCourseModuleResponse(
     module: DbCourseModule,
     { links, progress, completed }: ModuleMappingOptions,
   ): CourseModuleResponse {

@@ -5,5 +5,5 @@ export class ArticleLessonTeacherResponse extends LessonBaseTeacherResponse {
   @ApiProperty({
     description: 'Article link (signed URL to html markup)',
   })
-    articleLink: string;
+  articleLink: string;
 }

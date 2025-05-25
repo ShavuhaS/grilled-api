@@ -5,10 +5,10 @@ export class ShortAnswerQuestionTeacherResponse extends TestQuestionResponse {
   @ApiProperty({
     description: 'Right answer id',
   })
-    answerId: string;
+  answerId: string;
 
   @ApiProperty({
     description: 'Right answer (text)',
   })
-    answer: string;
+  answer: string;
 }

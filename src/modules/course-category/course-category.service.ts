@@ -5,15 +5,15 @@ import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity
 
 @Injectable()
 export class CourseCategoryService {
-  constructor (private categoryRepository: CourseCategoryRepository) {}
+  constructor(private categoryRepository: CourseCategoryRepository) {}
 
-  async getAllRootCategories (): Promise<DbCourseCategory[]> {
+  async getAllRootCategories(): Promise<DbCourseCategory[]> {
     return this.categoryRepository.findMany({
       parent: null,
     });
   }
 
-  async getWithSubcategories (id: string): Promise<DbCourseCategory> {
+  async getWithSubcategories(id: string): Promise<DbCourseCategory> {
     const category = await this.categoryRepository.findById(id, {
       subcategories: true,
     });

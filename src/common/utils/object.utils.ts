@@ -1,15 +1,15 @@
-export function nonEmptyObject<T extends object> (obj: T): T | undefined {
+export function nonEmptyObject<T extends object>(obj: T): T | undefined {
   return Object.keys(obj).length === 0 ? undefined : obj;
 }
 
-export function formattedJson (
+export function formattedJson(
   obj: object,
   indent: string | number = '\t',
 ): string {
   return JSON.stringify(obj, null, indent);
 }
 
-export function isClass (obj: any): boolean {
+export function isClass(obj: any): boolean {
   if (typeof obj !== 'function') {
     return false;
   }

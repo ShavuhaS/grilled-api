@@ -6,10 +6,10 @@ export class ChoiceQuestionTeacherResponse extends TestQuestionResponse {
   @ApiProperty({
     description: 'Question answer options',
   })
-    answers: TestQuestionAnswerTeacherResponse[];
+  answers: TestQuestionAnswerTeacherResponse[];
 
   @ApiProperty({
     description: 'Right answer (id)',
   })
-    rightAnswer: string;
+  rightAnswer: string;
 }

@@ -6,5 +6,5 @@ export class CourseCategoryResponse extends BaseCourseCategoryResponse {
     description: 'Course subcategories',
     type: [BaseCourseCategoryResponse],
   })
-    subcategories?: BaseCourseCategoryResponse[];
+  subcategories?: BaseCourseCategoryResponse[];
 }
