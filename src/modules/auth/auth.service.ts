@@ -223,6 +223,8 @@ export class AuthService {
   clearAccessTokenCookie(res: Response) {
     res.clearCookie(ACCESS_TOKEN_COOKIE, {
       domain: this.urlConfig.domain,
+      secure: true,
+      sameSite: 'none',
     });
   }
 
@@ -241,6 +243,8 @@ export class AuthService {
     res.clearCookie(REFRESH_TOKEN_COOKIE, {
       domain: this.urlConfig.domain,
       path: '/v1/auth',
+      secure: true,
+      sameSite: 'none',
     });
   }
 }
