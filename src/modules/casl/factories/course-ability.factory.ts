@@ -56,7 +56,7 @@ export class CourseAbilityFactory implements AbilityFactory<CourseAction> {
 
     const courseIds = userCourses.map(({ id }) => id);
 
-    can(CourseAction.ACCESS_CONTENT, DbCourse, {
+    can([CourseAction.ACCESS_CONTENT, CourseAction.COMPLETE], DbCourse, {
       id: { $in: courseIds },
     });
   }
@@ -70,11 +70,15 @@ export class CourseAbilityFactory implements AbilityFactory<CourseAction> {
     can(CourseAction.CREATE, DbCourse);
     can(CourseAction.READ, DbCourse);
     can(
-      [CourseAction.UPDATE, CourseAction.DELETE, CourseAction.ACCESS_CONTENT],
+      [
+        CourseAction.UPDATE,
+        CourseAction.DELETE,
+        CourseAction.ACCESS_CONTENT,
+        CourseAction.PUBLISH,
+        CourseAction.CHECK_STATUS,
+      ],
       DbCourse,
-      {
-        authorId: user.id,
-      },
+      { authorId: user.id },
     );
     cannot([CourseAction.UPDATE, CourseAction.DELETE], DbCourse, {
       enrolledCount: { $gt: 0 },

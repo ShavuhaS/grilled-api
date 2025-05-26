@@ -7,4 +7,7 @@ export enum CourseAction {
   ENROLL = 'enroll',
   ACCESS_CONTENT = 'access_content',
   DRAFT = 'draft',
+  PUBLISH = 'publish',
+  CHECK_STATUS = 'check_status',
+  COMPLETE = 'complete',
 }

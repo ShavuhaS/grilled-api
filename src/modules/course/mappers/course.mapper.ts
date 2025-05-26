@@ -6,6 +6,8 @@ import { CourseCategoryMapper } from '../../course-category/mappers/course-categ
 import { CourseResponse } from '../../../common/responses/course.response';
 import { CourseModuleMapper } from '../../course-module/mappers/course-module.mapper';
 import { CourseMappingOptions } from '../interfaces/course-mapping-options.interface';
+import { PaginatedCoursesResponse } from '../../../common/responses/paginated-courses.response';
+import { Paginated } from '../../../database/interfaces/paginated.interface';
 
 @Injectable()
 export class CourseMapper {
@@ -24,6 +26,7 @@ export class CourseMapper {
       ),
       about: course.about,
       name: course.name,
+      avatarLink: course.avatarLink,
       level: course.level,
       status: course.status,
       enrolledCount: course.enrolledCount,
@@ -48,6 +51,16 @@ export class CourseMapper {
       ...this.toBaseCourseResponse(course),
       progress: progress && +progress.course.toFixed(1),
       modules,
+    };
+  }
+
+  toPaginatedCoursesResponse({
+    data,
+    pagination,
+  }: Paginated<DbCourse>): PaginatedCoursesResponse {
+    return {
+      data: data.map((course) => this.toBaseCourseResponse(course)),
+      pagination,
     };
   }
 }

@@ -9,6 +9,7 @@ export class DbUserCourse {
   user?: DbUser;
   courseId: string;
   course?: DbCourse;
+  lastProgressAt?: Date;
   createdAt?: Date;
   updatedAt?: Date;
   certificate?: DbCourseCertificate;

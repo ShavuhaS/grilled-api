@@ -2,8 +2,8 @@ import { DbCourseSkill } from './course-skill.entity';
 import { DbSkillFollower } from './skill-follower.entity';
 import { Sortable } from '../interfaces/sortable.interface';
 
-export class DbSkill implements Sortable {
-  get sortFields(): readonly string[] {
+export class DbSkill implements Sortable<DbSkill> {
+  get sortFields(): readonly (keyof DbSkill)[] {
     return ['name', 'createdAt'];
   }
 

@@ -5,6 +5,7 @@ import { LessonLinkResponse } from './lesson-link.response';
 export class LessonResponse extends BaseLessonResponse {
   @ApiPropertyOptional({
     description: 'Lesson links',
+    type: [LessonLinkResponse],
   })
   links?: LessonLinkResponse[];
 

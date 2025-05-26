@@ -8,7 +8,10 @@ import { SkillResponse } from '../../../common/responses/skill.response';
 export class SkillMapper {
   constructor() {}
 
-  toPaginatedSkillsResponse({ data, pagination }: Paginated<DbSkill>): PaginatedSkillsResponse {
+  toPaginatedSkillsResponse({
+    data,
+    pagination,
+  }: Paginated<DbSkill>): PaginatedSkillsResponse {
     return {
       data: data.map((skill) => this.toSkillResponse(skill)),
       pagination,

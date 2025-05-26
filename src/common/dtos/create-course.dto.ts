@@ -32,7 +32,7 @@ export class CreateCourseDto {
   @IsNotEmpty({ message: 'Course description must not be empty' })
   @IsString({ message: 'Course description must be a string' })
   @MaxLength(1000, {
-    message: 'Course decription must be at most 1000 characters long',
+    message: 'Course description must be at most 1000 characters long',
   })
   about: string;
 

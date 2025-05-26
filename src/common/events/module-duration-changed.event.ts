@@ -1,6 +1,5 @@
-export class DurationUpdatedEvent {
+export class ModuleDurationChangedEvent {
   constructor(
-    public lessonId: string,
     public moduleId: string,
     public courseId: string,
     public durationDelta: number,

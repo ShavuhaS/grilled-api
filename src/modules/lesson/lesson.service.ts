@@ -19,13 +19,14 @@ import { CourseEvent } from '../../common/enums/course-event.enum';
 import { InvalidEntityTypeException } from '../../common/exceptions/invalid-entity-type.exception';
 import { MediaService } from '../media/media.service';
 import { seconds } from '../../common/utils/time.constants';
-import { DurationUpdatedEvent } from '../../common/events/duration-updated.event';
+import { LessonDurationChangedEvent } from '../../common/events/lesson-duration-changed.event';
 import { ResourceDeletedEvent } from '../../common/events/resource-deleted.event';
 import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity-id.exception';
 import { LessonUserContext } from '../course/types/lesson-user-context.type';
 import { TestResults } from '../test/types/test-results.type';
 import { IUpdateLessonDto } from '../../common/dtos/update-lesson.dto';
 import { nonEmptyObject } from '../../common/utils/object.utils';
+import { EmptyCourseContentException } from '../../common/exceptions/empty-course-content.exception';
 
 const storageResourceTypes = [
   ResourceTypeEnum.MARKDOWN,
@@ -124,7 +125,7 @@ export class LessonService {
     { lesson }: CreateLessonDto,
   ): Promise<DbCourseLesson> {
     if (lesson.type === LessonTypeEnum.TEST) {
-      this.testService.validateTest(lesson as TestLessonDto);
+      this.testService.validateNewTest(lesson as TestLessonDto);
     }
 
     let dbLesson = await this.createGeneric(moduleId, lesson);
@@ -135,8 +136,8 @@ export class LessonService {
     }
 
     this.eventEmitter.emit(
-      CourseEvent.DURATION_UPDATED,
-      new DurationUpdatedEvent(
+      CourseEvent.LESSON_DURATION_UPDATED,
+      new LessonDurationChangedEvent(
         dbLesson.id,
         moduleId,
         courseId,
@@ -241,8 +242,8 @@ export class LessonService {
     }
 
     this.eventEmitter.emit(
-      CourseEvent.DURATION_UPDATED,
-      new DurationUpdatedEvent(
+      CourseEvent.LESSON_DURATION_UPDATED,
+      new LessonDurationChangedEvent(
         id,
         lesson.moduleId,
         lesson.module.courseId,
@@ -282,8 +283,8 @@ export class LessonService {
     );
 
     this.eventEmitter.emit(
-      CourseEvent.DURATION_UPDATED,
-      new DurationUpdatedEvent(
+      CourseEvent.LESSON_DURATION_UPDATED,
+      new LessonDurationChangedEvent(
         lessonId,
         updatedLesson.moduleId,
         updatedLesson.module.courseId,
@@ -325,6 +326,7 @@ export class LessonService {
     const lesson = await this.lessonRepository.findById(id, {
       resources: true,
       module: true,
+      test: true,
     });
 
     if (!lesson) {
@@ -334,6 +336,10 @@ export class LessonService {
     if (dto.type && lesson.type !== dto.type) {
       if (dto.type === LessonTypeEnum.VIDEO) {
         dto.estimatedTime = null;
+      }
+
+      if (lesson.type === LessonTypeEnum.TEST) {
+        await this.testService.deleteById(lesson.test.id);
       }
 
       if (lesson.type in this.lessonToResourceMap) {
@@ -359,8 +365,8 @@ export class LessonService {
       const durationDelta = dto.estimatedTime - lesson.estimatedTime;
       if (durationDelta !== 0) {
         this.eventEmitter.emit(
-          CourseEvent.DURATION_UPDATED,
-          new DurationUpdatedEvent(
+          CourseEvent.LESSON_DURATION_UPDATED,
+          new LessonDurationChangedEvent(
             id,
             lesson.moduleId,
             lesson.module.courseId,
@@ -459,6 +465,22 @@ export class LessonService {
     }
   }
 
+  async validateLesson(lesson: DbCourseLesson) {
+    if (lesson.type in this.lessonToResourceMap) {
+      const resourceType = this.lessonToResourceMap[lesson.type];
+      const resource = lesson.resources?.find((r) => r.type === resourceType);
+      if (!resource || !resource.link) {
+        throw new EmptyCourseContentException(
+          `Lesson ${lesson.type.toLowerCase()}`,
+        );
+      }
+    }
+
+    if (lesson.type === LessonTypeEnum.TEST) {
+      await this.testService.validateDraftTest(lesson.id);
+    }
+  }
+
   async signLessonResources(lesson: DbCourseLesson): Promise<DbCourseLesson> {
     if (!lesson.resources) {
       return lesson;
@@ -505,5 +527,31 @@ export class LessonService {
     if (!otherLesson) {
       await this.storageService.deleteFile(storagePath);
     }
+  }
+
+  async completeLesson(
+    userId: string,
+    lessonId: string,
+    completeTests = false,
+  ): Promise<boolean> {
+    const lesson = await this.lessonRepository.findById(lessonId);
+    if (!completeTests && lesson?.type === LessonTypeEnum.TEST) {
+      throw new InvalidEntityTypeException('Lesson');
+    }
+
+    const completed = await this.lessonRepository.findOne({
+      id: lessonId,
+      completedBy: { some: { userId: userId } },
+    });
+    if (completed) return false;
+
+    await this.lessonRepository.updateById(lessonId, {
+      completedBy: {
+        create: {
+          userId,
+        },
+      },
+    });
+    return true;
   }
 }

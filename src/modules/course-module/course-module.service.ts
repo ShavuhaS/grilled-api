@@ -2,14 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { CreateCourseModuleDto } from '../../common/dtos/create-course-module.dto';
 import { DbCourseModule } from '../../database/entities/course-module.entity';
 import { CourseModuleRepository } from '../../database/repositories/course-module.repository';
-import { OnEvent } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { CourseEvent } from '../../common/enums/course-event.enum';
 import { DbCourseLesson } from '../../database/entities/course-lesson.entity';
-import { DurationUpdatedEvent } from '../../common/events/duration-updated.event';
+import { LessonDurationChangedEvent } from '../../common/events/lesson-duration-changed.event';
+import { ModuleDurationChangedEvent } from '../../common/events/module-duration-changed.event';
 
 @Injectable()
 export class CourseModuleService {
-  constructor(private moduleRepository: CourseModuleRepository) {}
+  constructor(
+    private moduleRepository: CourseModuleRepository,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   async create(
     courseId: string,
@@ -59,14 +63,23 @@ export class CourseModuleService {
       },
     );
 
+    this.eventEmitter.emit(
+      CourseEvent.MODULE_DURATION_UPDATED,
+      new ModuleDurationChangedEvent(
+        module.id,
+        module.courseId,
+        -module.estimatedTime,
+      ),
+    );
+
     return module;
   }
 
-  @OnEvent(CourseEvent.DURATION_UPDATED)
+  @OnEvent(CourseEvent.LESSON_DURATION_UPDATED)
   private async updateEstimatedTime({
     moduleId,
     durationDelta,
-  }: DurationUpdatedEvent) {
+  }: LessonDurationChangedEvent) {
     if (!durationDelta) {
       return;
     }

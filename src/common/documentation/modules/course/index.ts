@@ -8,10 +8,20 @@ import { DeleteLessonDocumentation } from './delete-lesson';
 import { GetLessonDocumentation } from './get-lesson';
 import { UpdateArticleDocumentation } from './update-article';
 import { UpdateLessonDocumentation } from './update-lesson';
+import { PublishDocumentation } from './publish';
+import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
+import { CheckEditableDocumentation } from './check-editable';
+import { CompleteLessonDocumentation } from './complete-lesson';
+import { UpdateDocumentation } from './update';
+import { UpdateAvatarDocumentation } from './update-avatar';
+import { GetAllDocumentation } from './get-all';
 
 export const CourseDocumentation = {
   GET: GetDocumentation,
+  GET_ALL: GetAllDocumentation,
   CREATE: CreateDocumentation,
+  UPDATE: UpdateDocumentation,
+  UPDATE_AVATAR: UpdateAvatarDocumentation,
   CREATE_MODULE: CreateModuleDocumentation,
   GET_LESSON: GetLessonDocumentation,
   CREATE_LESSON: CreateLessonDocumentation,
@@ -19,5 +29,8 @@ export const CourseDocumentation = {
   DELETE_LESSON: DeleteLessonDocumentation,
   UPLOAD_VIDEO: UploadVideoDocumentation,
   UPDATE_ARTICLE: UpdateArticleDocumentation,
+  CHECK_EDITABLE: CheckEditableDocumentation,
+  PUBLISH: PublishDocumentation,
   ENROLL: EnrollDocumentation,
-};
+  COMPLETE_LESSON: CompleteLessonDocumentation,
+} satisfies Record<string, ApiDocumentationParams>;

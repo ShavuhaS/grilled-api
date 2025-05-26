@@ -33,6 +33,11 @@ export class BaseCourseResponse {
   about: string;
 
   @ApiProperty({
+    description: 'Course avatar link',
+  })
+  avatarLink: string;
+
+  @ApiProperty({
     description: 'Course level (BEGINNER, INTERMEDIATE or EXPERT)',
     enum: CourseLevelEnum,
   })

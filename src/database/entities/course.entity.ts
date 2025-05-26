@@ -8,8 +8,13 @@ import { DbCourseQuestion } from './course-question.entity';
 import { DbCourseModule } from './course-module.entity';
 import { DecimalNumber } from '../types/decimal.type';
 import { Type } from 'class-transformer';
+import { Sortable } from '../interfaces/sortable.interface';
 
-export class DbCourse {
+export class DbCourse implements Sortable<DbCourse> {
+  get sortFields(): readonly (keyof DbCourse)[] {
+    return ['name', 'enrolledCount'];
+  }
+
   id: string;
   authorId: string;
   author?: DbTeacher;
@@ -20,6 +25,7 @@ export class DbCourse {
   versions?: DbCourse[];
   name: string;
   about: string;
+  avatarLink?: string;
   level: CourseLevelEnum;
   status: CourseStatusEnum;
   estimatedTime: number;

@@ -18,6 +18,8 @@ import { CreateTestQuestionFunction } from '../course/types/create-question.type
 import { TestResults } from './types/test-results.type';
 import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity-id.exception';
 import { DbLessonTest } from '../../database/entities/lesson-test.entity';
+import { EmptyCourseContentException } from '../../common/exceptions/empty-course-content.exception';
+import { InvalidTestAnswersException } from '../../common/exceptions/invalid-test-answers.exception';
 
 @Injectable()
 export class TestService {
@@ -35,6 +37,12 @@ export class TestService {
     [QuestionTypeEnum.MULTICHOICE]: this.createMultiChoiceQuestion.bind(this),
     [QuestionTypeEnum.SHORT_ANSWER]: this.createShortAnswerQuestion.bind(this),
   } as const;
+
+  private readonly singleAnswerQuestionTypes: QuestionTypeEnum[] = [
+    QuestionTypeEnum.CHOICE,
+    QuestionTypeEnum.FILL_IN,
+    QuestionTypeEnum.NUMERIC,
+  ];
 
   constructor(
     private testRepository: CourseTestRepository,
@@ -100,7 +108,44 @@ export class TestService {
     return dbLesson;
   }
 
-  validateTest({ questions }: TestLessonDto) {
+  async deleteById(id: string) {
+    await this.testRepository.deleteById(id);
+  }
+
+  async validateDraftTest(lessonId: string) {
+    const test = await this.testRepository.find(
+      { lessonId },
+      { questions: { include: { answers: true } } },
+    );
+    if (!test || test.questions.length === 0) {
+      throw new EmptyCourseContentException('Test');
+    }
+
+    for (const question of test.questions) {
+      this.validateQuestion(question);
+    }
+  }
+
+  validateQuestion(question: DbTestQuestion) {
+    const emptyErr = new EmptyCourseContentException(
+      'Test question answer list',
+    );
+    const answerErr = new InvalidTestAnswersException();
+    if (question.answers.length === 0) {
+      throw emptyErr;
+    }
+
+    const correctAnswers = question.answers.filter((ans) => ans.correct);
+
+    if (
+      this.singleAnswerQuestionTypes.includes(question.type) &&
+      correctAnswers.length !== 1
+    ) {
+      throw answerErr;
+    }
+  }
+
+  validateNewTest({ questions }: TestLessonDto) {
     for (const question of questions) {
       const isValid = this.questionValidMap[question.type];
       if (isValid !== undefined && !isValid(question)) {

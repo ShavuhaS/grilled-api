@@ -12,7 +12,10 @@ import { SearchUtil } from '../../database/utils/search.util';
 export class SkillService {
   constructor(private skillRepository: SkillRepository) {}
 
-  async getAll(query: QuerySkillsDto, orderBy: OrderByDto<DbSkill>): Promise<Paginated<DbSkill>> {
+  async getAll(
+    query: QuerySkillsDto,
+    orderBy: OrderByDto,
+  ): Promise<Paginated<DbSkill>> {
     let where = {};
 
     if (query.search) {

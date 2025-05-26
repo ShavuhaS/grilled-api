@@ -1,5 +1,8 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
-import { DefaultUnauthorizedResponse } from '../../default-responses.constants';
+import {
+  DefaultForbiddenResponse,
+  DefaultUnauthorizedResponse,
+} from '../../default-responses.constants';
 
 export const EnrollDocumentation: ApiDocumentationParams = {
   authRequired: true,
@@ -12,5 +15,11 @@ export const EnrollDocumentation: ApiDocumentationParams = {
     },
   ],
   created: {},
-  badRequest: DefaultUnauthorizedResponse,
+  badRequest: {
+    description: `
+    InvalidEntityIdException:
+      Course with such id was not found`,
+  },
+  unauthorized: DefaultUnauthorizedResponse,
+  forbidden: DefaultForbiddenResponse,
 };

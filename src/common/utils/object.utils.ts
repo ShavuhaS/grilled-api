@@ -22,3 +22,22 @@ export function isClass(obj: any): boolean {
 
   return !descriptor.writable;
 }
+
+export function reverseObject<K extends string, V extends string>(
+  obj: Partial<Record<K, V>>,
+): Partial<Record<V, K>> {
+  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [v, k]));
+}
+
+export function mapValues<K extends string, V1, V2>(
+  obj: Partial<Record<K, V1>>,
+  fn: (arg: V1) => V2,
+): Partial<Record<K, V2>> {
+  const result = {} as Partial<Record<K, V2>>;
+
+  for (const key in obj) {
+    result[key] = fn(obj[key]);
+  }
+
+  return result;
+}

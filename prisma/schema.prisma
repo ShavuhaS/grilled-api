@@ -176,6 +176,7 @@ model Course {
   versions           Course[]         @relation("CourseVersion")
   name               String
   about              String
+  avatarLink         String?          @map("avatar_link")
   level              CourseLevel
   status             CourseStatus     @default(DRAFT)
   estimatedTime      Int              @default(0) @map("estimated_time")
@@ -193,15 +194,16 @@ model Course {
 }
 
 model UserCourse {
-  id          String             @id @default(uuid())
-  userId      String             @map("user_id")
-  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  courseId    String             @map("course_id")
-  course      Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  createdAt   DateTime?          @default(now()) @map("created_at")
-  updatedAt   DateTime?          @default(now()) @updatedAt @map("updated_at")
-  certificate CourseCertificate?
-  review      CourseReview?
+  id             String             @id @default(uuid())
+  userId         String             @map("user_id")
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId       String             @map("course_id")
+  course         Course             @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lastProgressAt DateTime?          @map("last_progress_at")
+  createdAt      DateTime?          @default(now()) @map("created_at")
+  updatedAt      DateTime?          @default(now()) @updatedAt @map("updated_at")
+  certificate    CourseCertificate?
+  review         CourseReview?
 
   @@unique([userId, courseId])
   @@map("user_courses")
