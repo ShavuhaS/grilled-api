@@ -23,7 +23,9 @@ export class CreateCourseDto {
   @IsNotEmpty({ message: 'Course name must not be empty' })
   @IsString({ message: 'Course name must be a string' })
   @MinLength(5, { message: 'Course name must be at least 5 characters long' })
-  @MaxLength(60, { message: 'Course name must be at most 60 characters long' })
+  @MaxLength(100, {
+    message: 'Course name must be at most 100 characters long',
+  })
   name: string;
 
   @ApiProperty({

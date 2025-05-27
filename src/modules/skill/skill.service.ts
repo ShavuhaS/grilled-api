@@ -28,4 +28,53 @@ export class SkillService {
       query as PageDto,
     );
   }
+
+  async addFolower(ids: string[], userId: string) {
+    const userSkills = await this.getFollowedBy(userId);
+    const userSkillSet = new Set(userSkills.map(({ id }) => id));
+
+    const toAdd = [];
+    for (const id of ids) {
+      if (!userSkillSet.has(id)) {
+        toAdd.push(id);
+      }
+    }
+
+    for (const id of toAdd) {
+      await this.skillRepository.updateById(id, {
+        followers: { create: { userId } },
+      });
+    }
+  }
+
+  async removeFolower(ids: string[], userId: string) {
+    const userSkills = await this.getFollowedBy(userId);
+    const userSkillSet = new Set(userSkills.map(({ id }) => id));
+
+    const toRemove = [];
+    for (const id of ids) {
+      if (userSkillSet.has(id)) {
+        toRemove.push(id);
+      }
+    }
+
+    for (const id of toRemove) {
+      await this.skillRepository.updateById(id, {
+        followers: {
+          delete: {
+            userId_skillId: {
+              userId,
+              skillId: id,
+            },
+          },
+        },
+      });
+    }
+  }
+
+  async getFollowedBy(userId: string): Promise<DbSkill[]> {
+    return this.skillRepository.findMany({
+      followers: { some: { userId } },
+    });
+  }
 }

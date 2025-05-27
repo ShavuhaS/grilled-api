@@ -3,10 +3,15 @@ import { InferSubjects, MongoAbility } from '@casl/ability';
 import { DbTeacher } from '../../../database/entities/teacher.entity';
 import { DbCourse } from '../../../database/entities/course.entity';
 import { DbCourseModule } from '../../../database/entities/course-module.entity';
+import { DbSkill } from '../../../database/entities/skill.entity';
 
 export type Subjects =
   | InferSubjects<
-      typeof DbUser | typeof DbTeacher | typeof DbCourse | typeof DbCourseModule
+      | typeof DbUser
+      | typeof DbTeacher
+      | typeof DbCourse
+      | typeof DbCourseModule
+      | typeof DbSkill
     >
   | 'all';
 
