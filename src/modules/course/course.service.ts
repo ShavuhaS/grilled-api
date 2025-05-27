@@ -65,6 +65,10 @@ export class CourseService {
 
     if (signResources) {
       await this.signCourseResources(course);
+    } else {
+      course.avatarLink =
+        course.avatarLink &&
+        (await this.storageService.getSignedUrl(course.avatarLink));
     }
 
     return course;
@@ -337,7 +341,8 @@ export class CourseService {
   }
 
   async update(id: string, body: UpdateCourseDto): Promise<DbCourse> {
-    return this.courseRepository.updateById(id, body);
+    const course = await this.courseRepository.updateById(id, body);
+    return this.signCourseResources(course);
   }
 
   async updateArticle(

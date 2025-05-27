@@ -9,7 +9,10 @@ import { ChoiceQuestionTeacherResponse } from '../../../common/responses/choice-
 import { MultichoiceQuestionTeacherResponse } from '../../../common/responses/multichoice-question-teacher.response';
 import { ShortAnswerQuestionTeacherResponse } from '../../../common/responses/short-answer-question-teacher.response';
 import { TestQuestionStudentResponse } from '../../../common/responses/test-question-student.response';
-import { choiceQuestionTypes, singleAnswerQuestionTypes } from '../test.service';
+import {
+  choiceQuestionTypes,
+  singleAnswerQuestionTypes,
+} from '../test.service';
 import { TestQuestionAnswerStudentResponse } from '../../../common/responses/test-question-answer-student.response';
 
 @Injectable()

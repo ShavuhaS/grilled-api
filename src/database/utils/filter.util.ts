@@ -1,7 +1,7 @@
 import { DbFilter } from '../types/db-filter.type';
 import { EntityMap } from '../interfaces/entity-map.interface';
 import { apiToEntityMap } from '../../common/utils/entity-field-map.constant';
-import { FilterMethod, filterMethods } from '../types/filter-method.type';
+import { FilterMethod } from '../types/filter-method.type';
 
 export class FilterUtil {
   static getFilter<T extends keyof EntityMap>(
