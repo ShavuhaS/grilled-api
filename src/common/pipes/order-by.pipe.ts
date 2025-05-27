@@ -16,7 +16,7 @@ export class OrderByPipe<T extends Sortable<T>> implements PipeTransform {
       const kvs = value.split(',');
       for (const kv of kvs) {
         const [field, order] = kv.split(':');
-        const entityField = fieldMap[field];
+        const entityField = fieldMap[field] ?? field;
         if (entityField === 'createdAt') {
           containsCreatedAt = true;
         }

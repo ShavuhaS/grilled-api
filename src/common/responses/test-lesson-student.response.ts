@@ -9,7 +9,7 @@ export class TestResultsStudentResponse {
   id: string;
 
   @ApiPropertyOptional({
-    description: 'User\'s test results (if the lesson is a test)',
+    description: "User's test results (if the lesson is a test)",
     type: TestScoreResponse,
   })
   results: TestScoreResponse;

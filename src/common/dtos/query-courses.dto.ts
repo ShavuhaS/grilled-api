@@ -1,6 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsBoolean,
   IsEnum,
   IsNumber,
   IsOptional,
@@ -13,15 +12,11 @@ import {
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 import { CourseLevelEnum } from '../enums/course-level.enum';
-import { CourseStatusEnum } from '../enums/course-status.enum';
-import {
-  getOrderByFormat,
-  getOrderByRegex,
-} from '../utils/get-order-by-regex.util';
+import { getSortFormat, getSortRegex } from '../utils/get-order-by-regex.util';
 import { DbCourse } from '../../database/entities/course.entity';
 import { PageDto } from './page.dto';
 
-class CourseCategoryFilter {
+export class CourseCategoryFilter {
   @ApiPropertyOptional({
     description: 'Ids of course categories (separated by commas)',
   })
@@ -34,7 +29,7 @@ class CourseCategoryFilter {
   in?: string[];
 }
 
-class SkillFilter {
+export class SkillFilter {
   @ApiPropertyOptional({
     description: 'Ids of course skills (separated by commas)',
   })
@@ -47,7 +42,7 @@ class SkillFilter {
   in?: string[];
 }
 
-class AuthorFilter {
+export class AuthorFilter {
   @ApiPropertyOptional({
     description: 'Ids of course authors (separated by commas)',
   })
@@ -60,7 +55,7 @@ class AuthorFilter {
   in: string[];
 }
 
-class LevelFilter {
+export class LevelFilter {
   @ApiPropertyOptional({
     description: 'Course levels (separated by commas)',
     enum: CourseLevelEnum,
@@ -75,7 +70,7 @@ class LevelFilter {
   in?: CourseLevelEnum[];
 }
 
-class DurationFilter {
+export class DurationFilter {
   @ApiPropertyOptional({
     description: 'Min course duration',
   })
@@ -95,7 +90,7 @@ class DurationFilter {
   max?: number;
 }
 
-class RatingFilter {
+export class RatingFilter {
   @ApiPropertyOptional({
     description: 'Min rating',
   })
@@ -126,11 +121,11 @@ export class QueryCoursesDto extends PageDto {
   search?: string;
 
   @ApiPropertyOptional({
-    description: getOrderByFormat(DbCourse),
+    description: getSortFormat(DbCourse),
   })
   @IsOptional()
   @IsString({ message: 'Order by must be a string' })
-  @Matches(getOrderByRegex(DbCourse), { message: 'Order by format is invalid' })
+  @Matches(getSortRegex(DbCourse), { message: 'Order by format is invalid' })
   orderBy?: string;
 
   @ApiPropertyOptional({

@@ -115,7 +115,7 @@ export class CourseService {
     return paginatedData;
   }
 
-  private async signCourseResources(course: DbCourse): Promise<DbCourse> {
+  async signCourseResources(course: DbCourse): Promise<DbCourse> {
     if (course.avatarLink) {
       course.avatarLink = await this.storageService.getSignedUrl(
         course.avatarLink,
@@ -228,11 +228,11 @@ export class CourseService {
   }
 
   async getUserProgress(
-    user: DbUser,
+    userId: string,
     course: DbCourse,
   ): Promise<CourseProgress> {
     const completedLessons = await this.lessonService.getCompletedBy(
-      user.id,
+      userId,
       course.id,
     );
 
@@ -303,7 +303,7 @@ export class CourseService {
     if (isEnrolled) {
       return {
         links: true,
-        progress: await this.getUserProgress(user, course),
+        progress: await this.getUserProgress(user.id, course),
       };
     }
 

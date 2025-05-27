@@ -1,14 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CourseWithProgressResponse } from './course-with-progress.response';
 import { PaginationResponse } from './pagination.response';
-import { BaseCourseResponse } from './base-course.response';
 
-export class PaginatedCoursesResponse {
+export class PaginatedUserCoursesResponse {
   @ApiProperty({
     description: 'List of courses',
-    type: [BaseCourseResponse],
+    type: [CourseWithProgressResponse],
   })
-  data: BaseCourseResponse[];
+  data: CourseWithProgressResponse[];
 
   @ApiProperty({
     description: 'Pagination data',

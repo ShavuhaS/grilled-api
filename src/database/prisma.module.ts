@@ -10,6 +10,7 @@ import { CourseTestRepository } from './repositories/course-test.repository';
 import { TestQuestionRepository } from './repositories/test-question.repository';
 import { SkillRepository } from './repositories/skill.repository';
 import { TeacherRepository } from './repositories/teacher.repository';
+import { UserCourseRepository } from './repositories/user-course.repository';
 
 @Module({
   providers: [
@@ -24,6 +25,7 @@ import { TeacherRepository } from './repositories/teacher.repository';
     TestQuestionRepository,
     SkillRepository,
     TeacherRepository,
+    UserCourseRepository,
   ],
   exports: [
     UserRepository,
@@ -36,6 +38,7 @@ import { TeacherRepository } from './repositories/teacher.repository';
     TestQuestionRepository,
     SkillRepository,
     TeacherRepository,
+    UserCourseRepository,
   ],
 })
 export class PrismaModule {}

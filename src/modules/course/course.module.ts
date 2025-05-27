@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CourseController } from './course.controller';
 import { AuthModule } from '../auth/auth.module';
@@ -20,7 +20,7 @@ import { TestMapperModule } from '../test/mappers/test-mapper.module';
   providers: [CourseService],
   exports: [CourseService],
   imports: [
-    AuthModule,
+    forwardRef(() => AuthModule),
     CaslModule,
     PrismaModule,
     UploadModule,

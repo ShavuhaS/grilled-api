@@ -67,7 +67,7 @@ export class AuthController {
   })
   @Get('/me')
   async getMe(@Request() req) {
-    const user = await this.userService.getById(req.user.id);
+    const user = await this.userService.getById(req.user.id, true);
     return this.userMapper.toUserResponse(user);
   }
 

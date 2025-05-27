@@ -77,7 +77,9 @@ export class StorageService {
     return `avatars/${uuid}-${avatar.originalname}`;
   }
 
-  async uploadAvatar(avatar: Express.Multer.File): Promise<{ storagePath: string }> {
+  async uploadAvatar(
+    avatar: Express.Multer.File,
+  ): Promise<{ storagePath: string }> {
     const storagePath = this.getAvatarPath(avatar);
 
     await this.uploadFile(storagePath, avatar, {

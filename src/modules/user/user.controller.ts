@@ -1,7 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
   Patch,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -19,6 +21,10 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { FILE_PROCESSED_EVENT } from '../upload/events/file-processed.event';
 import { FileProcessedEvent } from '../../common/events/file-processed.event';
 import { AvatarValidationPipe } from '../../common/pipes/avatar-validation.pipe';
+import { QueryUserCoursesDto } from '../../common/dtos/query-user-courses.dto';
+import { OrderByPipe } from '../../common/pipes/order-by.pipe';
+import { OrderByDto } from '../../common/dtos/order-by.dto';
+import { DbCourse } from '../../database/entities/course.entity';
 
 @ApiTags('Users')
 @Controller({
@@ -63,5 +69,24 @@ export class UserController {
         new FileProcessedEvent(avatar.path),
       );
     }
+  }
+
+  @ApiEndpoint({
+    summary: 'Get user courses',
+    documentation: UserDocumentation.GET_COURSES,
+    guards: JwtGuard,
+  })
+  @Get('/me/courses')
+  async getCourses(
+    @User() user: DbUser,
+    @Query('orderBy', new OrderByPipe(DbCourse)) orderBy: OrderByDto,
+    @Query() query: QueryUserCoursesDto,
+  ) {
+    const paginatedCourses = await this.userService.getAllUserCourses(
+      user,
+      query,
+      orderBy,
+    );
+    return this.userService.getCoursesProgress(user.id, paginatedCourses);
   }
 }
