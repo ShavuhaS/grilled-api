@@ -69,7 +69,6 @@ export class CourseService {
     query: QueryCoursesDto,
     orderBy: OrderByDto,
   ): Promise<Paginated<DbCourse>> {
-    console.log(query);
     if (!user && query.my) {
       throw new UnauthorizedException();
     }
@@ -99,14 +98,24 @@ export class CourseService {
       }
     }
 
-    return PaginationUtil.paginate(
+    const paginatedData = await PaginationUtil.paginate(
       this.courseRepository,
       { where, orderBy },
       pagination,
     );
+
+    for (const course of paginatedData.data) {
+      await this.signCourseResources(course);
+    }
+
+    return paginatedData;
   }
 
   private async signCourseResources(course: DbCourse): Promise<DbCourse> {
+    if (course.avatarLink) {
+      course.avatarLink = await this.storageService.getSignedUrl(course.avatarLink);
+    }
+
     if (!course.modules) {
       return course;
     }
