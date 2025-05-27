@@ -7,6 +7,7 @@ import { CourseEvent } from '../../common/enums/course-event.enum';
 import { DbCourseLesson } from '../../database/entities/course-lesson.entity';
 import { LessonDurationChangedEvent } from '../../common/events/lesson-duration-changed.event';
 import { ModuleDurationChangedEvent } from '../../common/events/module-duration-changed.event';
+import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dto';
 
 @Injectable()
 export class CourseModuleService {
@@ -95,5 +96,43 @@ export class CourseModuleService {
       { id: module.id },
       { estimatedTime: { increment: durationDelta } },
     );
+  }
+
+  async updateById(id: string, body: UpdateCourseModuleDto): Promise<DbCourseModule> {
+    const old = await this.moduleRepository.findById(id);
+
+    if (body.order && body.order !== old.order) {
+      await this.updateOrder(old, body.order);
+      delete body.order;
+    }
+
+    return this.moduleRepository.updateById(id, body);
+  }
+
+  private async updateOrder(
+    { id, courseId, order }: DbCourseModule,
+    newOrder: number,
+  ) {
+    if (order === newOrder) return;
+
+    const moduleCount = await this.moduleRepository.count({ courseId });
+    newOrder = Math.min(newOrder, moduleCount);
+    newOrder = Math.max(newOrder, 1);
+
+    let orderFilter, increment;
+    if (newOrder > order) {
+      orderFilter = { gt: order, lte: newOrder };
+      increment = -1;
+    } else {
+      orderFilter = { gte: newOrder, lt: order };
+      increment = 1;
+    }
+
+    await this.moduleRepository.updateMany(
+      { courseId, order: orderFilter },
+      { order: { increment } },
+    );
+
+    await this.moduleRepository.updateById(id, { order: newOrder });
   }
 }

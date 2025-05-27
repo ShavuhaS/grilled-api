@@ -15,6 +15,7 @@ import { CompleteLessonDocumentation } from './complete-lesson';
 import { UpdateDocumentation } from './update';
 import { UpdateAvatarDocumentation } from './update-avatar';
 import { GetAllDocumentation } from './get-all';
+import { UpdateModuleDocumentation } from './update-module';
 
 export const CourseDocumentation = {
   GET: GetDocumentation,
@@ -23,6 +24,7 @@ export const CourseDocumentation = {
   UPDATE: UpdateDocumentation,
   UPDATE_AVATAR: UpdateAvatarDocumentation,
   CREATE_MODULE: CreateModuleDocumentation,
+  UPDATE_MODULE: UpdateModuleDocumentation,
   GET_LESSON: GetLessonDocumentation,
   CREATE_LESSON: CreateLessonDocumentation,
   UPDATE_LESSON: UpdateLessonDocumentation,

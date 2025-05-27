@@ -4,6 +4,7 @@ import {
   DefaultUnauthorizedResponse,
 } from '../../default-responses.constants';
 import { CourseModuleResponse } from '../../../responses/course-module.response';
+import { CreateCourseModuleDto } from '../../../dtos/create-course-module.dto';
 
 export const CreateModuleDocumentation: ApiDocumentationParams = {
   authRequired: true,
@@ -14,6 +15,9 @@ export const CreateModuleDocumentation: ApiDocumentationParams = {
       required: true,
     },
   ],
+  body: {
+    type: CreateCourseModuleDto,
+  },
   created: {
     type: CourseModuleResponse,
   },
@@ -21,7 +25,13 @@ export const CreateModuleDocumentation: ApiDocumentationParams = {
   badRequest: {
     description: `\n
     InvalidEntityIdException:
-      Course with such id was not found`,
+      Course with such id was not found
+      
+    InvalidBodyException:
+      Module name must not be empty
+      Module name must be a string
+      Module name must be at least 5 characters long
+      Module name must be at most 30 characters long`,
   },
   unauthorized: DefaultUnauthorizedResponse,
   forbidden: DefaultForbiddenResponse,

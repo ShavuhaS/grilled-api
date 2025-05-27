@@ -32,6 +32,8 @@ import { RoleEnum } from '../../common/enums/role.enum';
 import { Prisma } from '@prisma/client';
 import { FilterUtil } from '../../database/utils/filter.util';
 import { PaginationUtil } from '../../database/utils/pagination.util';
+import { DbCourseModule } from '../../database/entities/course-module.entity';
+import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dto';
 
 @Injectable()
 export class CourseService {
@@ -161,6 +163,12 @@ export class CourseService {
     if (!course) {
       throw new CourseModuleDisconnectionException();
     }
+  }
+
+  async updateModule(courseId: string, moduleId: string, body: UpdateCourseModuleDto): Promise<DbCourseModule> {
+    await this.checkModuleConnected(courseId, moduleId);
+
+    return this.moduleService.updateById(moduleId, body);
   }
 
   async deleteModule(courseId: string, moduleId: string) {

@@ -46,6 +46,7 @@ import { QueryCoursesDto } from '../../common/dtos/query-courses.dto';
 import { OrderByPipe } from '../../common/pipes/order-by.pipe';
 import { OrderByDto } from '../../common/dtos/order-by.dto';
 import { DbCourse } from '../../database/entities/course.entity';
+import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dto';
 
 @ApiTags('Courses')
 @ApiExtraModels(...CourseExtraModels)
@@ -161,6 +162,21 @@ export class CourseController {
   ) {
     const module = await this.moduleService.create(courseId, body);
     return this.moduleMapper.toCourseModuleResponse(module, { links: true });
+  }
+
+  @ApiEndpoint({
+    summary: 'Update course module',
+    documentation: CourseDocumentation.UPDATE_MODULE,
+    policies: CoursePolicies.UPDATE,
+  })
+  @Patch('/:courseId/modules/:moduleId')
+  async updateModule(
+    @Param('courseId') courseId: string,
+    @Param('moduleId', ModuleByIdPipe) moduleId: string,
+    @Body() body: UpdateCourseModuleDto,
+  ) {
+    const module = await this.courseService.updateModule(courseId, moduleId, body);
+    return this.moduleMapper.toBaseCourseModuleResponse(module);
   }
 
   @ApiEndpoint({
