@@ -44,7 +44,7 @@ export class SkillController {
   }
 
   @ApiEndpoint({
-    summary: 'Follow course categories',
+    summary: 'Follow skills',
     documentation: SkillDocumentation.FOLLOW,
     policies: SkillPolicies.FOLLOW,
   })
@@ -60,7 +60,7 @@ export class SkillController {
   }
 
   @ApiEndpoint({
-    summary: 'Unfollow course categories',
+    summary: 'Unfollow skills',
     documentation: SkillDocumentation.UNFOLLOW,
     policies: SkillPolicies.UNFOLLOW,
   })

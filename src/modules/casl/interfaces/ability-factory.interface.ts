@@ -4,6 +4,7 @@ import { DbTeacher } from '../../../database/entities/teacher.entity';
 import { DbCourse } from '../../../database/entities/course.entity';
 import { DbCourseModule } from '../../../database/entities/course-module.entity';
 import { DbSkill } from '../../../database/entities/skill.entity';
+import { DbCourseCategory } from '../../../database/entities/course-category.entity';
 
 export type Subjects =
   | InferSubjects<
@@ -12,6 +13,7 @@ export type Subjects =
       | typeof DbCourse
       | typeof DbCourseModule
       | typeof DbSkill
+      | typeof DbCourseCategory
     >
   | 'all';
 

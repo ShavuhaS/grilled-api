@@ -24,4 +24,53 @@ export class CourseCategoryService {
 
     return category;
   }
+
+  async getFollowedBy(userId: string): Promise<DbCourseCategory[]> {
+    return this.categoryRepository.findMany({
+      followers: { some: { userId } },
+    });
+  }
+
+  async addFolower(ids: string[], userId: string) {
+    const categories = await this.getFollowedBy(userId);
+    const categorySet = new Set(categories.map(({ id }) => id));
+
+    const toAdd = [];
+    for (const id of ids) {
+      if (!categorySet.has(id)) {
+        toAdd.push(id);
+      }
+    }
+
+    for (const id of toAdd) {
+      await this.categoryRepository.updateById(id, {
+        followers: { create: { userId } },
+      });
+    }
+  }
+
+  async removeFolower(ids: string[], userId: string) {
+    const categories = await this.getFollowedBy(userId);
+    const categoriesSet = new Set(categories.map(({ id }) => id));
+
+    const toRemove = [];
+    for (const id of ids) {
+      if (categoriesSet.has(id)) {
+        toRemove.push(id);
+      }
+    }
+
+    for (const id of toRemove) {
+      await this.categoryRepository.updateById(id, {
+        followers: {
+          delete: {
+            userId_categoryId: {
+              userId,
+              categoryId: id,
+            },
+          },
+        },
+      });
+    }
+  }
 }
