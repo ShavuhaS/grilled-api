@@ -19,7 +19,7 @@ export class ArticleLessonDto extends BaseLessonDto {
   @IsNotEmpty({ message: 'Article must not be empty' })
   @IsString({ message: 'Article must be a string' })
   @MinLength(50, { message: 'Article must be at least 50 characters long' })
-  @MaxLength(5000, { message: 'Article must be at most 5000 characters long' })
+  @MaxLength(10000, { message: 'Article must be at most 10000 characters long' })
   article: string;
 
   @ApiProperty({
