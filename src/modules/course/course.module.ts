@@ -12,6 +12,8 @@ import { LessonMapperModule } from '../lesson/mappers/lesson-mapper.module';
 import { LessonModule } from '../lesson/lesson.module';
 import { CourseModuleModule } from '../course-module/course-module.module';
 import { CourseModuleMapperModule } from '../course-module/mappers/course-module-mapper.module';
+import { TestModule } from '../test/test.module';
+import { TestMapperModule } from '../test/mappers/test-mapper.module';
 
 @Module({
   controllers: [CourseController],
@@ -26,9 +28,11 @@ import { CourseModuleMapperModule } from '../course-module/mappers/course-module
     StorageModule,
     CourseModuleModule,
     LessonModule,
+    TestModule,
     CourseMapperModule,
     CourseModuleMapperModule,
     LessonMapperModule,
+    TestMapperModule,
   ],
 })
 export class CourseModule {}

@@ -16,6 +16,7 @@ import { UpdateDocumentation } from './update';
 import { UpdateAvatarDocumentation } from './update-avatar';
 import { GetAllDocumentation } from './get-all';
 import { UpdateModuleDocumentation } from './update-module';
+import { GetTestDocumentation } from './get-test';
 
 export const CourseDocumentation = {
   GET: GetDocumentation,
@@ -31,6 +32,7 @@ export const CourseDocumentation = {
   DELETE_LESSON: DeleteLessonDocumentation,
   UPLOAD_VIDEO: UploadVideoDocumentation,
   UPDATE_ARTICLE: UpdateArticleDocumentation,
+  GET_TEST: GetTestDocumentation,
   CHECK_EDITABLE: CheckEditableDocumentation,
   PUBLISH: PublishDocumentation,
   ENROLL: EnrollDocumentation,

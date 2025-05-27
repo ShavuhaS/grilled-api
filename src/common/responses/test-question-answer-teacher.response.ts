@@ -1,16 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { TestQuestionAnswerStudentResponse } from './test-question-answer-student.response';
 
-export class TestQuestionAnswerTeacherResponse {
-  @ApiProperty({
-    description: 'Answer id',
-  })
-  id: string;
-
-  @ApiProperty({
-    description: 'Answer text',
-  })
-  answer: string;
-
+export class TestQuestionAnswerTeacherResponse extends TestQuestionAnswerStudentResponse {
   @ApiProperty({
     description: 'Answer commentary (why it is right or wrong)',
   })

@@ -1,13 +1,14 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
-import { DefaultForbiddenResponse, DefaultUnauthorizedResponse } from '../../default-responses.constants';
+import {
+  DefaultForbiddenResponse,
+  DefaultUnauthorizedResponse,
+} from '../../default-responses.constants';
 import { BaseCourseModuleResponse } from '../../../responses/base-course-module.response';
 import { UpdateCourseModuleDto } from '../../../dtos/update-course-module.dto';
 
 export const UpdateModuleDocumentation: ApiDocumentationParams = {
   authRequired: true,
-  policies: [
-    'Only the course owner can update modules',
-  ],
+  policies: ['Only the course owner can update modules'],
   body: {
     type: UpdateCourseModuleDto,
   },

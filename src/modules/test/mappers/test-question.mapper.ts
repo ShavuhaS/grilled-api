@@ -8,6 +8,9 @@ import { TestQuestionAnswerTeacherResponse } from '../../../common/responses/tes
 import { ChoiceQuestionTeacherResponse } from '../../../common/responses/choice-question-teacher.response';
 import { MultichoiceQuestionTeacherResponse } from '../../../common/responses/multichoice-question-teacher.response';
 import { ShortAnswerQuestionTeacherResponse } from '../../../common/responses/short-answer-question-teacher.response';
+import { TestQuestionStudentResponse } from '../../../common/responses/test-question-student.response';
+import { choiceQuestionTypes, singleAnswerQuestionTypes } from '../test.service';
+import { TestQuestionAnswerStudentResponse } from '../../../common/responses/test-question-answer-student.response';
 
 @Injectable()
 export class TestQuestionMapper {
@@ -36,15 +39,19 @@ export class TestQuestionMapper {
     return { id, type, text };
   }
 
-  toTestQuestionAnswerTeacherResponse({
+  toTestQuestionAnswerStudentResponse({
     id,
     text,
-    commentary,
-  }: DbTestQuestionAnswer): TestQuestionAnswerTeacherResponse {
+  }: DbTestQuestionAnswer): TestQuestionAnswerStudentResponse {
+    return { id, answer: text };
+  }
+
+  toTestQuestionAnswerTeacherResponse(
+    a: DbTestQuestionAnswer,
+  ): TestQuestionAnswerTeacherResponse {
     return {
-      id,
-      answer: text,
-      commentary,
+      ...this.toTestQuestionAnswerStudentResponse(a),
+      commentary: a.commentary,
     };
   }
 
@@ -88,6 +95,21 @@ export class TestQuestionMapper {
       ...this.toTestQuestionResponse(question),
       answer: rightAnswer.text,
       answerId: rightAnswer.id,
+    };
+  }
+
+  toTestQuestionStudentResponse(
+    q: DbTestQuestion,
+  ): TestQuestionStudentResponse {
+    const answers = choiceQuestionTypes.includes(q.type)
+      ? q.answers
+      : undefined;
+
+    return {
+      ...this.toTestQuestionResponse(q),
+      answers: answers?.map((ans) =>
+        this.toTestQuestionAnswerStudentResponse(ans),
+      ),
     };
   }
 }

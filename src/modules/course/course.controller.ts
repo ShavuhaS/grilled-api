@@ -47,6 +47,7 @@ import { OrderByPipe } from '../../common/pipes/order-by.pipe';
 import { OrderByDto } from '../../common/dtos/order-by.dto';
 import { DbCourse } from '../../database/entities/course.entity';
 import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dto';
+import { TestMapper } from '../test/mappers/test.mapper';
 
 @ApiTags('Courses')
 @ApiExtraModels(...CourseExtraModels)
@@ -62,6 +63,7 @@ export class CourseController {
     private courseMapper: CourseMapper,
     private moduleMapper: CourseModuleMapper,
     private lessonMapper: LessonMapper,
+    private testMapper: TestMapper,
     private eventEmitter: EventEmitter2,
   ) {}
 
@@ -175,7 +177,11 @@ export class CourseController {
     @Param('moduleId', ModuleByIdPipe) moduleId: string,
     @Body() body: UpdateCourseModuleDto,
   ) {
-    const module = await this.courseService.updateModule(courseId, moduleId, body);
+    const module = await this.courseService.updateModule(
+      courseId,
+      moduleId,
+      body,
+    );
     return this.moduleMapper.toBaseCourseModuleResponse(module);
   }
 
@@ -308,6 +314,25 @@ export class CourseController {
       body,
     );
     return this.lessonMapper.toLessonTeacherResponse(lesson);
+  }
+
+  @ApiEndpoint({
+    summary: 'Get test questions',
+    documentation: CourseDocumentation.GET_TEST,
+    policies: CoursePolicies.ACCESS_CONTENT,
+  })
+  @Get('/:courseId/tests/:testId')
+  async getTest(
+    @Param('courseId') courseId: string,
+    @Param('testId') testId: string,
+    @User() user: DbUser,
+  ) {
+    const test = await this.courseService.getTest(courseId, testId);
+    const isOwner = await this.courseService.isUserOwner(user.id, courseId);
+    if (isOwner) {
+      return this.testMapper.toTestTeacherResponse(test);
+    }
+    return this.testMapper.toTestStudentResponse(test);
   }
 
   @ApiEndpoint({

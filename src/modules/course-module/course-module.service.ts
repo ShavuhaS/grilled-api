@@ -98,7 +98,10 @@ export class CourseModuleService {
     );
   }
 
-  async updateById(id: string, body: UpdateCourseModuleDto): Promise<DbCourseModule> {
+  async updateById(
+    id: string,
+    body: UpdateCourseModuleDto,
+  ): Promise<DbCourseModule> {
     const old = await this.moduleRepository.findById(id);
 
     if (body.order && body.order !== old.order) {

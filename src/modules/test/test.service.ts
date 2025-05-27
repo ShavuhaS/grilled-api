@@ -21,6 +21,17 @@ import { DbLessonTest } from '../../database/entities/lesson-test.entity';
 import { EmptyCourseContentException } from '../../common/exceptions/empty-course-content.exception';
 import { InvalidTestAnswersException } from '../../common/exceptions/invalid-test-answers.exception';
 
+export const singleAnswerQuestionTypes: QuestionTypeEnum[] = [
+  QuestionTypeEnum.CHOICE,
+  QuestionTypeEnum.FILL_IN,
+  QuestionTypeEnum.NUMERIC,
+];
+
+export const choiceQuestionTypes: QuestionTypeEnum[] = [
+  QuestionTypeEnum.CHOICE,
+  QuestionTypeEnum.MULTICHOICE,
+];
+
 @Injectable()
 export class TestService {
   private readonly questionValidMap: Partial<
@@ -38,16 +49,20 @@ export class TestService {
     [QuestionTypeEnum.SHORT_ANSWER]: this.createShortAnswerQuestion.bind(this),
   } as const;
 
-  private readonly singleAnswerQuestionTypes: QuestionTypeEnum[] = [
-    QuestionTypeEnum.CHOICE,
-    QuestionTypeEnum.FILL_IN,
-    QuestionTypeEnum.NUMERIC,
-  ];
-
   constructor(
     private testRepository: CourseTestRepository,
     private questionRepository: TestQuestionRepository,
   ) {}
+
+  async getById(id: string): Promise<DbLessonTest> {
+    return this.testRepository.findById(id, {
+      questions: {
+        include: {
+          answers: true,
+        },
+      },
+    });
+  }
 
   async getUserResults(id: string, userId: string): Promise<TestResults> {
     const test = await this.testRepository.findById(id);
@@ -138,7 +153,7 @@ export class TestService {
     const correctAnswers = question.answers.filter((ans) => ans.correct);
 
     if (
-      this.singleAnswerQuestionTypes.includes(question.type) &&
+      singleAnswerQuestionTypes.includes(question.type) &&
       correctAnswers.length !== 1
     ) {
       throw answerErr;

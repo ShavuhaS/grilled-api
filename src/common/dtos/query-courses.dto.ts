@@ -26,7 +26,7 @@ class CourseCategoryFilter {
     description: 'Ids of course categories (separated by commas)',
   })
   @IsOptional()
-  @Transform(({ value }) => Array.isArray(value) ? value : value.split(','))
+  @Transform(({ value }) => (Array.isArray(value) ? value : value.split(',')))
   @IsUUID(undefined, {
     each: true,
     message: 'Each of the category ids must be a valid UUID',
@@ -39,7 +39,7 @@ class AuthorFilter {
     description: 'Ids of course authors (separated by commas)',
   })
   @IsOptional()
-  @Transform(({ value }) => Array.isArray(value) ? value : value.split(','))
+  @Transform(({ value }) => (Array.isArray(value) ? value : value.split(',')))
   @IsUUID(undefined, {
     each: true,
     message: 'Each of the author ids must be a valid UUID',
@@ -54,7 +54,7 @@ class LevelFilter {
     isArray: true,
   })
   @IsOptional()
-  @Transform(({ value }) => Array.isArray(value) ? value : value.split(','))
+  @Transform(({ value }) => (Array.isArray(value) ? value : value.split(',')))
   @IsEnum(CourseLevelEnum, {
     each: true,
     message: 'Each of the course levels must be a valid enum',
@@ -69,7 +69,7 @@ class StatusFilter {
     isArray: true,
   })
   @IsOptional()
-  @Transform(({ value }) => Array.isArray(value) ? value : value.split(','))
+  @Transform(({ value }) => (Array.isArray(value) ? value : value.split(',')))
   @IsEnum(CourseStatusEnum, {
     each: true,
     message: 'Each of the course statuses must be a valid enum',

@@ -34,6 +34,9 @@ import { FilterUtil } from '../../database/utils/filter.util';
 import { PaginationUtil } from '../../database/utils/pagination.util';
 import { DbCourseModule } from '../../database/entities/course-module.entity';
 import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dto';
+import { DbLessonTest } from '../../database/entities/lesson-test.entity';
+import { CourseTestDisconnectionException } from '../../common/exceptions/course-test-disconnection.exception';
+import { TestService } from '../test/test.service';
 
 @Injectable()
 export class CourseService {
@@ -42,6 +45,7 @@ export class CourseService {
     private moduleService: CourseModuleService,
     private lessonService: LessonService,
     private storageService: StorageService,
+    private testService: TestService,
   ) {}
 
   async getById(id: string, signResources = false): Promise<DbCourse> {
@@ -115,7 +119,9 @@ export class CourseService {
 
   private async signCourseResources(course: DbCourse): Promise<DbCourse> {
     if (course.avatarLink) {
-      course.avatarLink = await this.storageService.getSignedUrl(course.avatarLink);
+      course.avatarLink = await this.storageService.getSignedUrl(
+        course.avatarLink,
+      );
     }
 
     if (!course.modules) {
@@ -141,6 +147,11 @@ export class CourseService {
     });
   }
 
+  async isUserOwner(userId: string, courseId: string): Promise<boolean> {
+    const course = await this.courseRepository.findById(courseId);
+    return this.ownsCourse(userId, course);
+  }
+
   async isUserEnrolled(userId: string, courseId: string): Promise<boolean> {
     const enrollee = await this.courseRepository.findOne({
       id: courseId,
@@ -150,8 +161,8 @@ export class CourseService {
     return !!enrollee;
   }
 
-  private async ownsCourse(user: DbUser, course: DbCourse): Promise<boolean> {
-    return course.authorId === user.id;
+  private async ownsCourse(userId: string, course: DbCourse): Promise<boolean> {
+    return course.authorId === userId;
   }
 
   private async checkModuleConnected(courseId: string, moduleId: string) {
@@ -165,7 +176,11 @@ export class CourseService {
     }
   }
 
-  async updateModule(courseId: string, moduleId: string, body: UpdateCourseModuleDto): Promise<DbCourseModule> {
+  async updateModule(
+    courseId: string,
+    moduleId: string,
+    body: UpdateCourseModuleDto,
+  ): Promise<DbCourseModule> {
     await this.checkModuleConnected(courseId, moduleId);
 
     return this.moduleService.updateById(moduleId, body);
@@ -244,7 +259,7 @@ export class CourseService {
       return { links: false };
     }
 
-    const isOwner = await this.ownsCourse(user, course);
+    const isOwner = await this.ownsCourse(user.id, course);
     if (isOwner) {
       return { links: true };
     }
@@ -438,6 +453,22 @@ export class CourseService {
         },
       });
     }
+  }
+
+  private async checkTestConnected(courseId: string, testId: string) {
+    const course = await this.courseRepository.findOne({
+      modules: { some: { lessons: { some: { test: { id: testId } } } } },
+    });
+
+    if (!course) {
+      throw new CourseTestDisconnectionException();
+    }
+  }
+
+  async getTest(courseId: string, testId: string): Promise<DbLessonTest> {
+    await this.checkTestConnected(courseId, testId);
+
+    return this.testService.getById(testId);
   }
 
   @OnEvent(CourseEvent.LESSON_DURATION_UPDATED)

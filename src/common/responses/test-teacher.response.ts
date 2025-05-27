@@ -2,6 +2,7 @@ import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { ChoiceQuestionTeacherResponse } from './choice-question-teacher.response';
 import { MultichoiceQuestionTeacherResponse } from './multichoice-question-teacher.response';
 import { ShortAnswerQuestionTeacherResponse } from './short-answer-question-teacher.response';
+import { BaseTestResponse } from './base-test.response';
 
 export type TestQuestionTeacherResponse =
   | ChoiceQuestionTeacherResponse
@@ -13,13 +14,7 @@ export type TestQuestionTeacherResponse =
   MultichoiceQuestionTeacherResponse,
   ShortAnswerQuestionTeacherResponse,
 )
-export class TestTeacherResponse {
-  @ApiProperty({
-    description: 'Number of questions in the test',
-    type: 'integer',
-  })
-  questionCount: number;
-
+export class TestTeacherResponse extends BaseTestResponse {
   @ApiProperty({
     description: 'List of questions (with answers)',
     oneOf: [

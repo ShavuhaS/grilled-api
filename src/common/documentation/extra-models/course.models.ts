@@ -4,6 +4,7 @@ import { TestLessonTeacherResponse } from '../../responses/test-lesson-teacher.r
 import { ArticleLessonStudentResponse } from '../../responses/article-lesson-student.response';
 import { VideoLessonStudentResponse } from '../../responses/video-lesson-student.response';
 import { TestLessonStudentResponse } from '../../responses/test-lesson-student.response';
+import { TestStudentResponse } from '../../responses/test-student.response';
 
 export const CourseExtraModels = [
   ArticleLessonTeacherResponse,
@@ -12,4 +13,5 @@ export const CourseExtraModels = [
   ArticleLessonStudentResponse,
   VideoLessonStudentResponse,
   TestLessonStudentResponse,
+  TestStudentResponse,
 ];
