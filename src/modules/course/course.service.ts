@@ -37,6 +37,7 @@ import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dt
 import { DbLessonTest } from '../../database/entities/lesson-test.entity';
 import { CourseTestDisconnectionException } from '../../common/exceptions/course-test-disconnection.exception';
 import { TestService } from '../test/test.service';
+import { InvalidBodyException } from '../../common/exceptions/invalid-body.exception';
 
 @Injectable()
 export class CourseService {
@@ -75,22 +76,10 @@ export class CourseService {
   }
 
   async getAll(
-    user: DbUser,
     query: QueryCoursesDto,
     orderBy: OrderByDto,
   ): Promise<Paginated<DbCourse>> {
-    if (!user && query.my) {
-      throw new UnauthorizedException();
-    }
-
-    if (query.status) {
-      query.status.in = query.status.in ?? [CourseStatusEnum.PUBLISHED];
-    }
-    if (!user || user.role === RoleEnum.STUDENT) {
-      query.status = { in: [CourseStatusEnum.PUBLISHED] };
-    }
-
-    const { search, orderBy: _, my, pageSize, page, ...filter } = query;
+    const { search, orderBy: _, pageSize, page, skillId, ...filter } = query;
     const pagination = { page, pageSize };
 
     const searchWhere = search
@@ -99,14 +88,20 @@ export class CourseService {
 
     const filterWhere = FilterUtil.getFilter('DbCourse', filter);
 
-    const where: Prisma.CourseWhereInput = { ...searchWhere, ...filterWhere };
-    if (query.my) {
-      if (user.role === RoleEnum.STUDENT) {
-        where.enrollees = { some: { userId: user.id } };
-      } else if (user.role === RoleEnum.TEACHER) {
-        where.authorId = { equals: user.id };
+    const skillFilter = Array.isArray(skillId?.in)
+      ? {
+        skills: {
+          some: { skillId },
+        },
       }
-    }
+      : {};
+
+    const where: Prisma.CourseWhereInput = {
+      ...searchWhere,
+      ...filterWhere,
+      ...skillFilter,
+      status: CourseStatusEnum.PUBLISHED,
+    };
 
     const paginatedData = await PaginationUtil.paginate(
       this.courseRepository,

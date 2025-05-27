@@ -5,7 +5,6 @@ import {
   SearchQuery,
 } from '../../default-queries.constants';
 import { CourseLevelEnum } from '../../../enums/course-level.enum';
-import { CourseStatusEnum } from '../../../enums/course-status.enum';
 import { DefaultUnauthorizedResponse } from '../../default-responses.constants';
 import { PaginatedCoursesResponse } from '../../../responses/paginated-courses.response';
 
@@ -22,6 +21,11 @@ export const GetAllDocumentation: ApiDocumentationParams = {
       required: false,
     },
     {
+      name: 'skillId[in]',
+      type: 'string',
+      required: false,
+    },
+    {
       name: 'authorId[in]',
       type: 'string',
       required: false,
@@ -29,12 +33,6 @@ export const GetAllDocumentation: ApiDocumentationParams = {
     {
       name: 'level[in]',
       enum: CourseLevelEnum,
-      isArray: true,
-      required: false,
-    },
-    {
-      name: 'status[in]',
-      enum: CourseStatusEnum,
       isArray: true,
       required: false,
     },
@@ -63,11 +61,6 @@ export const GetAllDocumentation: ApiDocumentationParams = {
       required: false,
       minimum: 0,
       maximum: 5,
-    },
-    {
-      name: 'my',
-      type: Boolean,
-      required: false,
     },
   ],
   ok: {

@@ -34,6 +34,19 @@ class CourseCategoryFilter {
   in?: string[];
 }
 
+class SkillFilter {
+  @ApiPropertyOptional({
+    description: 'Ids of course skills (separated by commas)',
+  })
+  @IsOptional()
+  @Transform(({ value }) => (Array.isArray(value) ? value : value.split(',')))
+  @IsUUID(undefined, {
+    each: true,
+    message: 'Each of the skill ids must be a valid UUID',
+  })
+  in?: string[];
+}
+
 class AuthorFilter {
   @ApiPropertyOptional({
     description: 'Ids of course authors (separated by commas)',
@@ -60,21 +73,6 @@ class LevelFilter {
     message: 'Each of the course levels must be a valid enum',
   })
   in?: CourseLevelEnum[];
-}
-
-class StatusFilter {
-  @ApiPropertyOptional({
-    description: 'Course statuses (separated by commas)',
-    enum: CourseStatusEnum,
-    isArray: true,
-  })
-  @IsOptional()
-  @Transform(({ value }) => (Array.isArray(value) ? value : value.split(',')))
-  @IsEnum(CourseStatusEnum, {
-    each: true,
-    message: 'Each of the course statuses must be a valid enum',
-  })
-  in?: CourseStatusEnum[];
 }
 
 class DurationFilter {
@@ -145,6 +143,15 @@ export class QueryCoursesDto extends PageDto {
   categoryId?: CourseCategoryFilter;
 
   @ApiPropertyOptional({
+    description: 'Skill filter',
+    type: SkillFilter,
+  })
+  @IsOptional()
+  @Type(() => SkillFilter)
+  @ValidateNested()
+  skillId?: SkillFilter;
+
+  @ApiPropertyOptional({
     description: 'Author filter',
     type: AuthorFilter,
   })
@@ -163,15 +170,6 @@ export class QueryCoursesDto extends PageDto {
   level?: LevelFilter;
 
   @ApiPropertyOptional({
-    description: 'Course status filter',
-    type: StatusFilter,
-  })
-  @IsOptional()
-  @Type(() => StatusFilter)
-  @ValidateNested()
-  status?: StatusFilter;
-
-  @ApiPropertyOptional({
     description: 'Duration filter',
     type: DurationFilter,
   })
@@ -188,12 +186,4 @@ export class QueryCoursesDto extends PageDto {
   @Type(() => RatingFilter)
   @ValidateNested()
   rating?: RatingFilter;
-
-  @ApiPropertyOptional({
-    description: 'Whether to only include own courses (as author or student)',
-  })
-  @IsOptional()
-  @Transform(({ value }) => value === 'true')
-  @IsBoolean({ message: 'My should be a boolean' })
-  my = false;
 }

@@ -109,9 +109,8 @@ export class CourseController {
   async getAll(
     @Query('orderBy', new OrderByPipe(DbCourse)) orderBy: OrderByDto,
     @Query() query: QueryCoursesDto,
-    @User() user: DbUser,
   ) {
-    const courses = await this.courseService.getAll(user, query, orderBy);
+    const courses = await this.courseService.getAll(query, orderBy);
     return this.courseMapper.toPaginatedCoursesResponse(courses);
   }
 
