@@ -9,6 +9,11 @@ export class FilterUtil {
     obj: object,
   ): Partial<Record<string, DbFilter>> {
     const newObj = {};
+    const methodMap: Record<FilterMethod, keyof DbFilter[string]> = {
+      min: 'gte',
+      max: 'lte',
+      in: 'in',
+    };
     const fieldMap = apiToEntityMap[entityName];
     for (const field in obj) {
       const newField = field in fieldMap ? fieldMap[field] : field;
@@ -16,10 +21,10 @@ export class FilterUtil {
       if (typeof value === 'object') {
         const newValue = {};
         const keys = Object.keys(value).filter((k) =>
-          filterMethods.includes(k as FilterMethod),
+          Object.keys(methodMap).includes(k as FilterMethod),
         ) as FilterMethod[];
         for (const key of keys) {
-          newValue[key] = value[key];
+          newValue[methodMap[key]] = value[key];
         }
         newObj[newField] = newValue;
       } else {

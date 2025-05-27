@@ -1,7 +1,7 @@
 export type DbFilter = {
   [key in string]: {
-    min?: number;
-    max?: number;
+    gte?: number;
+    lte?: number;
     in?: any[];
   };
 };
