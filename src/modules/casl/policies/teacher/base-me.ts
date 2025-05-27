@@ -8,13 +8,18 @@ import { ForbiddenException } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { DbTeacher } from '../../../../database/entities/teacher.entity';
 
-export abstract class TeacherBaseMePolicy implements IPolicyHandler<TeacherAction> {
+export abstract class TeacherBaseMePolicy
+  implements IPolicyHandler<TeacherAction>
+{
   protected constructor(
     private repo: TeacherRepository,
     private action: TeacherAction,
   ) {}
 
-  async handle(ability: AppAbility<TeacherAction>, req: Request): Promise<boolean> {
+  async handle(
+    ability: AppAbility<TeacherAction>,
+    req: Request,
+  ): Promise<boolean> {
     const user = req.user as DbUser;
     const teacher = await this.repo.find({ userId: user.id });
 

@@ -28,7 +28,6 @@ import { OrderByDto } from '../../common/dtos/order-by.dto';
 import { QueryCoursesDto } from '../../common/dtos/query-courses.dto';
 import { Paginated } from '../../database/interfaces/paginated.interface';
 import { SearchUtil } from '../../database/utils/search.util';
-import { RoleEnum } from '../../common/enums/role.enum';
 import { Prisma } from '@prisma/client';
 import { FilterUtil } from '../../database/utils/filter.util';
 import { PaginationUtil } from '../../database/utils/pagination.util';
@@ -37,7 +36,6 @@ import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dt
 import { DbLessonTest } from '../../database/entities/lesson-test.entity';
 import { CourseTestDisconnectionException } from '../../common/exceptions/course-test-disconnection.exception';
 import { TestService } from '../test/test.service';
-import { InvalidBodyException } from '../../common/exceptions/invalid-body.exception';
 
 @Injectable()
 export class CourseService {

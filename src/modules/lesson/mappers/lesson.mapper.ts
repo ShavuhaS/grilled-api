@@ -157,9 +157,13 @@ export class LessonMapper {
     completed: boolean,
     testResults: TestResults,
   ): TestLessonStudentResponse {
+    const test = lesson.test
+      ? { id: lesson.test?.id, results: testResults }
+      : undefined;
+
     return {
       ...this.toLessonResponse(lesson, { links: true, completed }),
-      testResults,
-    } as TestLessonStudentResponse;
+      test,
+    };
   }
 }

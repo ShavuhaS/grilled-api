@@ -29,10 +29,7 @@ export class TeacherController {
     policies: TeacherPolicies.UPDATE_ME,
   })
   @Patch('/me')
-  async updateMe(
-    @User() user: DbUser,
-    @Body() dto: UpdateTeacherDto,
-  ) {
+  async updateMe(@User() user: DbUser, @Body() dto: UpdateTeacherDto) {
     const teacher = await this.teacherService.update(user.id, dto);
     return this.teacherMapper.toBaseTeacherResponse(teacher);
   }

@@ -8,7 +8,6 @@ import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity
 export class TeacherService {
   constructor(private teacherRepository: TeacherRepository) {}
 
-
   async update(id: string, dto: UpdateTeacherDto): Promise<DbTeacher> {
     const teacher = await this.teacherRepository.find({ userId: id });
 

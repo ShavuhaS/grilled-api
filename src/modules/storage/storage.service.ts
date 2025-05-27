@@ -72,6 +72,21 @@ export class StorageService {
     return { storagePath };
   }
 
+  private getAvatarPath(avatar: Express.Multer.File): string {
+    const uuid = crypto.randomUUID().slice(0, 8);
+    return `avatars/${uuid}-${avatar.originalname}`;
+  }
+
+  async uploadAvatar(avatar: Express.Multer.File): Promise<{ storagePath: string }> {
+    const storagePath = this.getAvatarPath(avatar);
+
+    await this.uploadFile(storagePath, avatar, {
+      contentType: avatar.mimetype,
+    });
+
+    return { storagePath };
+  }
+
   async getSignedUrl(storagePath: string): Promise<string> {
     return (
       await this.bucket.file(storagePath).getSignedUrl({

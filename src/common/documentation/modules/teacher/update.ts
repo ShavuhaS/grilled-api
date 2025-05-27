@@ -1,5 +1,8 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
-import { DefaultForbiddenResponse, DefaultUnauthorizedResponse } from '../../default-responses.constants';
+import {
+  DefaultForbiddenResponse,
+  DefaultUnauthorizedResponse,
+} from '../../default-responses.constants';
 import { UpdateTeacherDto } from '../../../dtos/update-teacher.dto';
 import { BaseTeacherResponse } from '../../../responses/base-teacher.response';
 
