@@ -18,6 +18,7 @@ import { GetAllDocumentation } from './get-all';
 import { UpdateModuleDocumentation } from './update-module';
 import { GetTestDocumentation } from './get-test';
 import { AttachSkillsDocumentation } from './attach-skills';
+import { DetachSkillsDocumentation } from './detach-skills';
 
 export const CourseDocumentation = {
   GET: GetDocumentation,
@@ -25,6 +26,7 @@ export const CourseDocumentation = {
   CREATE: CreateDocumentation,
   UPDATE: UpdateDocumentation,
   ATTACH_SKILLS: AttachSkillsDocumentation,
+  DETACH_SKILLS: DetachSkillsDocumentation,
   UPDATE_AVATAR: UpdateAvatarDocumentation,
   CREATE_MODULE: CreateModuleDocumentation,
   UPDATE_MODULE: UpdateModuleDocumentation,

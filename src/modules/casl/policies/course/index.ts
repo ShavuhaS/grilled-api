@@ -17,6 +17,7 @@ export const CoursePolicies = {
   ENROLL: CourseEnrollPolicy,
   UPDATE: CourseUpdatePolicy,
   ATTACH_SKILLS: CourseUpdatePolicy,
+  DETACH_SKILLS: CourseUpdatePolicy,
   MODULE_CREATE: CourseUpdatePolicy,
   MODULE_DELETE: CourseUpdatePolicy,
   LESSON_CREATE: CourseUpdatePolicy,

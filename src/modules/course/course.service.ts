@@ -200,18 +200,32 @@ export class CourseService {
     if (!course) {
       throw new InvalidEntityIdException('Course');
     }
-
     for (const { skillId } of course.skills) {
       skillSet.delete(skillId);
     }
-
     const toConnect = Array.from(skillSet);
     await this.courseRepository.updateById(courseId, {
       skills: {
         create: toConnect.map((skillId) => ({ skillId })),
       },
     });
+    return this.getById(courseId, true);
+  }
 
+  async detachSkills(courseId: string, skillIds: string[]): Promise<DbCourse> {
+    const course = await this.courseRepository.findById(courseId, {
+      skills: { include: { skill: true } },
+    });
+    if (!course) {
+      throw new InvalidEntityIdException('Course');
+    }
+    await this.courseRepository.updateById(courseId, {
+      skills: {
+        deleteMany: {
+          skillId: { in: skillIds },
+        },
+      },
+    });
     return this.getById(courseId, true);
   }
 

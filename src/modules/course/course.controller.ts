@@ -49,6 +49,8 @@ import { DbCourse } from '../../database/entities/course.entity';
 import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dto';
 import { TestMapper } from '../test/mappers/test.mapper';
 import { SkillByIdPipe } from '../../common/pipes/skill-by-id.pipe';
+import { AttachEntitiesDto } from '../../common/dtos/attach-entities.dto';
+import { DetachEntitiesDto } from '../../common/dtos/detach-entities.dto';
 
 @ApiTags('Courses')
 @ApiExtraModels(...CourseExtraModels)
@@ -161,8 +163,24 @@ export class CourseController {
   async attachSkills(
     @Param('courseId', CourseByIdPipe) courseId: string,
     @Body('ids', SkillByIdPipe) ids: string[],
+    @Body() body: AttachEntitiesDto,
   ) {
     const course = await this.courseService.attachSkills(courseId, ids);
+    return this.courseMapper.toCourseResponse(course, { links: true });
+  }
+
+  @ApiEndpoint({
+    summary: 'Detach skills from a course',
+    documentation: CourseDocumentation.DETACH_SKILLS,
+    policies: CoursePolicies.DETACH_SKILLS,
+  })
+  @Delete('/:courseId/skills')
+  async detachSkills(
+    @Param('courseId', CourseByIdPipe) courseId: string,
+    @Body('ids', SkillByIdPipe) ids: string[],
+    @Body() body: DetachEntitiesDto,
+  ) {
+    const course = await this.courseService.detachSkills(courseId, ids);
     return this.courseMapper.toCourseResponse(course, { links: true });
   }
 
