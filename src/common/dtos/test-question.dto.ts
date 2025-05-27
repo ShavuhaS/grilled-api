@@ -63,6 +63,7 @@ export class ChoiceTestQuestionDto extends BaseTestQuestionDto {
 
   @ApiProperty({
     description: 'Possible question answers',
+    type: [TestQuestionAnswerDto],
   })
   @Type(() => TestQuestionAnswerDto)
   @ValidateNested({ each: true })

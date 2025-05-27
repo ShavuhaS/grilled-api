@@ -8,6 +8,7 @@ import { CourseModuleMapper } from '../../course-module/mappers/course-module.ma
 import { CourseMappingOptions } from '../interfaces/course-mapping-options.interface';
 import { PaginatedCoursesResponse } from '../../../common/responses/paginated-courses.response';
 import { Paginated } from '../../../database/interfaces/paginated.interface';
+import { SkillMapper } from '../../skill/mappers/skill.mapper';
 
 @Injectable()
 export class CourseMapper {
@@ -15,6 +16,7 @@ export class CourseMapper {
     private teacherMapper: TeacherMapper,
     private categoryMapper: CourseCategoryMapper,
     private moduleMapper: CourseModuleMapper,
+    private skillMapper: SkillMapper,
   ) {}
 
   toBaseCourseResponse(course: DbCourse): BaseCourseResponse {
@@ -50,6 +52,10 @@ export class CourseMapper {
     return {
       ...this.toBaseCourseResponse(course),
       progress: progress && +progress.course.toFixed(1),
+      skills:
+        course.skills
+          ?.filter(({ skill }) => !!skill)
+          ?.map(({ skill }) => this.skillMapper.toSkillResponse(skill)) ?? [],
       modules,
     };
   }

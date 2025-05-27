@@ -62,6 +62,7 @@ export class CourseService {
           },
         },
       },
+      skills: { include: { skill: true } },
     });
 
     if (signResources) {
@@ -83,17 +84,17 @@ export class CourseService {
     const pagination = { page, pageSize };
 
     const searchWhere = search
-      ? SearchUtil.getFieldSearch<'course'>(search, 'name', 'level')
+      ? SearchUtil.getFieldSearch<'course'>(search, 'name')
       : {};
 
     const filterWhere = FilterUtil.getFilter('DbCourse', filter);
 
     const skillFilter = Array.isArray(skillId?.in)
       ? {
-        skills: {
-          some: { skillId },
-        },
-      }
+          skills: {
+            some: { skillId },
+          },
+        }
       : {};
 
     const where: Prisma.CourseWhereInput = {
@@ -189,6 +190,29 @@ export class CourseService {
     await this.checkModuleConnected(courseId, moduleId);
 
     await this.moduleService.deleteById(moduleId);
+  }
+
+  async attachSkills(courseId: string, skillIds: string[]): Promise<DbCourse> {
+    const skillSet = new Set<string>(skillIds);
+    const course = await this.courseRepository.findById(courseId, {
+      skills: { include: { skill: true } },
+    });
+    if (!course) {
+      throw new InvalidEntityIdException('Course');
+    }
+
+    for (const { skillId } of course.skills) {
+      skillSet.delete(skillId);
+    }
+
+    const toConnect = Array.from(skillSet);
+    await this.courseRepository.updateById(courseId, {
+      skills: {
+        create: toConnect.map((skillId) => ({ skillId })),
+      },
+    });
+
+    return this.getById(courseId, true);
   }
 
   async getUserProgress(

@@ -48,6 +48,7 @@ import { OrderByDto } from '../../common/dtos/order-by.dto';
 import { DbCourse } from '../../database/entities/course.entity';
 import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dto';
 import { TestMapper } from '../test/mappers/test.mapper';
+import { SkillByIdPipe } from '../../common/pipes/skill-by-id.pipe';
 
 @ApiTags('Courses')
 @ApiExtraModels(...CourseExtraModels)
@@ -149,6 +150,20 @@ export class CourseController {
         new FileProcessedEvent(file.path),
       );
     }
+  }
+
+  @ApiEndpoint({
+    summary: 'Attach skills to a course',
+    documentation: CourseDocumentation.ATTACH_SKILLS,
+    policies: CoursePolicies.ATTACH_SKILLS,
+  })
+  @Post('/:courseId/skills')
+  async attachSkills(
+    @Param('courseId', CourseByIdPipe) courseId: string,
+    @Body('ids', SkillByIdPipe) ids: string[],
+  ) {
+    const course = await this.courseService.attachSkills(courseId, ids);
+    return this.courseMapper.toCourseResponse(course, { links: true });
   }
 
   @ApiEndpoint({
