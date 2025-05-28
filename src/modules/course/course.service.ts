@@ -36,6 +36,8 @@ import { UpdateCourseModuleDto } from '../../common/dtos/update-course-module.dt
 import { DbLessonTest } from '../../database/entities/lesson-test.entity';
 import { CourseTestDisconnectionException } from '../../common/exceptions/course-test-disconnection.exception';
 import { TestService } from '../test/test.service';
+import { TakeTestDto } from '../../common/dtos/take-test.dto';
+import { TestScoreResponse } from '../../common/responses/test-score.response';
 
 @Injectable()
 export class CourseService {
@@ -554,5 +556,16 @@ export class CourseService {
       { id: course.id },
       { estimatedTime: { increment: durationDelta } },
     );
+  }
+
+  async takeTest(
+    userId: string,
+    courseId: string,
+    testId: string,
+    dto: TakeTestDto,
+  ): Promise<TestScoreResponse> {
+    await this.checkTestConnected(courseId, testId);
+
+    return this.testService.takeTest(userId, testId, dto);
   }
 }

@@ -102,19 +102,16 @@ export class UserService {
       where.course = { ...where.course, skills: { some: { skillId } } };
     }
 
+    where.userId = user.id;
     if (Array.isArray(status?.in) && status.in.length > 0) {
       const hasActive = status.in.includes(UserCourseStatus.ACTIVE);
       const hasArchived = status.in.includes(UserCourseStatus.ARCHIVED);
 
       if (hasActive && !hasArchived) {
-        where.NOT = { userId: user.id, certificate: { isNot: null } };
+        where.NOT = { certificate: { isNot: null } };
       } else if (!hasActive && hasArchived) {
-        where = { ...where, userId: user.id, certificate: { isNot: null } };
-      } else {
-        where.userId = user.id;
+        where = { ...where, certificate: { isNot: null } };
       }
-    } else {
-      where.userId = user.id;
     }
 
     if (Array.isArray(categoryId?.in) && categoryId.in.length > 0) {

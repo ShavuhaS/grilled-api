@@ -11,6 +11,7 @@ import { CourseCompletePolicy } from './complete';
 export const CoursePolicies = {
   CREATE: courseCreatePolicy,
   ACCESS_CONTENT: CourseAccessContentPolicy,
+  TAKE_TEST: CourseAccessContentPolicy,
   COMPLETE: CourseCompletePolicy,
   CHECK_STATUS: CourseCheckStatusPolicy,
   PUBLISH: CoursePublishPolicy,

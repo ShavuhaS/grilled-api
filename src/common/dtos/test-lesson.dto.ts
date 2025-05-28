@@ -6,17 +6,7 @@ import {
   getSchemaPath,
 } from '@nestjs/swagger';
 import { LessonTypeEnum } from '../enums/lesson-type.enum';
-import {
-  ArrayNotEmpty,
-  Equals,
-  IsArray,
-  IsInt,
-  IsNotEmpty,
-  IsOptional,
-  Max,
-  Min,
-  ValidateNested,
-} from 'class-validator';
+import { IsArray, IsOptional, ValidateNested } from 'class-validator';
 import {
   TestQuestionDto,
   ChoiceTestQuestionDto,

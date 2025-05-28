@@ -20,6 +20,19 @@ import { InvalidEntityIdException } from '../../common/exceptions/invalid-entity
 import { DbLessonTest } from '../../database/entities/lesson-test.entity';
 import { EmptyCourseContentException } from '../../common/exceptions/empty-course-content.exception';
 import { InvalidTestAnswersException } from '../../common/exceptions/invalid-test-answers.exception';
+import { AnswerDto, TakeTestDto } from '../../common/dtos/take-test.dto';
+import { TestScoreResponse } from '../../common/responses/test-score.response';
+import { TestAttemptRepository } from '../../database/repositories/test-attempt.repository';
+import { ChoiceAnswerDto } from '../../common/dtos/choice-answer.dto';
+import { MultichoiceAnswerDto } from '../../common/dtos/multichoice-answer.dto';
+import { ShortAnswerDto } from '../../common/dtos/short-answer.dto';
+import { ValidateAnswerFunction } from '../course/types/validate-answer.type';
+import { QuestionAnswerDisconnectionException } from '../../common/exceptions/question-answer-disconnection.exception';
+import { QuestionTestDisconnectionException } from '../../common/exceptions/question-test-disconnection.exception';
+import { InvalidEntityTypeException } from '../../common/exceptions/invalid-entity-type.exception';
+import { RecordAnswerFunction } from '../course/types/record-answer.type';
+import { AttemptAnswerRepository } from '../../database/repositories/attempt-answer.repository';
+import { EvaluateAnswerFunction } from '../course/types/evaluate-answer.type';
 
 export const singleAnswerQuestionTypes: QuestionTypeEnum[] = [
   QuestionTypeEnum.CHOICE,
@@ -49,9 +62,35 @@ export class TestService {
     [QuestionTypeEnum.SHORT_ANSWER]: this.createShortAnswerQuestion.bind(this),
   } as const;
 
+  private readonly validateAnswerMap: Partial<
+    Record<QuestionTypeEnum, ValidateAnswerFunction>
+  > = {
+    [QuestionTypeEnum.CHOICE]: this.validateChoiceAnswer.bind(this),
+    [QuestionTypeEnum.MULTICHOICE]: this.validateMultichoiceAnswer.bind(this),
+    [QuestionTypeEnum.SHORT_ANSWER]: this.validateShortAnswer.bind(this),
+  };
+
+  private readonly recordAnswerMap: Partial<
+    Record<QuestionTypeEnum, RecordAnswerFunction>
+  > = {
+    [QuestionTypeEnum.CHOICE]: this.recordChoiceAnswer.bind(this),
+    [QuestionTypeEnum.MULTICHOICE]: this.recordMultichoiceAnswer.bind(this),
+    [QuestionTypeEnum.SHORT_ANSWER]: this.recordShortAnswer.bind(this),
+  };
+
+  private readonly evaluateAnswerMap: Partial<
+    Record<QuestionTypeEnum, EvaluateAnswerFunction>
+  > = {
+    [QuestionTypeEnum.CHOICE]: this.evaluateChoiceAnswer.bind(this),
+    [QuestionTypeEnum.MULTICHOICE]: this.evaluateMultichoiceAnswer.bind(this),
+    [QuestionTypeEnum.SHORT_ANSWER]: this.evaluateShortAnswer.bind(this),
+  };
+
   constructor(
     private testRepository: CourseTestRepository,
     private questionRepository: TestQuestionRepository,
+    private attemptRepository: TestAttemptRepository,
+    private attemptAnswerRepository: AttemptAnswerRepository,
   ) {}
 
   async getById(id: string): Promise<DbLessonTest> {
@@ -265,5 +304,213 @@ export class TestService {
       },
       { answers: true },
     );
+  }
+
+  async takeTest(
+    userId: string,
+    testId: string,
+    dto: TakeTestDto,
+  ): Promise<TestScoreResponse> {
+    await this.validateAnswers(testId, dto);
+
+    const testAttempt = await this.getNewAttempt(userId, testId);
+    await this.recordAttemptAnswers(testAttempt.id, dto);
+
+    const results = await this.evaluateAttempt(testId, dto);
+    await this.attemptRepository.updateById(testAttempt.id, {
+      result: results.score,
+    });
+
+    return results;
+  }
+
+  private async validateAnswers(testId: string, dto: TakeTestDto) {
+    for (const answer of dto.answers) {
+      await this.validateAnswerMap[answer.type](testId, answer);
+    }
+  }
+
+  private async validateChoiceAnswer(testId: string, answer: ChoiceAnswerDto) {
+    const { answerId, questionId } = answer;
+    const question = await this.questionRepository.findOne(
+      { id: questionId, answers: { some: { id: answerId } } },
+      { test: true },
+    );
+    if (!question) {
+      throw new QuestionAnswerDisconnectionException();
+    }
+    if (question.type !== QuestionTypeEnum.CHOICE) {
+      throw new InvalidEntityTypeException('Question');
+    }
+    if (question.test.id !== testId) {
+      throw new QuestionTestDisconnectionException();
+    }
+  }
+
+  private async validateMultichoiceAnswer(
+    testId: string,
+    answer: MultichoiceAnswerDto,
+  ) {
+    const { answerIds, questionId } = answer;
+    const question = await this.questionRepository.findOne(
+      { id: questionId, answers: { some: { id: { in: answerIds } } } },
+      { answers: true, test: true },
+    );
+    if (!question) {
+      throw new QuestionAnswerDisconnectionException();
+    }
+    if (question.type !== QuestionTypeEnum.MULTICHOICE) {
+      throw new InvalidEntityTypeException('Question');
+    }
+    const rightAnswerIds = answerIds.filter(
+      (id) => !!question.answers.find((ans) => ans.id === id),
+    );
+    if (rightAnswerIds.length !== answerIds.length) {
+      throw new QuestionAnswerDisconnectionException();
+    }
+    if (question.test.id !== testId) {
+      throw new QuestionTestDisconnectionException();
+    }
+  }
+
+  private async validateShortAnswer(testId: string, answer: ShortAnswerDto) {
+    const { questionId } = answer;
+    const question = await this.questionRepository.findById(questionId, {
+      test: true,
+    });
+    if (!question) {
+      throw new InvalidEntityIdException('Question');
+    }
+    if (question.type !== QuestionTypeEnum.SHORT_ANSWER) {
+      throw new InvalidEntityTypeException('Question');
+    }
+    if (question.test.id !== testId) {
+      throw new QuestionTestDisconnectionException();
+    }
+  }
+
+  private async getNewAttempt(userId: string, testId: string) {
+    const testAttempt = await this.attemptRepository.find({
+      userId_testId: { userId, testId },
+    });
+
+    if (!!testAttempt) {
+      await this.attemptRepository.deleteById(testAttempt.id);
+    }
+
+    return this.attemptRepository.create({
+      testId,
+      userId,
+      result: 0,
+    });
+  }
+
+  private async recordAttemptAnswers(attemptId: string, dto: TakeTestDto) {
+    for (const answer of dto.answers) {
+      await this.recordAnswerMap[answer.type](attemptId, answer);
+    }
+  }
+
+  private async recordChoiceAnswer(attemptId: string, answer: ChoiceAnswerDto) {
+    const { answerId, questionId } = answer;
+    await this.attemptRepository.updateById(attemptId, {
+      answers: {
+        create: {
+          testQuestionId: questionId,
+          choices: {
+            create: {
+              testAnswerId: answerId,
+            },
+          },
+        },
+      },
+    });
+  }
+
+  private async recordMultichoiceAnswer(
+    attemptId: string,
+    answer: MultichoiceAnswerDto,
+  ) {
+    const { questionId, answerIds } = answer;
+    const attemptAnswer = await this.attemptAnswerRepository.create({
+      attemptId,
+      testQuestionId: questionId,
+    });
+    for (const answerId of answerIds) {
+      await this.attemptAnswerRepository.updateById(attemptAnswer.id, {
+        choices: {
+          create: {
+            testAnswerId: answerId,
+          },
+        },
+      });
+    }
+  }
+
+  private async recordShortAnswer(
+    attemptId: string,
+    answerDto: ShortAnswerDto,
+  ) {
+    const { questionId, answer } = answerDto;
+    await this.attemptRepository.updateById(attemptId, {
+      answers: {
+        create: {
+          testQuestionId: questionId,
+          answer,
+        },
+      },
+    });
+  }
+
+  private async evaluateAttempt(
+    testId: string,
+    dto: TakeTestDto,
+  ): Promise<TestScoreResponse> {
+    const { questionCount } = await this.testRepository.findById(testId);
+    let score = 0;
+    for (const answer of dto.answers) {
+      score += await this.evaluateAnswerMap[answer.type](answer);
+    }
+    return { score, maxScore: questionCount };
+  }
+
+  private async evaluateChoiceAnswer(answer: ChoiceAnswerDto): Promise<number> {
+    const { questionId, answerId } = answer;
+    const question = await this.questionRepository.findById(questionId, {
+      answers: true,
+    });
+    const rightAnswer = question.answers.find((ans) => ans.correct);
+    return (answerId === rightAnswer.id) ? 1 : 0;
+  }
+
+  private async evaluateMultichoiceAnswer(
+    answer: MultichoiceAnswerDto,
+  ): Promise<number> {
+    const { questionId, answerIds } = answer;
+    const question = await this.questionRepository.findById(questionId, {
+      answers: true,
+    });
+    const rightAnswerIds = question.answers
+      .filter((ans) => ans.correct)
+      .map(({ id }) => id);
+    if (rightAnswerIds.length !== answerIds.length) {
+      return 0;
+    }
+    const rightAnswerSet = new Set(rightAnswerIds);
+    for (const answerId of answerIds) {
+      if (!rightAnswerSet.has(answerId)) {
+        return 0;
+      }
+    }
+    return 1;
+  }
+
+  private async evaluateShortAnswer(answerDto: ShortAnswerDto): Promise<number> {
+    const { questionId, answer } = answerDto;
+    const question = await this.questionRepository.findById(questionId, {
+      answers: true,
+    });
+    const rightAnswer = question.answers.find((ans) => ans.correct);
+    return (answer === rightAnswer.text) ? 1 : 0;
   }
 }

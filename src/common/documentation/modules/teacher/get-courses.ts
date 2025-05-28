@@ -1,7 +1,14 @@
 import { ApiDocumentationParams } from '../../types/api-documentation-params.type';
-import { OrderByQuery, PaginationQueries, SearchQuery } from '../../default-queries.constants';
+import {
+  OrderByQuery,
+  PaginationQueries,
+  SearchQuery,
+} from '../../default-queries.constants';
 import { PaginatedCoursesResponse } from '../../../responses/paginated-courses.response';
-import { DefaultForbiddenResponse, DefaultUnauthorizedResponse } from '../../default-responses.constants';
+import {
+  DefaultForbiddenResponse,
+  DefaultUnauthorizedResponse,
+} from '../../default-responses.constants';
 import { CourseStatusEnum } from '../../../enums/course-status.enum';
 
 export const GetCoursesDocumentation: ApiDocumentationParams = {

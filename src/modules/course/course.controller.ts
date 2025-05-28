@@ -51,6 +51,8 @@ import { TestMapper } from '../test/mappers/test.mapper';
 import { SkillByIdPipe } from '../../common/pipes/skill-by-id.pipe';
 import { AttachEntitiesDto } from '../../common/dtos/attach-entities.dto';
 import { DetachEntitiesDto } from '../../common/dtos/detach-entities.dto';
+import { TakeTestDto } from '../../common/dtos/take-test.dto';
+import { TestByIdPipe } from '../../common/pipes/test-by-id.pipe';
 
 @ApiTags('Courses')
 @ApiExtraModels(...CourseExtraModels)
@@ -365,6 +367,21 @@ export class CourseController {
       return this.testMapper.toTestTeacherResponse(test);
     }
     return this.testMapper.toTestStudentResponse(test);
+  }
+
+  @ApiEndpoint({
+    summary: 'Take a test (send question answers)',
+    documentation: CourseDocumentation.TAKE_TEST,
+    policies: CoursePolicies.TAKE_TEST,
+  })
+  @Patch('/:courseId/tests/:testId/answers')
+  async takeTest(
+    @Param('courseId', CourseByIdPipe) courseId: string,
+    @Param('testId', TestByIdPipe) testId: string,
+    @User() user: DbUser,
+    @Body() dto: TakeTestDto,
+  ) {
+    return this.courseService.takeTest(user.id, courseId, testId, dto);
   }
 
   @ApiEndpoint({

@@ -7,10 +7,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import {
-  getSortFormat,
-  getSortRegex,
-} from '../utils/get-order-by-regex.util';
+import { getSortFormat, getSortRegex } from '../utils/get-order-by-regex.util';
 import { PageDto } from './page.dto';
 import { DbCourse } from '../../database/entities/course.entity';
 import { CourseStatusEnum } from '../enums/course-status.enum';

@@ -19,6 +19,7 @@ import { UpdateModuleDocumentation } from './update-module';
 import { GetTestDocumentation } from './get-test';
 import { AttachSkillsDocumentation } from './attach-skills';
 import { DetachSkillsDocumentation } from './detach-skills';
+import { TakeTestDocumentation } from './take-test';
 
 export const CourseDocumentation = {
   GET: GetDocumentation,
@@ -37,6 +38,7 @@ export const CourseDocumentation = {
   UPLOAD_VIDEO: UploadVideoDocumentation,
   UPDATE_ARTICLE: UpdateArticleDocumentation,
   GET_TEST: GetTestDocumentation,
+  TAKE_TEST: TakeTestDocumentation,
   CHECK_EDITABLE: CheckEditableDocumentation,
   PUBLISH: PublishDocumentation,
   ENROLL: EnrollDocumentation,

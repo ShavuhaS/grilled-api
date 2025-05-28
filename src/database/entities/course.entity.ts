@@ -12,7 +12,7 @@ import { Sortable } from '../interfaces/sortable.interface';
 
 export class DbCourse implements Sortable<DbCourse> {
   get sortFields(): readonly (keyof DbCourse)[] {
-    return ['name', 'enrolledCount'];
+    return ['name', 'enrolledCount', 'updatedAt'];
   }
 
   id: string;

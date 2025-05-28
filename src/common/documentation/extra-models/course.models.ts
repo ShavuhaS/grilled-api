@@ -5,6 +5,9 @@ import { ArticleLessonStudentResponse } from '../../responses/article-lesson-stu
 import { VideoLessonStudentResponse } from '../../responses/video-lesson-student.response';
 import { TestLessonStudentResponse } from '../../responses/test-lesson-student.response';
 import { TestStudentResponse } from '../../responses/test-student.response';
+import { ChoiceAnswerDto } from '../../dtos/choice-answer.dto';
+import { MultichoiceAnswerDto } from '../../dtos/multichoice-answer.dto';
+import { ShortAnswerDto } from '../../dtos/short-answer.dto';
 
 export const CourseExtraModels = [
   ArticleLessonTeacherResponse,
@@ -14,4 +17,7 @@ export const CourseExtraModels = [
   VideoLessonStudentResponse,
   TestLessonStudentResponse,
   TestStudentResponse,
+  ChoiceAnswerDto,
+  MultichoiceAnswerDto,
+  ShortAnswerDto,
 ];

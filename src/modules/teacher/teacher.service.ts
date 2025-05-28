@@ -31,7 +31,11 @@ export class TeacherService {
     return this.teacherRepository.update({ userId: id }, dto);
   }
 
-  async getCourses(id: string, query: QueryTeacherCoursesDto, orderBy: OrderByDto): Promise<Paginated<DbCourse>> {
+  async getCourses(
+    id: string,
+    query: QueryTeacherCoursesDto,
+    orderBy: OrderByDto,
+  ): Promise<Paginated<DbCourse>> {
     const { search, orderBy: _, pageSize, page, ...filter } = query;
     const pagination = { pageSize, page };
 

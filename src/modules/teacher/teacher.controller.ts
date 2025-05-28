@@ -51,7 +51,11 @@ export class TeacherController {
     @Query('orderBy', new OrderByPipe(DbCourse)) orderBy: OrderByDto,
     @Query() query: QueryTeacherCoursesDto,
   ) {
-    const paginatedCourses = await this.teacherService.getCourses(user.id, query, orderBy);
+    const paginatedCourses = await this.teacherService.getCourses(
+      user.id,
+      query,
+      orderBy,
+    );
     return this.courseMapper.toPaginatedCoursesResponse(paginatedCourses);
   }
 }

@@ -10,6 +10,11 @@ import { CourseModule } from '../course/course.module';
   controllers: [TeacherController],
   providers: [TeacherService],
   exports: [TeacherService],
-  imports: [CourseModule, TeacherMapperModule, CourseMapperModule, PrismaModule],
+  imports: [
+    CourseModule,
+    TeacherMapperModule,
+    CourseMapperModule,
+    PrismaModule,
+  ],
 })
 export class TeacherModule {}
