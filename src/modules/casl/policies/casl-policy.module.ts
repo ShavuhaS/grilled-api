@@ -7,6 +7,7 @@ import { CoursePublishPolicy } from './course/publish';
 import { CourseCheckStatusPolicy } from './course/check-status';
 import { CourseCompletePolicy } from './course/complete';
 import { TeacherUpdateMePolicy } from './teacher/update-me';
+import { TeacherGetMePolicy } from './teacher/get-me';
 
 @Module({
   providers: [
@@ -17,6 +18,7 @@ import { TeacherUpdateMePolicy } from './teacher/update-me';
     CourseCheckStatusPolicy,
     CourseCompletePolicy,
     TeacherUpdateMePolicy,
+    TeacherGetMePolicy,
   ],
   exports: [
     CourseEnrollPolicy,
@@ -26,6 +28,7 @@ import { TeacherUpdateMePolicy } from './teacher/update-me';
     CourseCheckStatusPolicy,
     CourseCompletePolicy,
     TeacherUpdateMePolicy,
+    TeacherGetMePolicy,
   ],
   imports: [PrismaModule],
 })

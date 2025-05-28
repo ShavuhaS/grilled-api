@@ -65,8 +65,8 @@ export class CourseMapper {
     pagination,
   }: Paginated<DbCourse>): PaginatedCoursesResponse {
     return {
-      data: data.map((course) => this.toBaseCourseResponse(course)),
       pagination,
+      data: data.map((course) => this.toBaseCourseResponse(course)),
     };
   }
 }
