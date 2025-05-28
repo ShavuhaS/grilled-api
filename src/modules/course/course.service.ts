@@ -121,6 +121,10 @@ export class CourseService {
         course.avatarLink,
       );
     }
+    if (course.author?.user?.avatar) {
+      const avatar = course.author.user.avatar;
+      course.author.user.avatar = await this.storageService.getSignedUrl(avatar);
+    }
 
     if (!course.modules) {
       return course;

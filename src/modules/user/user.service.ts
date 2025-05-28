@@ -135,7 +135,7 @@ export class UserService {
           course: {
             include: {
               category: true,
-              author: true,
+              author: { include: { user: true } },
               modules: { include: { lessons: true } },
             },
           },
