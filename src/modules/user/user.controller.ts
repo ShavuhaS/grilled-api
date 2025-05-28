@@ -25,6 +25,8 @@ import { QueryUserCoursesDto } from '../../common/dtos/query-user-courses.dto';
 import { OrderByPipe } from '../../common/pipes/order-by.pipe';
 import { OrderByDto } from '../../common/dtos/order-by.dto';
 import { DbCourse } from '../../database/entities/course.entity';
+import { CourseCategoryMapper } from '../course-category/mappers/course-category.mapper';
+import { SkillMapper } from '../skill/mappers/skill.mapper';
 
 @ApiTags('Users')
 @Controller({
@@ -35,6 +37,8 @@ export class UserController {
   constructor(
     private userService: UserService,
     private userMapper: UserMapper,
+    private categoryMapper: CourseCategoryMapper,
+    private skillMapper: SkillMapper,
     private eventEmitter: EventEmitter2,
   ) {}
 
@@ -88,5 +92,29 @@ export class UserController {
       orderBy,
     );
     return this.userService.getCoursesProgress(user.id, paginatedCourses);
+  }
+
+  @ApiEndpoint({
+    summary: 'Get user categories followed by user',
+    documentation: UserDocumentation.GET_CATEGORIES,
+    guards: JwtGuard,
+  })
+  @Get('/me/courseCategories')
+  async getCourseCategories(@User() user: DbUser) {
+    const categories = await this.userService.getCourseCategories(user);
+    return categories.map((category) =>
+      this.categoryMapper.toBaseCourseCategoryResponse(category),
+    );
+  }
+
+  @ApiEndpoint({
+    summary: 'Get skills followed by user',
+    documentation: UserDocumentation.GET_SKILLS,
+    guards: JwtGuard,
+  })
+  @Get('/me/skills')
+  async getSkills(@User() user: DbUser) {
+    const skills = await this.userService.getSkills(user);
+    return skills.map((skill) => this.skillMapper.toSkillResponse(skill));
   }
 }

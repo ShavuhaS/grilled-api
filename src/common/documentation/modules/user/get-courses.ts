@@ -34,9 +34,6 @@ export const GetCoursesDocumentation: ApiDocumentationParams = {
       required: false,
     },
   ],
-  body: {
-    type: QueryUserCoursesDto,
-  },
   ok: {
     type: PaginatedUserCoursesResponse,
   },

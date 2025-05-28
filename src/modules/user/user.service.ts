@@ -19,6 +19,10 @@ import { PaginatedUserCoursesResponse } from '../../common/responses/paginated-u
 import { CourseMapper } from '../course/mappers/course.mapper';
 import { CourseWithProgressResponse } from '../../common/responses/course-with-progress.response';
 import { RoleEnum } from '../../common/enums/role.enum';
+import { DbCourseCategory } from '../../database/entities/course-category.entity';
+import { CourseCategoryService } from '../course-category/course-category.service';
+import { DbSkill } from '../../database/entities/skill.entity';
+import { SkillService } from '../skill/skill.service';
 
 @Injectable()
 export class UserService {
@@ -27,6 +31,8 @@ export class UserService {
     private userCourseRepository: UserCourseRepository,
     private storageService: StorageService,
     private courseService: CourseService,
+    private categoryService: CourseCategoryService,
+    private skillService: SkillService,
     private courseMapper: CourseMapper,
   ) {}
 
@@ -153,6 +159,13 @@ export class UserService {
     return { data: courses, pagination: paginated.pagination };
   }
 
+  getCourseCategories(user: DbUser): Promise<DbCourseCategory[]> {
+    if (user.role === RoleEnum.TEACHER) {
+      throw new ForbiddenException();
+    }
+    return this.categoryService.getFollowedBy(user.id);
+  }
+
   async getCoursesProgress(
     userId: string,
     courses: Paginated<DbCourse>,
@@ -172,5 +185,12 @@ export class UserService {
       pagination,
       data: withProgress,
     };
+  }
+
+  async getSkills(user: DbUser): Promise<DbSkill[]> {
+    if (user.role === RoleEnum.TEACHER) {
+      throw new ForbiddenException();
+    }
+    return this.skillService.getFollowedBy(user.id);
   }
 }

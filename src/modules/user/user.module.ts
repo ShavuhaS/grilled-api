@@ -6,6 +6,10 @@ import { PrismaModule } from '../../database/prisma.module';
 import { StorageModule } from '../storage/storage.module';
 import { CourseModule } from '../course/course.module';
 import { CourseMapperModule } from '../course/mappers/course-mapper.module';
+import { CourseCategoryModule } from '../course-category/course-category.module';
+import { CourseCategoryMapperModule } from '../course-category/mappers/course-category-mapper.module';
+import { SkillModule } from '../skill/skill.module';
+import { SkillMapperModule } from '../skill/mappers/skill-mapper.module';
 
 @Module({
   controllers: [UserController],
@@ -15,7 +19,11 @@ import { CourseMapperModule } from '../course/mappers/course-mapper.module';
     PrismaModule,
     StorageModule,
     forwardRef(() => CourseModule),
+    CourseCategoryModule,
+    SkillModule,
+    SkillMapperModule,
     CourseMapperModule,
+    CourseCategoryMapperModule,
     UserMapperModule,
   ],
 })
