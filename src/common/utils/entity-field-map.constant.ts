@@ -15,6 +15,7 @@ export const entityToApiMap: ApiFieldMapping = {
     status: 'status',
     avgRating: 'rating',
     enrolledCount: 'enrolledCount',
+    updatedAt: 'updatedAt',
   },
   DbSkill: {
     name: 'name',
