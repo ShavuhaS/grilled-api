@@ -13,6 +13,7 @@ import { AppModule } from './modules/app.module';
 import { validationExceptionFactory } from './common/utils/validation-exception.factory';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { json, urlencoded } from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -24,6 +25,8 @@ async function bootstrap() {
     credentials: true,
   });
 
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ limit: '10mb', extended: true }));
   app.use(cookieParser());
   app.useGlobalPipes(
     new ValidationPipe({
